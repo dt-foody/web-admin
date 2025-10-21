@@ -1,0 +1,47 @@
+<label
+  for="category-image"
+  class="relative shadow-theme-xs group hover:border-brand-500 block cursor-pointer rounded-lg border-2 border-dashed border-gray-300 transition dark:hover:border-brand-400 dark:border-gray-800 overflow-hidden"
+  style="min-height: 180px"
+>
+  <ng-container *ngIf="imagePreview; else placeholder">
+    <img [src]="imagePreview" alt="Preview" class="w-full h-full object-contain" />
+  </ng-container>
+
+  <ng-template #placeholder>
+    <div class="flex justify-center items-center p-10">
+      <div class="flex max-w-[260px] flex-col items-center gap-4">
+        <div
+          class="inline-flex h-13 w-13 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition dark:border-gray-800 dark:text-gray-400"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M20.0004 16V18.5C20.0004 19.3284 19.3288 20 18.5004 20H5.49951C4.67108 20 3.99951 19.3284 3.99951 18.5V16M12.0015 4L12.0015 16M7.37454 8.6246L11.9994 4.00269L16.6245 8.6246"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+        <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+          <span class="font-medium text-gray-800 dark:text-white/90">Click to upload</span>
+          or drag and drop SVG, PNG, JPG or GIF
+        </p>
+      </div>
+    </div>
+  </ng-template>
+
+  <input
+    type="file"
+    id="category-image"
+    class="hidden"
+    accept="image/*"
+    (change)="onImageUpload($event)"
+  />
+</label>

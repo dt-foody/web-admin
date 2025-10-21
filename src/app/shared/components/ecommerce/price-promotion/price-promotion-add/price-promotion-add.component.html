@@ -1,0 +1,231 @@
+<div class="space-y-6">
+  <!-- Promotion Info Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Promotion Information</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- Promotion Name -->
+        <div>
+          <app-label for="promotion-name" className="required">Promotion Name</app-label>
+          <app-input-field
+            id="promotion-name"
+            placeholder="Enter promotion name"
+            [(value)]="promotionData.name"
+          ></app-input-field>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <app-label for="description">Description</app-label>
+          <app-text-area
+            id="description"
+            [rows]="3"
+            placeholder="Enter promotion description"
+            [(value)]="promotionData.description"
+          ></app-text-area>
+        </div>
+
+        <!-- Status -->
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div>
+            <app-label for="status">Status</app-label>
+            <app-select
+              id="status"
+              [options]="statusOptions"
+              placeholder="Select status"
+              [value]="promotionData.isActive.toString()"
+              (valueChange)="handleSelectChange('isActive', $event)"
+            ></app-select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Applicable Item Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Applicable Item</h2>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Select either a product or a combo (not both)
+      </p>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- Select Type -->
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div>
+            <app-label for="applicable-to" className="required">Apply To</app-label>
+            <app-select
+              id="applicable-to"
+              [options]="applicableToOptions"
+              placeholder="Select type"
+              [value]="selectedApplicableTo"
+              (valueChange)="handleApplicableToChange($event)"
+            ></app-select>
+          </div>
+        </div>
+
+        <!-- Product Selection -->
+        <div *ngIf="selectedApplicableTo === 'product'">
+          <app-label for="product" className="required">Product</app-label>
+          <ng-select
+            [items]="products"
+            bindLabel="name"
+            bindValue="id"
+            placeholder="Select a product"
+            [(ngModel)]="promotionData.product"
+            [searchable]="true"
+            [clearable]="true"
+            name="product"
+          >
+          </ng-select>
+        </div>
+
+        <!-- Combo Selection -->
+        <div *ngIf="selectedApplicableTo === 'combo'">
+          <app-label for="combo" className="required">Combo</app-label>
+          <ng-select
+            [items]="combos"
+            bindLabel="name"
+            bindValue="id"
+            placeholder="Select a combo"
+            [(ngModel)]="promotionData.combo"
+            [searchable]="true"
+            [clearable]="true"
+            name="combo"
+          >
+          </ng-select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Discount Value Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Discount Value</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- Discount Type & Value -->
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div>
+            <app-label for="discount-type" className="required">Discount Type</app-label>
+            <app-select
+              id="discount-type"
+              [options]="discountTypeOptions"
+              placeholder="Select discount type"
+              [value]="promotionData.discountType"
+              (valueChange)="handleSelectChange('discountType', $event)"
+            ></app-select>
+          </div>
+          <div>
+            <app-label for="discount-value" className="required">Discount Value</app-label>
+            <app-input-field
+              id="discount-value"
+              type="number"
+              placeholder="0"
+              [(value)]="promotionData.discountValue"
+            ></app-input-field>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {{
+                promotionData.discountType === 'percentage'
+                  ? 'Enter percentage (0-100)'
+                  : 'Enter fixed amount'
+              }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Validity Period Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Validity Period</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <!-- Start Date -->
+        <div>
+          <app-label for="start-date" className="required">Start Date</app-label>
+          <app-input-field
+            id="start-date"
+            type="datetime-local"
+            [(value)]="promotionData.startDate"
+          ></app-input-field>
+        </div>
+
+        <!-- End Date -->
+        <div>
+          <app-label for="end-date" className="required">End Date</app-label>
+          <app-input-field
+            id="end-date"
+            type="datetime-local"
+            [(value)]="promotionData.endDate"
+          ></app-input-field>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quantity Limits Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Quantity Limits</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <!-- Max Quantity -->
+        <div>
+          <app-label for="max-quantity">Maximum Total Quantity</app-label>
+          <app-input-field
+            id="max-quantity"
+            type="number"
+            placeholder="0"
+            [(value)]="promotionData.maxQuantity"
+          ></app-input-field>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Total quantity that can be sold at promotional price (0 = unlimited)
+          </p>
+        </div>
+
+        <!-- Daily Max Uses -->
+        <div>
+          <app-label for="daily-max-uses">Maximum Daily Quantity</app-label>
+          <app-input-field
+            id="daily-max-uses"
+            type="number"
+            placeholder="0"
+            [(value)]="promotionData.dailyMaxUses"
+          ></app-input-field>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Maximum quantity per day (0 = unlimited)
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+    <app-button variant="outline" (btnClick)="onCancel()">Cancel</app-button>
+    <app-button variant="primary" (btnClick)="onSave()">
+      {{ isEditMode ? 'Update Promotion' : 'Create Promotion' }}
+    </app-button>
+  </div>
+</div>

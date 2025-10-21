@@ -1,0 +1,422 @@
+<div class="space-y-6">
+  <!-- Product Info Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Product Information</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Image Upload Column - Left Side -->
+        <div class="lg:col-span-3">
+          <app-label>Product Thumbnail</app-label>
+          <div class="mt-2">
+            <app-image-upload [imagePreview]="imagePreview" (fileSelected)="onFileSelected($event)">
+            </app-image-upload>
+          </div>
+        </div>
+
+        <!-- Form Fields Column - Right Side -->
+        <div class="lg:col-span-9">
+          <div class="grid grid-cols-1 gap-5">
+            <!-- Product Name -->
+            <div>
+              <app-label for="product-name" className="required">Product Name</app-label>
+              <app-input-field
+                id="product-name"
+                placeholder="Enter product name"
+                [(value)]="productData.name"
+              ></app-input-field>
+            </div>
+
+            <!-- Category & Status -->
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div>
+                <app-label for="category" className="required">Category</app-label>
+                <ng-select
+                  [items]="categories"
+                  bindLabel="label"
+                  bindValue="value"
+                  placeholder="Select category"
+                  [(ngModel)]="productData.category"
+                  [searchable]="true"
+                  [clearable]="true"
+                  name="category"
+                >
+                </ng-select>
+              </div>
+              <div>
+                <app-label for="status">Status</app-label>
+                <app-select
+                  id="status"
+                  [options]="availabilityOptions"
+                  placeholder="Select status"
+                  [value]="productData.isActive.toString()"
+                  (valueChange)="handleSelectChange('isActive', $event)"
+                >
+                </app-select>
+              </div>
+            </div>
+
+            <!-- Base Price & Priority -->
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div>
+                <app-label for="base-price" className="required">Base Price</app-label>
+                <app-input-field
+                  id="base-price"
+                  type="number"
+                  placeholder="0.00"
+                  [(value)]="productData.basePrice"
+                ></app-input-field>
+              </div>
+              <div>
+                <app-label for="priority">Display Priority</app-label>
+                <app-input-field
+                  id="priority"
+                  type="number"
+                  placeholder="0"
+                  [(value)]="productData.priority"
+                ></app-input-field>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+              <app-label for="description">Description</app-label>
+              <app-text-area
+                id="description"
+                [rows]="4"
+                placeholder="Enter product description"
+                [(value)]="productData.description"
+              ></app-text-area>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Option Groups Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Product Option Groups</h2>
+        <app-button variant="outline" size="sm" (btnClick)="addOptionGroup()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="mr-1.5"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Add Option Group
+        </app-button>
+      </div>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="space-y-4">
+        <!-- Empty State -->
+        <div
+          *ngIf="productData.optionGroups.length === 0"
+          class="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-gray-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="mx-auto mb-4 text-gray-400"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M12 8v8m-4-4h8" />
+          </svg>
+          <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            No option groups yet
+          </p>
+          <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">
+            Add option groups like Size, Toppings, etc.
+          </p>
+          <app-button variant="primary" size="sm" (btnClick)="addOptionGroup()"
+            >Add First Group</app-button
+          >
+        </div>
+
+        <!-- Option Groups List -->
+        <div
+          *ngFor="let group of productData.optionGroups; let groupIndex = index"
+          class="rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/50"
+        >
+          <!-- Group Header -->
+          <div
+            class="flex items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/50"
+          >
+            <div class="flex items-center gap-3">
+              <button
+                (click)="toggleGroup(groupIndex)"
+                class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  [class.rotate-90]="isGroupExpanded(groupIndex)"
+                  class="transition-transform"
+                >
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+              <div>
+                <h3 class="font-medium text-gray-800 dark:text-white">
+                  {{ group.name || 'Unnamed Group ' + (groupIndex + 1) }}
+                </h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  {{ group.options.length }} option(s) | Min: {{ group.minOptions }} | Max:
+                  {{ group.maxOptions }}
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <!-- Move Up -->
+              <button
+                *ngIf="groupIndex > 0"
+                (click)="moveGroupUp(groupIndex)"
+                class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M18 15l-6-6-6 6" />
+                </svg>
+              </button>
+              <!-- Move Down -->
+              <button
+                *ngIf="groupIndex < productData.optionGroups.length - 1"
+                (click)="moveGroupDown(groupIndex)"
+                class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              <!-- Delete -->
+              <button
+                (click)="removeOptionGroup(groupIndex)"
+                class="rounded p-1.5 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Group Content (Expandable) -->
+          <div *ngIf="isGroupExpanded(groupIndex)" class="p-4 space-y-4">
+            <!-- Group Settings -->
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <app-label [for]="'group-name-' + groupIndex">Group Name *</app-label>
+                <app-input-field
+                  [id]="'group-name-' + groupIndex"
+                  placeholder="e.g., Size, Toppings"
+                  [value]="group.name"
+                  (valueChange)="handleGroupFieldChange(groupIndex, 'name', $event)"
+                >
+                </app-input-field>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <app-label [for]="'min-options-' + groupIndex">Min Options</app-label>
+                  <app-input-field
+                    [id]="'min-options-' + groupIndex"
+                    type="number"
+                    placeholder="0"
+                    [value]="group.minOptions"
+                    (valueChange)="handleGroupFieldChange(groupIndex, 'minOptions', $event)"
+                  >
+                  </app-input-field>
+                </div>
+                <div>
+                  <app-label [for]="'max-options-' + groupIndex">Max Options</app-label>
+                  <app-input-field
+                    [id]="'max-options-' + groupIndex"
+                    type="number"
+                    placeholder="1"
+                    [value]="group.maxOptions"
+                    (valueChange)="handleGroupFieldChange(groupIndex, 'maxOptions', $event)"
+                  >
+                  </app-input-field>
+                </div>
+              </div>
+            </div>
+
+            <!-- Options List -->
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Options</label>
+                <button
+                  (click)="addOption(groupIndex)"
+                  class="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  Add Option
+                </button>
+              </div>
+
+              <!-- Empty Options State -->
+              <div
+                *ngIf="group.options.length === 0"
+                class="rounded-lg border border-dashed border-gray-300 p-6 text-center dark:border-gray-600"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">No options added yet</p>
+              </div>
+
+              <!-- Options -->
+              <div
+                *ngFor="let option of group.options; let optionIndex = index"
+                class="grid grid-cols-1 gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-600 dark:bg-gray-800 md:grid-cols-12"
+              >
+                <div class="md:col-span-4">
+                  <app-label [for]="'option-name-' + groupIndex + '-' + optionIndex" class="text-xs"
+                    >Option Name *</app-label
+                  >
+                  <app-input-field
+                    [id]="'option-name-' + groupIndex + '-' + optionIndex"
+                    placeholder="e.g., Medium, Extra Cheese"
+                    [(value)]="option.name"
+                  >
+                  </app-input-field>
+                </div>
+
+                <div class="md:col-span-3">
+                  <app-label
+                    [for]="'option-price-' + groupIndex + '-' + optionIndex"
+                    class="text-xs"
+                    >Price Modifier</app-label
+                  >
+                  <app-input-field
+                    [id]="'option-price-' + groupIndex + '-' + optionIndex"
+                    type="number"
+                    placeholder="0.00"
+                    [(value)]="option.priceModifier"
+                  >
+                  </app-input-field>
+                </div>
+
+                <div class="md:col-span-3">
+                  <app-label [for]="'option-type-' + groupIndex + '-' + optionIndex" class="text-xs"
+                    >Type</app-label
+                  >
+                  <app-select
+                    [id]="'option-type-' + groupIndex + '-' + optionIndex"
+                    [options]="priceModifierTypes"
+                    [(value)]="option.type"
+                  >
+                  </app-select>
+                </div>
+
+                <div class="flex items-end gap-2 md:col-span-2">
+                  <label class="inline-flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      [(checked)]="option.isActive"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                    />
+                    <span class="text-xs text-gray-600 dark:text-gray-400">Active</span>
+                  </label>
+                  <button
+                    (click)="removeOption(groupIndex, optionIndex)"
+                    class="rounded p-1.5 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+    <app-button size="sm" variant="outline" (btnClick)="onDraft()">Save as Draft</app-button>
+    <app-button size="sm" variant="primary" (btnClick)="onPublish()">Publish Product</app-button>
+  </div>
+</div>

@@ -1,0 +1,232 @@
+<div class="space-y-6">
+  <!-- Coupon Info Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Coupon Information</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- Coupon Name & Code -->
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div>
+            <app-label for="coupon-name" className="required">Coupon Name</app-label>
+            <app-input-field
+              id="coupon-name"
+              placeholder="Enter coupon name"
+              [(value)]="couponData.name"
+            ></app-input-field>
+          </div>
+          <div>
+            <app-label for="coupon-code" className="required">Coupon Code</app-label>
+            <app-input-field
+              id="coupon-code"
+              placeholder="Enter coupon code (e.g., SUMMER2024)"
+              [(value)]="couponData.code"
+            ></app-input-field>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <app-label for="description">Description</app-label>
+          <app-text-area
+            id="description"
+            [rows]="3"
+            placeholder="Enter coupon description"
+            [(value)]="couponData.description"
+          ></app-text-area>
+        </div>
+
+        <!-- Status -->
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div>
+            <app-label for="status">Status</app-label>
+            <app-select
+              id="status"
+              [options]="statusOptions"
+              placeholder="Select status"
+              [value]="couponData.isActive.toString()"
+              (valueChange)="handleSelectChange('isActive', $event)"
+            ></app-select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Discount Value Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Discount Value</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- Value & Type -->
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div>
+            <app-label for="value" className="required">Discount Value</app-label>
+            <app-input-field
+              id="value"
+              type="number"
+              placeholder="0"
+              [(value)]="couponData.value"
+            ></app-input-field>
+          </div>
+          <div>
+            <app-label for="value-type" className="required">Value Type</app-label>
+            <app-select
+              id="value-type"
+              [options]="valueTypeOptions"
+              placeholder="Select value type"
+              [(value)]="couponData.valueType"
+            ></app-select>
+          </div>
+        </div>
+
+        <!-- Min Order Amount -->
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div>
+            <app-label for="min-order">Minimum Order Amount</app-label>
+            <app-input-field
+              id="min-order"
+              type="number"
+              placeholder="0"
+              [(value)]="couponData.minOrderAmount"
+            ></app-input-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Applicable Products & Combos Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Applicable Items</h2>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Leave empty to apply to all products/combos
+      </p>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- Products -->
+        <div>
+          <app-label for="products">Applicable Products</app-label>
+          <ng-select
+            [items]="products"
+            bindLabel="name"
+            bindValue="id"
+            placeholder="Select products"
+            [(ngModel)]="couponData.applicableProducts"
+            [multiple]="true"
+            [searchable]="true"
+            [clearable]="true"
+            name="products"
+          >
+          </ng-select>
+        </div>
+
+        <!-- Combos -->
+        <div>
+          <app-label for="combos">Applicable Combos</app-label>
+          <ng-select
+            [items]="combos"
+            bindLabel="name"
+            bindValue="id"
+            placeholder="Select combos"
+            [(ngModel)]="couponData.applicableCombos"
+            [multiple]="true"
+            [searchable]="true"
+            [clearable]="true"
+            name="combos"
+          >
+          </ng-select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Validity Period Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Validity Period</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <!-- Start Date -->
+        <div>
+          <app-label for="start-date" className="required">Start Date</app-label>
+          <app-input-field
+            id="start-date"
+            type="datetime-local"
+            [(value)]="couponData.startDate"
+          ></app-input-field>
+        </div>
+
+        <!-- End Date -->
+        <div>
+          <app-label for="end-date" className="required">End Date</app-label>
+          <app-input-field
+            id="end-date"
+            type="datetime-local"
+            [(value)]="couponData.endDate"
+          ></app-input-field>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Usage Limits Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Usage Limits</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <!-- Max Uses -->
+        <div>
+          <app-label for="max-uses" className="required">Maximum Total Uses</app-label>
+          <app-input-field
+            id="max-uses"
+            type="number"
+            placeholder="0"
+            [(value)]="couponData.maxUses"
+          ></app-input-field>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Total number of times this coupon can be used
+          </p>
+        </div>
+
+        <!-- Daily Max Uses -->
+        <div>
+          <app-label for="daily-max-uses" className="required">Maximum Daily Uses</app-label>
+          <app-input-field
+            id="daily-max-uses"
+            type="number"
+            placeholder="0"
+            [(value)]="couponData.dailyMaxUses"
+          ></app-input-field>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Maximum uses per day</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+    <app-button variant="outline" (btnClick)="onCancel()">Cancel</app-button>
+    <app-button variant="primary" (btnClick)="onSave()">
+      {{ isEditMode ? 'Update Coupon' : 'Create Coupon' }}
+    </app-button>
+  </div>
+</div>

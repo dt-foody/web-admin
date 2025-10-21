@@ -1,0 +1,230 @@
+<div
+  class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+>
+  <div
+    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
+  >
+    <app-search-input placeholder="Search categories..." (search)="onSearchChange($event)">
+    </app-search-input>
+    <a
+      routerLink="/blog-category/add"
+      *hasPermission="'blogCategory.create'"
+      class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+      >
+        <path
+          d="M5 10.0002H15.0006M10.0002 5V15.0006"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      Add Category
+    </a>
+  </div>
+
+  <div class="overflow-x-auto custom-scrollbar">
+    <table class="w-full">
+      <thead>
+        <tr class="border-b border-gray-200 dark:divide-gray-800 dark:border-gray-800">
+          <th class="w-14 px-5 py-4 text-left">
+            <input type="checkbox" (change)="toggleAll()" [checked]="isAllSelected()" />
+          </th>
+          <th>
+            <app-sort-header
+              label="Category"
+              key="name"
+              [activeKey]="query.sort?.key"
+              [asc]="query.sort?.asc"
+              (sortChange)="onSortChange($event)"
+            ></app-sort-header>
+          </th>
+          <th class="px-5 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+            Preview
+          </th>
+          <th>
+            <app-sort-header
+              label="Post Count"
+              key="postCount"
+              [activeKey]="query.sort?.key"
+              [asc]="query.sort?.asc"
+              (sortChange)="onSortChange($event)"
+            ></app-sort-header>
+          </th>
+          <th class="px-5 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+            Status
+          </th>
+          <th>
+            <app-sort-header
+              label="Created At"
+              key="createdAt"
+              [activeKey]="query.sort?.key"
+              [asc]="query.sort?.asc"
+              (sortChange)="onSortChange($event)"
+            ></app-sort-header>
+          </th>
+          <th class="px-5 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+            Action
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-x divide-y divide-gray-200 dark:divide-gray-800">
+        @for (category of dataSources; track category.id) {
+          <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
+            <td class="w-14 px-5 py-4">
+              <input
+                type="checkbox"
+                [checked]="selected.includes(category.id)"
+                (change)="toggleSelect(category.id)"
+              />
+            </td>
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-3">
+                @if (category.coverImage) {
+                  <img
+                    [src]="category.coverImage"
+                    alt="{{ category.name }}"
+                    class="h-10 w-10 rounded-md object-cover"
+                  />
+                } @else {
+                  <div
+                    class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 dark:bg-gray-700 text-gray-400"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                  </div>
+                }
+                <div>
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
+                    category.name
+                  }}</span>
+                  <p class="text-xs font-mono text-gray-500 dark:text-gray-400">
+                    {{ category.slug }}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td class="px-5 py-4">
+              <span
+                class="rounded-md px-3 py-1 text-xs"
+                [style.backgroundColor]="category.backgroundColor"
+                [style.color]="category.textColor"
+                >{{ category.name }}</span
+              >
+            </td>
+            <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">
+              {{ category.postCount || 0 }}
+            </td>
+            <td class="px-5 py-4">
+              <button
+                (click)="handleToggleActive(category)"
+                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
+                [ngClass]="{
+                  'bg-brand-500': category.isActive,
+                  'bg-gray-200 dark:bg-gray-700': !category.isActive,
+                }"
+              >
+                <span
+                  class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
+                  [ngClass]="{
+                    'translate-x-6': category.isActive,
+                    'translate-x-1': !category.isActive,
+                  }"
+                ></span>
+              </button>
+            </td>
+            <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">
+              {{ formatDate(category.createdAt) }}
+            </td>
+            <td class="px-5 py-4">
+              <div class="flex gap-2">
+                <button
+                  *hasPermission="'blogCategory.update'"
+                  (click)="handleEdit(category)"
+                  class="text-blue-500 p-1"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                    />
+                  </svg>
+                </button>
+                <button
+                  *hasPermission="'blogCategory.delete'"
+                  (click)="handleDelete(category)"
+                  class="text-red-500 p-1"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="size-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <app-pagination
+    [page]="query.page"
+    [totalPages]="totalPages"
+    [totalResults]="totalResults"
+    [pageSize]="query.pageSize"
+    (pageChange)="onPageChange($event)"
+  ></app-pagination>
+</div>
+
+<ng-template #confirmDelete let-dialog>
+  <div class="p-5">
+    <h3 class="text-lg font-semibold mb-4">Confirm Delete</h3>
+    <p class="mb-6">
+      Are you sure you want to delete category <strong>{{ itemToDelete?.name }}</strong
+      >?
+    </p>
+    <div class="flex justify-end gap-3">
+      <button (click)="dialog.close(false)" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700">
+        Cancel
+      </button>
+      <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 text-white">
+        Delete
+      </button>
+    </div>
+  </div>
+</ng-template>

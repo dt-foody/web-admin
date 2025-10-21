@@ -1,0 +1,497 @@
+<div class="space-y-6">
+  <!-- Customer Information Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Customer Information</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- Customer Select -->
+        <div>
+          <app-label for="customer" className="required">Customer</app-label>
+          <ng-select
+            [items]="customers"
+            bindLabel="name"
+            bindValue="id"
+            placeholder="Select customer"
+            [(ngModel)]="orderData.customer"
+            [searchable]="true"
+            [clearable]="true"
+            name="customer"
+          >
+            <ng-template ng-option-tmp let-item="item">
+              <div class="flex flex-col">
+                <span class="font-medium">{{ item.name }}</span>
+                <span class="text-xs text-gray-500">{{ item.phone || item.email }}</span>
+              </div>
+            </ng-template>
+          </ng-select>
+        </div>
+
+        <!-- Order Status -->
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div>
+            <app-label for="order-status">Order Status</app-label>
+            <ng-select
+              [items]="orderStatuses"
+              bindLabel="label"
+              bindValue="value"
+              placeholder="Select status"
+              [(ngModel)]="orderData.status"
+              [searchable]="true"
+              [clearable]="true"
+              name="orderStatuses"
+            >
+            </ng-select>
+          </div>
+          <div>
+            <app-label for="order-note">Order Note</app-label>
+            <app-input-field
+              id="order-note"
+              placeholder="Enter order notes"
+              [(value)]="orderData.note"
+            ></app-input-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Items Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Order Items</h2>
+        <app-button variant="outline" size="sm" (btnClick)="addOrderItem()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="mr-1.5"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Add Item
+        </app-button>
+      </div>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="space-y-4">
+        <!-- Empty State -->
+        <div
+          *ngIf="orderData.items.length === 0"
+          class="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-gray-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="mx-auto mb-4 text-gray-400"
+          >
+            <path
+              d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 1 1-8 0"
+            />
+          </svg>
+          <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">No items in order</p>
+          <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">
+            Add products or combos to this order
+          </p>
+          <app-button variant="primary" size="sm" (btnClick)="addOrderItem()"
+            >Add First Item</app-button
+          >
+        </div>
+
+        <!-- Order Items List -->
+        <div
+          *ngFor="let item of orderData.items; let i = index"
+          class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/50"
+        >
+          <div class="space-y-4">
+            <!-- Item Type Selector & Remove Button -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Item Type:</span>
+                <div class="flex gap-2">
+                  <label class="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="itemType-{{ i }}"
+                      [value]="'product'"
+                      [checked]="getItemType(i) === 'product'"
+                      (change)="onItemTypeChange(i, 'product')"
+                      class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Product</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="itemType-{{ i }}"
+                      [value]="'combo'"
+                      [checked]="getItemType(i) === 'combo'"
+                      (change)="onItemTypeChange(i, 'combo')"
+                      class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Combo</span>
+                  </label>
+                </div>
+              </div>
+              <button
+                (click)="removeOrderItem(i)"
+                class="rounded p-2 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Product Selection (visible when type is 'product') -->
+            <div
+              *ngIf="getItemType(i) === 'product'"
+              class="grid grid-cols-1 gap-4 md:grid-cols-12"
+            >
+              <div class="md:col-span-4">
+                <app-label [for]="'item-product-' + i" class="text-xs" className="required"
+                  >Product</app-label
+                >
+                <ng-select
+                  [items]="products"
+                  bindLabel="name"
+                  bindValue="id"
+                  placeholder="Select product"
+                  [(ngModel)]="item.product"
+                  (change)="onProductChange(i, item.product)"
+                  [searchable]="true"
+                  [clearable]="false"
+                >
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="flex flex-col">
+                      <span class="font-medium">{{ item.name }}</span>
+                      <span class="text-xs text-gray-500"
+                        >{{ item.basePrice | number: '1.2-2' }} đ</span
+                      >
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+
+              <div class="md:col-span-2">
+                <app-label [for]="'item-quantity-' + i" class="text-xs" className="required"
+                  >Quantity</app-label
+                >
+                <app-input-field
+                  [id]="'item-quantity-' + i"
+                  type="number"
+                  placeholder="1"
+                  [value]="item.quantity"
+                  (valueChange)="onItemQuantityChange(i, $event)"
+                ></app-input-field>
+              </div>
+
+              <div class="md:col-span-2">
+                <app-label [for]="'item-price-' + i" class="text-xs" className="required"
+                  >Price</app-label
+                >
+                <app-input-field
+                  [id]="'item-price-' + i"
+                  type="number"
+                  placeholder="0.00"
+                  [value]="item.price"
+                  (valueChange)="onItemPriceChange(i, $event)"
+                ></app-input-field>
+              </div>
+
+              <div class="md:col-span-4">
+                <app-label [for]="'item-note-' + i" class="text-xs">Note</app-label>
+                <app-input-field
+                  [id]="'item-note-' + i"
+                  placeholder="Special requests"
+                  [(value)]="item.note"
+                ></app-input-field>
+              </div>
+            </div>
+
+            <!-- Combo Selection (visible when type is 'combo') -->
+            <div *ngIf="getItemType(i) === 'combo'" class="grid grid-cols-1 gap-4 md:grid-cols-12">
+              <div class="md:col-span-4">
+                <app-label [for]="'item-combo-' + i" class="text-xs" className="required"
+                  >Combo</app-label
+                >
+                <ng-select
+                  [items]="combos"
+                  bindLabel="name"
+                  bindValue="id"
+                  placeholder="Select combo"
+                  [(ngModel)]="item.combo"
+                  (change)="onComboChange(i, item.combo || '')"
+                  [searchable]="true"
+                  [clearable]="false"
+                >
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="flex flex-col">
+                      <span class="font-medium">{{ item.name }}</span>
+                      <span class="text-xs text-gray-500"
+                        >{{ item.comboPrice | number: '1.2-2' }} đ</span
+                      >
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+
+              <div class="md:col-span-2">
+                <app-label [for]="'item-combo-quantity-' + i" class="text-xs" className="required"
+                  >Quantity</app-label
+                >
+                <app-input-field
+                  [id]="'item-combo-quantity-' + i"
+                  type="number"
+                  placeholder="1"
+                  [value]="item.quantity"
+                  (valueChange)="onItemQuantityChange(i, $event)"
+                ></app-input-field>
+              </div>
+
+              <div class="md:col-span-2">
+                <app-label [for]="'item-combo-price-' + i" class="text-xs" className="required"
+                  >Price</app-label
+                >
+                <app-input-field
+                  [id]="'item-combo-price-' + i"
+                  type="number"
+                  placeholder="0.00"
+                  [value]="item.price"
+                  (valueChange)="onItemPriceChange(i, $event)"
+                ></app-input-field>
+              </div>
+
+              <div class="md:col-span-4">
+                <app-label [for]="'item-combo-note-' + i" class="text-xs">Note</app-label>
+                <app-input-field
+                  [id]="'item-combo-note-' + i"
+                  placeholder="Special requests"
+                  [(value)]="item.note"
+                ></app-input-field>
+              </div>
+            </div>
+
+            <!-- Subtotal Display -->
+            <div
+              class="flex items-center justify-end border-t border-gray-200 pt-3 dark:border-gray-700"
+            >
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Subtotal:</span>
+                <span class="text-lg font-semibold text-gray-800 dark:text-white">
+                  {{ +item.price * +item.quantity | number: '1.2-2' }} đ
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing Summary Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Pricing Summary</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="space-y-4">
+        <!-- Total Amount (Read-only) -->
+        <div
+          class="flex items-center justify-between rounded-lg bg-gray-50 p-4 dark:bg-gray-900/50"
+        >
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Amount</span>
+          <span class="text-lg font-semibold text-gray-800 dark:text-white">
+            {{ orderData.totalAmount | number: '1.2-2' }} đ
+          </span>
+        </div>
+
+        <!-- Discount & Shipping -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <app-label for="discount-amount">Discount Amount</app-label>
+            <app-input-field
+              id="discount-amount"
+              type="number"
+              placeholder="0.00"
+              [(value)]="orderData.discountAmount"
+              (valueChange)="calculateTotals()"
+            ></app-input-field>
+          </div>
+          <div>
+            <app-label for="shipping-fee">Shipping Fee</app-label>
+            <app-input-field
+              id="shipping-fee"
+              type="number"
+              placeholder="0.00"
+              [(value)]="orderData.shippingFee"
+              (valueChange)="calculateTotals()"
+            ></app-input-field>
+          </div>
+        </div>
+
+        <!-- Grand Total (Read-only) -->
+        <div
+          class="flex items-center justify-between rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20"
+        >
+          <span class="text-base font-semibold text-blue-700 dark:text-blue-300">Grand Total</span>
+          <span class="text-2xl font-bold text-blue-700 dark:text-blue-300">
+            {{ orderData.grandTotal | number: '1.2-2' }} đ
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Information Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Payment Information</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div>
+          <app-label for="payment-method">Payment Method</app-label>
+          <app-select
+            id="payment-method"
+            [options]="paymentMethods"
+            [(value)]="orderData.payment.method"
+          ></app-select>
+        </div>
+        <div>
+          <app-label for="payment-status">Payment Status</app-label>
+          <app-select
+            id="payment-status"
+            [options]="paymentStatuses"
+            [(value)]="orderData.payment.status"
+          ></app-select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shipping Information Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Shipping Information</h2>
+    </div>
+    <div class="p-4 sm:p-6">
+      <div class="space-y-5">
+        <!-- Shipping Status -->
+        <div>
+          <app-label for="shipping-status">Shipping Status</app-label>
+          <app-select
+            id="shipping-status"
+            [options]="shippingStatuses"
+            [(value)]="orderData.shipping.status"
+          ></app-select>
+        </div>
+
+        <!-- Recipient Information -->
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div>
+            <app-label for="recipient-name" className="required">Recipient Name</app-label>
+            <app-input-field
+              id="recipient-name"
+              placeholder="Enter recipient name"
+              [(value)]="orderData.shipping.address.recipientName"
+            ></app-input-field>
+          </div>
+          <div>
+            <app-label for="recipient-phone" className="required">Recipient Phone</app-label>
+            <app-input-field
+              id="recipient-phone"
+              placeholder="Enter phone number"
+              [(value)]="orderData.shipping.address.recipientPhone"
+            ></app-input-field>
+          </div>
+        </div>
+
+        <!-- Address Details -->
+        <div>
+          <app-label for="street" className="required">Street Address</app-label>
+          <app-input-field
+            id="street"
+            placeholder="Enter street address"
+            [(value)]="orderData.shipping.address.street"
+          ></app-input-field>
+        </div>
+
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+          <div>
+            <app-label for="ward">Ward</app-label>
+            <app-input-field
+              id="ward"
+              placeholder="Enter ward"
+              [(value)]="orderData.shipping.address.ward"
+            ></app-input-field>
+          </div>
+          <div>
+            <app-label for="district">District</app-label>
+            <app-input-field
+              id="district"
+              placeholder="Enter district"
+              [(value)]="orderData.shipping.address.district"
+            ></app-input-field>
+          </div>
+          <div>
+            <app-label for="city" className="required">City/Province</app-label>
+            <app-input-field
+              id="city"
+              placeholder="Enter city"
+              [(value)]="orderData.shipping.address.city"
+            ></app-input-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+    <!-- <app-button variant="outline" (btnClick)="router.navigateByUrl('/order')">
+      Cancel
+    </app-button> -->
+    <app-button variant="primary" (btnClick)="onSaveDraft()"> Save as Draft </app-button>
+    <app-button variant="primary" (btnClick)="onSubmit()">
+      {{ isEditMode ? 'Update Order' : 'Add Order' }}
+    </app-button>
+  </div>
+</div>

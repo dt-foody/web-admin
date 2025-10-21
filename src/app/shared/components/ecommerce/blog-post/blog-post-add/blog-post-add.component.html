@@ -1,0 +1,339 @@
+<div class="space-y-6">
+  <!-- Basic Information Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <button
+      (click)="toggleSection('basic')"
+      class="w-full border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+    >
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Basic Information</h2>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        [class.rotate-90]="isSectionExpanded('basic')"
+        class="transition-transform text-gray-500"
+      >
+        <path d="M9 18l6-6-6-6" />
+      </svg>
+    </button>
+    <div *ngIf="isSectionExpanded('basic')" class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- Title -->
+        <div>
+          <app-label for="title" className="required">Title</app-label>
+          <app-input-field
+            id="title"
+            placeholder="Enter post title"
+            [(value)]="postData.title"
+          ></app-input-field>
+        </div>
+
+        <!-- Slug -->
+        <div>
+          <app-label for="slug">URL Slug</app-label>
+          <app-input-field
+            id="slug"
+            placeholder="auto-generated-from-title"
+            [(value)]="postData.slug"
+          ></app-input-field>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Auto-generated from title. Edit if needed.
+          </p>
+        </div>
+
+        <!-- Summary -->
+        <div>
+          <app-label for="summary">Summary</app-label>
+          <textarea
+            id="summary"
+            rows="3"
+            placeholder="Brief description of the post"
+            [(ngModel)]="postData.summary"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
+          ></textarea>
+        </div>
+
+        <!-- Content -->
+        <div>
+          <app-label for="content" className="required">Content</app-label>
+          <ckeditor
+            [editor]="Editor"
+            [(ngModel)]="postData.content"
+            [config]="editorConfig"
+            (ready)="onReady($event)"
+          >
+          </ckeditor>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cover Image Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <button
+      (click)="toggleSection('cover')"
+      class="w-full border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+    >
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Cover Image</h2>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        [class.rotate-90]="isSectionExpanded('cover')"
+        class="transition-transform text-gray-500"
+      >
+        <path d="M9 18l6-6-6-6" />
+      </svg>
+    </button>
+    <div *ngIf="isSectionExpanded('cover')" class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- Cover Image URL -->
+        <div>
+          <app-label for="cover-image">Image URL</app-label>
+          <app-input-field
+            id="cover-image"
+            type="url"
+            placeholder="https://example.com/image.jpg"
+            [(value)]="postData.coverImage"
+          ></app-input-field>
+        </div>
+
+        <!-- Cover Image Alt -->
+        <div>
+          <app-label for="cover-image-alt">Image Alt Text</app-label>
+          <app-input-field
+            id="cover-image-alt"
+            placeholder="Describe the image for accessibility"
+            [(value)]="postData.coverImageAlt"
+          ></app-input-field>
+        </div>
+
+        <!-- Image Preview -->
+        <div
+          *ngIf="postData.coverImage"
+          class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+        >
+          <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Preview:</p>
+          <img
+            [src]="postData.coverImage"
+            [alt]="postData.coverImageAlt || 'Cover image'"
+            class="w-full rounded-lg object-cover max-h-64"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories & Tags Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <button
+      (click)="toggleSection('taxonomy')"
+      class="w-full border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+    >
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Categories & Tags</h2>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        [class.rotate-90]="isSectionExpanded('taxonomy')"
+        class="transition-transform text-gray-500"
+      >
+        <path d="M9 18l6-6-6-6" />
+      </svg>
+    </button>
+    <div *ngIf="isSectionExpanded('taxonomy')" class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div>
+          <app-label for="categories">Categories</app-label>
+          <ng-select
+            id="categories"
+            [items]="allCategories"
+            bindLabel="name"
+            bindValue="id"
+            [multiple]="true"
+            placeholder="Select categories"
+            [(ngModel)]="postData.categories"
+            [closeOnSelect]="false"
+          >
+          </ng-select>
+        </div>
+        <div>
+          <app-label for="tags">Tags</app-label>
+          <ng-select
+            id="tags"
+            [items]="allTags"
+            bindLabel="name"
+            bindValue="id"
+            [multiple]="true"
+            placeholder="Select tags"
+            [(ngModel)]="postData.tags"
+            [closeOnSelect]="false"
+          >
+          </ng-select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Publishing Settings Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <button
+      (click)="toggleSection('publishing')"
+      class="w-full border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+    >
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Publishing Settings</h2>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        [class.rotate-90]="isSectionExpanded('publishing')"
+        class="transition-transform text-gray-500"
+      >
+        <path d="M9 18l6-6-6-6" />
+      </svg>
+    </button>
+    <div *ngIf="isSectionExpanded('publishing')" class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- Status -->
+        <div>
+          <app-label for="status" className="required">Status</app-label>
+          <app-select
+            id="status"
+            [options]="statusOptions"
+            placeholder="Select status"
+            [(value)]="postData.status"
+          ></app-select>
+        </div>
+
+        <!-- Published Date -->
+        <div>
+          <app-label for="published-at">Published Date</app-label>
+          <app-input-field
+            id="published-at"
+            type="date"
+            [(value)]="postData.publishedAt"
+          ></app-input-field>
+        </div>
+
+        <!-- Checkboxes -->
+        <div class="space-y-3">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              [checked]="postData.isFeatured"
+              (change)="handleCheckboxChange('isFeatured', $any($event.target).checked)"
+              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+            />
+            <span class="text-sm text-gray-700 dark:text-gray-300">Featured Post</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              [checked]="postData.isPinned"
+              (change)="handleCheckboxChange('isPinned', $any($event.target).checked)"
+              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+            />
+            <span class="text-sm text-gray-700 dark:text-gray-300">Pin to Top</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEO Settings Section -->
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
+    <button
+      (click)="toggleSection('seo')"
+      class="w-full border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+    >
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">SEO Settings</h2>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        [class.rotate-90]="isSectionExpanded('seo')"
+        class="transition-transform text-gray-500"
+      >
+        <path d="M9 18l6-6-6-6" />
+      </svg>
+    </button>
+    <div *ngIf="isSectionExpanded('seo')" class="p-4 sm:p-6">
+      <div class="grid grid-cols-1 gap-5">
+        <!-- SEO Title -->
+        <div>
+          <app-label for="seo-title">SEO Title</app-label>
+          <app-input-field
+            id="seo-title"
+            placeholder="Custom title for search engines"
+            [(value)]="postData.seoTitle"
+          ></app-input-field>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Leave empty to use post title</p>
+        </div>
+
+        <!-- SEO Description -->
+        <div>
+          <app-label for="seo-description">SEO Description</app-label>
+          <textarea
+            id="seo-description"
+            rows="3"
+            placeholder="Meta description for search engines (160 characters recommended)"
+            [(value)]="postData.seoDescription"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
+          ></textarea>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            {{ postData.seoDescription.length || 0 }} / 160 characters
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+    <app-button variant="outline" (btnClick)="onCancel()">Cancel</app-button>
+    <app-button variant="primary" (btnClick)="onSave()">
+      {{ isEditMode ? 'Update Post' : 'Create Post' }}
+    </app-button>
+  </div>
+</div>
