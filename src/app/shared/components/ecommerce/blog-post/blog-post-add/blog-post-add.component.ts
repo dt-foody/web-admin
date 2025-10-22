@@ -4,7 +4,6 @@ import { LabelComponent } from '../../../form/label/label.component';
 import { InputFieldComponent } from '../../../form/input/input-field.component';
 import { SelectComponent } from '../../../form/select/select.component';
 import { ButtonComponent } from '../../../ui/button/button.component';
-import { BlogPost } from '../../../../models/blog-post.model';
 import { BlogPostService } from '../../../../services/api/blog-post.service';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
@@ -14,16 +13,16 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { FileService } from '../../../../services/api/file.service';
 import { CustomUploadAdapter } from '../../../../utils/ckeditor-upload-adapter';
-import { generateSlug } from '../../../../utils/slugify.util'; // Giả sử bạn có một hàm slugify
 import { BlogTagService } from '../../../../services/api/blog-tag.service';
 import { BlogCategoryService } from '../../../../services/api/blog-category.service';
 import { BlogCategory } from '../../../../models/blog-category.model';
 import { BlogTag } from '../../../../models/blog-tag.model';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { ImageUploadComponent } from '../../../_core/image-upload/image-upload.component';
+import { SafeHtmlPipe } from '../../../../pipe/safe-html.pipe';
 
 interface BlogPostFormData {
   title: string;
-  slug: string;
   summary: string;
   content: string;
   coverImage: string;
@@ -40,7 +39,6 @@ interface BlogPostFormData {
 
 const DEFAULT_FORM: BlogPostFormData = {
   title: '',
-  slug: '',
   summary: '',
   content: '',
   coverImage: '',
@@ -66,6 +64,8 @@ const DEFAULT_FORM: BlogPostFormData = {
     InputFieldComponent,
     SelectComponent,
     ButtonComponent,
+    ImageUploadComponent,
+    SafeHtmlPipe,
   ],
   templateUrl: './blog-post-add.component.html',
   styles: ``,
@@ -73,6 +73,12 @@ const DEFAULT_FORM: BlogPostFormData = {
 export class BlogPostAddComponent implements OnInit {
   postId: string | null = null;
   isEditMode: boolean = false;
+
+  imagePreview: string | null = null;
+  selectedFile: File | null = null;
+
+  // Thêm thuộc tính này để quản lý chế độ xem
+  public viewMode: 'write' | 'preview' = 'write';
 
   // Form data
   postData = createFormData(DEFAULT_FORM);
@@ -186,6 +192,23 @@ export class BlogPostAddComponent implements OnInit {
 
   handleCheckboxChange(field: keyof BlogPostFormData, checked: boolean) {
     (this.postData as any)[field] = checked;
+  }
+
+  onFileSelected(file: File) {
+    this.selectedFile = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => (this.imagePreview = e.target?.result as string);
+    reader.readAsDataURL(file);
+
+    // Upload lên server
+    this.fileService.uploadFile(file).subscribe({
+      next: (res) => (this.postData.coverImage = res.url),
+      error: (err) => {
+        console.error(err);
+        this.toastr.error('Upload failed!', 'Image');
+      },
+    });
   }
 
   // Validate form
