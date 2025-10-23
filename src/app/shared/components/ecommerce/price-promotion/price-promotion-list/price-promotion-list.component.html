@@ -31,7 +31,7 @@
             strokeLinejoin="round"
           />
         </svg>
-        Add Promotion
+        Create
       </a>
     </div>
   </div>
@@ -270,7 +270,7 @@
                     <circle cx="6.5" cy="6.5" r="2.5" />
                     <circle cx="17.5" cy="17.5" r="2.5" />
                   </svg>
-                  {{ promotion.discountValue }}%
+                  {{ promotion.discountValue }}
                 } @else {
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -453,7 +453,7 @@
 
             <td class="px-5 py-4 whitespace-nowrap">
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                {{ formatDate(promotion.createdAt) }}
+                {{ promotion.createdAt | date: 'HH:ss dd/MM/yyyy' }}
               </p>
             </td>
 

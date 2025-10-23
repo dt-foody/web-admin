@@ -312,7 +312,7 @@
 
             <td class="px-5 py-4 whitespace-nowrap">
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                {{ formatDate(order.createdAt) }}
+                {{ order.createdAt | date: 'HH:ss dd/MM/yyyy' }}
               </p>
             </td>
 

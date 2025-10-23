@@ -27,34 +27,31 @@ import { CommonModule } from '@angular/common';
     </label>
   `,
 })
-export class SwitchComponent implements OnChanges {
+export class SwitchComponent {
   @Input() label: string = '';
-  @Input() defaultChecked: boolean = false;
   @Input() disabled: boolean = false;
   @Input() color: 'blue' | 'gray' = 'blue';
+  
+  // Thay đổi 1: Dùng @Input() value thay vì defaultChecked.
+  @Input() value: boolean = false;
 
   @Output() valueChange = new EventEmitter<boolean>();
 
-  isChecked: boolean = false;
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['defaultChecked']) {
-      this.isChecked = changes['defaultChecked'].currentValue;
-    }
-  }
+  // Thay đổi 2: Loại bỏ isChecked và ngOnChanges.
 
   handleToggle() {
     if (this.disabled) return;
-    this.isChecked = !this.isChecked;
-    this.valueChange.emit(this.isChecked);
+    // Thay đổi 3: Emit giá trị mới, ngược với giá trị hiện tại.
+    this.valueChange.emit(!this.value);
   }
 
   get switchColors() {
     const onBg = this.color === 'blue' ? 'bg-brand-500' : 'bg-gray-800';
     const offBg = 'bg-gray-200 dark:bg-white/10';
     return {
-      background: this.isChecked ? onBg : offBg,
-      knob: this.isChecked ? 'translate-x-full bg-white' : 'translate-x-0 bg-white',
+      // Thay đổi 4: Dùng this.value thay vì this.isChecked
+      background: this.value ? onBg : offBg,
+      knob: this.value ? 'translate-x-full bg-white' : 'translate-x-0 bg-white',
     };
   }
 }

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild, ElementRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Coupon } from '../../../../models/coupon.model';
@@ -14,6 +14,7 @@ import { HasPermissionDirective } from '../../../../directives/has-permission.di
 
 @Component({
   selector: 'app-coupon-list',
+  standalone: true, // Đảm bảo component là standalone
   imports: [
     CommonModule,
     FormsModule,
@@ -22,6 +23,7 @@ import { HasPermissionDirective } from '../../../../directives/has-permission.di
     SearchInputComponent,
     SortHeaderComponent,
     HasPermissionDirective,
+    DatePipe, // Thêm DatePipe để sử dụng trong template gốc
   ],
   templateUrl: './coupon-list.component.html',
   styles: ``,
@@ -31,6 +33,23 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
   @ViewChild('filterRef') filterRef!: ElementRef;
 
   itemToDelete: Coupon | null = null;
+
+  // Thêm các tùy chọn filter
+  filterVisibility: 'all' | 'public' | 'private' = 'all';
+  filterType: 'all' | 'discount_code' | 'freeship' | 'gift' = 'all';
+
+  visibilityOptions = [
+    { value: 'all', label: 'All Visibilities' },
+    { value: 'public', label: 'Public' },
+    { value: 'private', label: 'Private' },
+  ];
+  
+  typeOptions = [
+    { value: 'all', label: 'All Types' },
+    { value: 'discount_code', label: 'Discount Code' },
+    { value: 'freeship', label: 'Free Shipping' },
+    { value: 'gift', label: 'Gift' },
+  ];
 
   constructor(
     private couponService: CouponService,
@@ -47,17 +66,29 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
     super.ngOnInit();
   }
 
+  /**
+   * Lấy dữ liệu từ API
+   */
   fetchData() {
     const params: any = {
       page: this.query.page,
       limit: this.query.pageSize,
+      // Bỏ populate 'applicableUsers' để tối ưu performance
       populate: 'applicableProducts,applicableCombos',
-      sortBy: this.query.sort?.key + ':' + (this.query.sort?.asc ? 'asc' : 'desc'),
+      sortBy: this.query.sort?.key ? (this.query.sort.key + ':' + (this.query.sort.asc ? 'asc' : 'desc')) : undefined,
     };
 
-    // Add search query
+    // Thêm query tìm kiếm
     if (this.query && this.query.search && this.query.search.trim()) {
       params.search = this.query.search.trim();
+    }
+    
+    // Thêm các tham số filter
+    if (this.filterVisibility !== 'all') {
+      params.visibility = this.filterVisibility;
+    }
+    if (this.filterType !== 'all') {
+      params.type = this.filterType;
     }
 
     this.couponService.getAll(params).subscribe((data) => {
@@ -66,11 +97,25 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
       this.totalResults = data.totalResults;
     });
   }
+  
+  /**
+   * Áp dụng filter và reset về trang 1
+   */
+  applyFilters(): void {
+    this.query.page = 1;
+    this.fetchData();
+  }
 
+  /**
+   * Điều hướng đến trang chỉnh sửa
+   */
   handleEdit(coupon: Coupon): void {
     this.router.navigate(['/coupon/edit', coupon.id]);
   }
 
+  /**
+   * Xử lý xóa (mở dialog xác nhận)
+   */
   handleDelete(coupon: Coupon): void {
     this.itemToDelete = coupon;
     const dialogRef = this.dialog.open(this.confirmDeleteTpl, {
@@ -88,6 +133,9 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
     });
   }
 
+  /**
+   * Bật/tắt trạng thái Active
+   */
   handleToggleActive(coupon: Coupon): void {
     this.couponService.update(coupon.id, { isActive: !coupon.isActive }).subscribe({
       next: () => {
@@ -100,20 +148,53 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
     });
   }
 
-  // Check if coupon is expired
+  // --- Các hàm Helper để hiển thị ---
+
+  /**
+   * Kiểm tra coupon đã hết hạn
+   */
   isExpired(coupon: Coupon): boolean {
     const now = new Date();
     const endDate = new Date(coupon.endDate);
     return endDate < now;
   }
 
-  // Check if coupon is fully used
+  /**
+   * Kiểm tra coupon đã hết lượt sử dụng
+   * (0 = không giới hạn)
+   */
   isFullyUsed(coupon: Coupon): boolean {
+    if (coupon.maxUses <= 0) {
+      return false; // 0 nghĩa là không giới hạn
+    }
     return coupon.usedCount >= coupon.maxUses;
   }
 
-  // Check if coupon is valid (not expired and not fully used)
+  /**
+   * Kiểm tra coupon còn hợp lệ
+   */
   isValid(coupon: Coupon): boolean {
     return !this.isExpired(coupon) && !this.isFullyUsed(coupon) && coupon.isActive;
+  }
+  
+  /**
+   * Hiển thị giới hạn tổng
+   */
+  getMaxUsesDisplay(coupon: Coupon): string {
+    return coupon.maxUses > 0 ? coupon.maxUses.toString() : 'Unlimited';
+  }
+  
+  /**
+   * Hiển thị giới hạn hàng ngày
+   */
+  getDailyMaxUsesDisplay(coupon: Coupon): string {
+    return coupon.dailyMaxUses > 0 ? coupon.dailyMaxUses.toString() : 'Unlimited';
+  }
+
+  /**
+   * Hiển thị giới hạn mỗi người dùng
+   */
+  getMaxUsesPerUserDisplay(coupon: Coupon): string {
+    return coupon.maxUsesPerUser > 0 ? coupon.maxUsesPerUser.toString() : 'Unlimited';
   }
 }

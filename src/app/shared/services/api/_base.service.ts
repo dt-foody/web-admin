@@ -71,7 +71,6 @@ export abstract class BaseService<T> {
 
   // 🔹 Update (PATCH mặc định, PUT nếu cần)
   update(id: string | number, item: Partial<T>, usePut: boolean = false): Observable<T> {
-    console.log('item', item);
     const req = usePut
       ? this.http.put<T>(`${this.apiUrl}/${id}`, item)
       : this.http.patch<T>(`${this.apiUrl}/${id}`, item);

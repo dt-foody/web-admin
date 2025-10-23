@@ -31,7 +31,7 @@
             strokeLinejoin="round"
           />
         </svg>
-        Add Blog
+        Create
       </a>
     </div>
   </div>
@@ -418,7 +418,7 @@
             <!-- Created At -->
             <td class="px-5 py-4 whitespace-nowrap">
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                {{ formatDate(post.createdAt) }}
+                {{ post.createdAt | date: 'HH:ss dd/MM/yyyy' }}
               </p>
             </td>
 

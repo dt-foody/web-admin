@@ -32,7 +32,7 @@
             strokeLinejoin="round"
           />
         </svg>
-        Add Product
+        Create
       </a>
     </div>
   </div>
@@ -291,7 +291,7 @@
             </td>
             <td class="px-5 py-4 whitespace-nowrap">
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                {{ formatDate(product.createdAt) }}
+                {{ product.createdAt | date: 'HH:ss dd/MM/yyyy' }}
               </p>
             </td>
             <td class="px-5 py-4 whitespace-nowrap">

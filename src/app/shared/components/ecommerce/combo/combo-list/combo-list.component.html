@@ -31,7 +31,7 @@
             strokeLinejoin="round"
           />
         </svg>
-        Add Combo
+        Create
       </a>
     </div>
   </div>
@@ -308,7 +308,7 @@
 
             <td class="px-5 py-4 whitespace-nowrap">
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                {{ formatDate(combo.createdAt) }}
+                {{ combo.createdAt | date: 'HH:ss dd/MM/yyyy' }}
               </p>
             </td>
 

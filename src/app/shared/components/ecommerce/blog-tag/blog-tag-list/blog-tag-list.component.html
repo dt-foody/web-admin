@@ -32,7 +32,7 @@
             strokeLinejoin="round"
           />
         </svg>
-        Add Tag
+        Create
       </a>
     </div>
   </div>
@@ -201,7 +201,7 @@
               </button>
             </td>
             <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">
-              {{ formatDate(tag.createdAt) }}
+              {{ tag.createdAt | date: 'HH:ss dd/MM/yyyy' }}
             </td>
             <td class="px-5 py-4">
               <div class="flex gap-2">

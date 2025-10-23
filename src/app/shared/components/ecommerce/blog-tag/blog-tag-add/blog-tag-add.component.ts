@@ -12,13 +12,12 @@ import { BlogTagService } from '../../../../services/api/blog-tag.service'; // S
 // Components dùng chung
 import { LabelComponent } from '../../../form/label/label.component';
 import { InputFieldComponent } from '../../../form/input/input-field.component';
-import { SelectComponent } from '../../../form/select/select.component';
 import { ButtonComponent } from '../../../ui/button/button.component';
 
 // Utilities
 import { createFormData, deepSanitize } from '../../../../utils/form-data.utils';
-import { generateSlug } from '../../../../utils/slugify.util'; // Giả sử bạn có một hàm slugify
 import { ColorEvent } from 'ngx-color';
+import { SwitchComponent } from '../../../form/input/switch.component';
 
 interface BlogTagFormData {
   name: string;
@@ -45,8 +44,8 @@ const DEFAULT_FORM: BlogTagFormData = {
     ColorSketchModule,
     LabelComponent,
     InputFieldComponent,
-    SelectComponent,
     ButtonComponent,
+    SwitchComponent
   ],
   templateUrl: './blog-tag-add.component.html',
 })

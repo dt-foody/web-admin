@@ -50,7 +50,7 @@
         variant="primary"
         [startIcon]="iconAdd"
       >
-        Add User
+        Create
       </app-button>
     </div>
   </div>
@@ -217,7 +217,6 @@
                   <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
                     user.name
                   }}</span>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">ID: {{ user.id }}</span>
                 </div>
               </div>
             </td>
@@ -319,7 +318,7 @@
             <!-- Created At -->
             <td class="px-5 py-4 whitespace-nowrap">
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                {{ formatDate(user.createdAt) }}
+                {{ user.createdAt | date: 'HH:ss dd/MM/yyyy' }}
               </p>
             </td>
 

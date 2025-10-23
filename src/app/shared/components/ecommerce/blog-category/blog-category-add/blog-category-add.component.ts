@@ -9,13 +9,15 @@ import { ColorEvent } from 'ngx-color';
 // Core and shared components
 import { LabelComponent } from '../../../form/label/label.component';
 import { InputFieldComponent } from '../../../form/input/input-field.component';
-import { SelectComponent } from '../../../form/select/select.component';
 import { ButtonComponent } from '../../../ui/button/button.component';
 
 // Models and Services
 import { BlogCategory } from '../../../../models/blog-category.model';
 import { BlogCategoryService } from '../../../../services/api/blog-category.service';
 import { createFormData, deepSanitize } from '../../../../utils/form-data.utils';
+import { ImageUploadComponent } from '../../../_core/image-upload/image-upload.component';
+import { FileService } from '../../../../services/api/file.service';
+import { SwitchComponent } from '../../../form/input/switch.component';
 
 interface BlogCategoryFormData {
   name: string;
@@ -43,15 +45,19 @@ const DEFAULT_FORM: BlogCategoryFormData = {
     FormsModule,
     LabelComponent,
     InputFieldComponent,
-    SelectComponent,
     ButtonComponent,
     ColorSketchModule,
+    ImageUploadComponent,
+    SwitchComponent,
   ],
   templateUrl: './blog-category-add.component.html',
 })
 export class BlogCategoryAddComponent implements OnInit {
   categoryId: string | null = null;
   isEditMode: boolean = false;
+
+  imagePreview: string | null = null;
+  selectedFile: File | null = null;
 
   formData = createFormData(DEFAULT_FORM);
 
@@ -67,6 +73,7 @@ export class BlogCategoryAddComponent implements OnInit {
     private toastr: ToastrService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
+    private fileService: FileService,
   ) {}
 
   ngOnInit() {
@@ -146,5 +153,22 @@ export class BlogCategoryAddComponent implements OnInit {
 
   onCancel() {
     this.router.navigateByUrl('/blog-category');
+  }
+
+  onFileSelected(file: File) {
+    this.selectedFile = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => (this.imagePreview = e.target?.result as string);
+    reader.readAsDataURL(file);
+
+    // Upload lên server
+    this.fileService.uploadFile(file).subscribe({
+      next: (res) => (this.formData.coverImage = res.url),
+      error: (err) => {
+        console.error(err);
+        this.toastr.error('Upload failed!', 'Image');
+      },
+    });
   }
 }

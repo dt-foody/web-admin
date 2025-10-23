@@ -1,83 +1,77 @@
+// src/app/core/interceptors/auth.interceptor.ts
+
 import {
   HttpInterceptorFn,
   HttpRequest,
   HttpHandlerFn,
   HttpErrorResponse,
-  HttpEvent,
 } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, switchMap, throwError, firstValueFrom } from 'rxjs';
+import { throwError } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/api/auth.service';
 
-let isRefreshing = false;
-let refreshSubscribers: (() => void)[] = [];
+/**
+ * Hàm helper để thêm token vào header của request
+ */
+const addTokenHeader = (req: HttpRequest<any>, token: string): HttpRequest<any> => {
+  return req.clone({
+    setHeaders: { Authorization: `Bearer ${token}` },
+  });
+};
 
-/** Khi có token mới, gọi lại tất cả request đã chờ */
-function onRefreshed() {
-  refreshSubscribers.forEach((cb) => cb());
-  refreshSubscribers = [];
-}
+/**
+ * Hàm helper xử lý logic khi gặp lỗi 401
+ */
+const handle401Error = (req: HttpRequest<any>, next: HttpHandlerFn, authService: AuthService) => {
+  // Logic cực kỳ đơn giản: chỉ cần gọi service để refresh token
+  // Service sẽ tự đảm bảo nó chỉ chạy một lần và các request khác sẽ nhận được kết quả
+  return authService.refreshToken().pipe(
+    switchMap(() => {
+      // Khi refresh thành công, lấy token mới nhất và gọi lại request cũ
+      const newToken = authService.getToken();
+      if (newToken) {
+        return next(addTokenHeader(req, newToken));
+      }
+      // Nếu không có token mới sau khi refresh, đó là một lỗi
+      return throwError(() => new Error('Failed to get new token after refresh'));
+    }),
+    catchError((refreshError) => {
+      // Nếu refreshToken() thất bại, service đã xử lý logout
+      // Chỉ cần ném lỗi ra để request gốc cũng nhận được thông báo lỗi
+      return throwError(() => refreshError);
+    }),
+  );
+};
 
-/** Khi đang refresh, thêm request vào hàng đợi */
-function subscribeTokenRefresh(cb: () => void) {
-  refreshSubscribers.push(cb);
-}
-
-export const AuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => {
+/**
+ * Interceptor chính
+ */
+export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-
   const token = authService.getToken();
 
-  // 🔹 Đính kèm access token nếu có
-  let authReq = req;
+  // 1. Đính kèm access token vào header nếu có
   if (token) {
-    authReq = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` },
-    });
+    req = addTokenHeader(req, token);
   }
 
-  // 🔹 Xử lý pipeline
-  return next(authReq).pipe(
+  // 2. Gửi request đi và xử lý lỗi
+  return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      // 3. Nếu là lỗi 401 và không phải là request refresh-token -> xử lý refresh
       if (error.status === 401 && !req.url.includes('/auth/refresh-tokens')) {
-        if (!isRefreshing) {
-          isRefreshing = true;
-
-          // 🔁 Refresh token
-          return authService.refreshToken().pipe(
-            switchMap(async () => {
-              isRefreshing = false;
-              onRefreshed();
-
-              // ⚡ Gửi lại request cũ — token mới đã được lưu trong localStorage
-              const result = await firstValueFrom(next(req.clone()));
-              return result;
-            }),
-            catchError((refreshError) => {
-              isRefreshing = false;
-              authService.logout();
-              router.navigate(['/signin']);
-              return throwError(() => refreshError);
-            }),
-          );
-        } else {
-          // ⏳ Nếu đang refresh → chờ refresh xong rồi gửi lại
-          return new Promise<HttpEvent<any>>((resolve) => {
-            subscribeTokenRefresh(async () => {
-              const result = await firstValueFrom(next(req.clone()));
-              resolve(result);
-            });
-          });
-        }
+        return handle401Error(req, next, authService);
       }
 
-      // 🚫 Nếu lỗi 403 → redirect forbidden
+      // 4. Xử lý các lỗi khác nếu cần (ví dụ: 403 Forbidden)
       if (error.status === 403) {
-        router.navigate(['/forbidden']);
+        router.navigate(['/forbidden']); // Hoặc trang không có quyền
       }
 
+      // 5. Ném các lỗi khác ra ngoài
       return throwError(() => error);
     }),
   );
