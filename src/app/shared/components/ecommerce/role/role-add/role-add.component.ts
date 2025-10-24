@@ -6,6 +6,9 @@ import { Permission } from '../../../../models/permission.model';
 import { ToastrService } from 'ngx-toastr';
 import { PermissionService } from '../../../../services/api/permission.service';
 import { RoleService } from '../../../../services/api/role.service';
+import { InputFieldComponent } from '../../../form/input/input-field.component';
+import { TextAreaComponent } from '../../../form/input/text-area.component';
+import { CheckboxComponent } from '../../../form/input/checkbox.component';
 
 interface RoleForm {
   name: string;
@@ -27,7 +30,7 @@ interface PermissionMatrix {
 @Component({
   selector: 'app-role-add',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, InputFieldComponent, TextAreaComponent, CheckboxComponent],
   templateUrl: './role-add.component.html',
 })
 export class RoleAddComponent implements OnInit {

@@ -15,6 +15,7 @@ import { HasPermissionDirective } from '../../../../directives/has-permission.di
 // Models and Services
 import { BlogTag } from '../../../../models/blog-tag.model';
 import { BlogTagService } from '../../../../services/api/blog-tag.service';
+import { CheckboxComponent } from '../../../form/input/checkbox.component';
 
 @Component({
   selector: 'app-blog-tag-list',
@@ -25,6 +26,7 @@ import { BlogTagService } from '../../../../services/api/blog-tag.service';
     RouterModule,
     PaginationComponent,
     SearchInputComponent,
+    CheckboxComponent,
     SortHeaderComponent,
     HasPermissionDirective,
   ],

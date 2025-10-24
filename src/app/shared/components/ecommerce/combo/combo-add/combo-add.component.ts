@@ -17,6 +17,7 @@ import { FileService } from '../../../../services/api/file.service';
 import { sanitizeFormData, createFormData } from '../../../../utils/form-data.utils';
 import { environment } from '../../../../../../environments/environment';
 import { ImageUploadComponent } from '../../../_core/image-upload/image-upload.component';
+import { SwitchComponent } from '../../../form/input/switch.component';
 
 const DEFAULT_COMBO: ComboFormData = {
   name: '',
@@ -42,15 +43,11 @@ const DEFAULT_COMBO: ComboFormData = {
     TextAreaComponent,
     ButtonComponent,
     ImageUploadComponent,
+    SwitchComponent
   ],
 })
 export class ComboAddComponent implements OnInit {
   comboData = createFormData(DEFAULT_COMBO);
-
-  availabilityOptions = [
-    { value: 'true', label: 'Active' },
-    { value: 'false', label: 'Inactive' },
-  ];
 
   availableProducts: Product[] = [];
 

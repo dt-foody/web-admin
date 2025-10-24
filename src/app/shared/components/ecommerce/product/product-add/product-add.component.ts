@@ -23,6 +23,7 @@ import { environment } from '../../../../../../environments/environment';
 
 import { sanitizeFormData, createFormData } from '../../../../utils/form-data.utils';
 import { ImageUploadComponent } from '../../../_core/image-upload/image-upload.component';
+import { SwitchComponent } from '../../../form/input/switch.component';
 
 const DEFAULT_FORM: ProductFormData = {
   name: '',
@@ -47,6 +48,7 @@ const DEFAULT_FORM: ProductFormData = {
     TextAreaComponent,
     ButtonComponent,
     ImageUploadComponent,
+    SwitchComponent,
   ],
   templateUrl: './product-add.component.html',
   styles: ``,
@@ -62,11 +64,6 @@ export class ProductAddComponent implements OnInit {
   productData = createFormData(DEFAULT_FORM);
 
   categories: TreeOption[] = [];
-
-  availabilityOptions = [
-    { value: 'true', label: 'Active' },
-    { value: 'false', label: 'Inactive' },
-  ];
 
   priceModifierTypes = [
     { value: 'fixed_amount', label: 'Fixed Amount' },

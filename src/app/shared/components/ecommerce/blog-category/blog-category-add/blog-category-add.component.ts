@@ -60,12 +60,7 @@ export class BlogCategoryAddComponent implements OnInit {
   selectedFile: File | null = null;
 
   formData = createFormData(DEFAULT_FORM);
-
-  statusOptions = [
-    { value: 'true', label: 'Active' },
-    { value: 'false', label: 'Inactive' },
-  ];
-
+  
   activePicker: 'bg' | 'text' | null = null;
 
   constructor(

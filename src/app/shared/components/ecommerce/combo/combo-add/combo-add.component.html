@@ -3,8 +3,9 @@
   <div
     class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
   >
-    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex justify-between">
       <h2 class="text-lg font-medium text-gray-800 dark:text-white">Combo Information</h2>
+      <app-switch label="Active" [(value)]="comboData.isActive"></app-switch>
     </div>
     <div class="p-4 sm:p-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -29,31 +30,6 @@
                 [(value)]="comboData.name"
               >
               </app-input-field>
-            </div>
-
-            <!-- Status & Priority -->
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-              <div>
-                <app-label for="status">Status</app-label>
-                <app-select
-                  id="status"
-                  [options]="availabilityOptions"
-                  placeholder="Select status"
-                  [value]="comboData.isActive.toString()"
-                  (valueChange)="handleSelectChange('isActive', $event)"
-                >
-                </app-select>
-              </div>
-              <div>
-                <app-label for="priority">Display Priority</app-label>
-                <app-input-field
-                  id="priority"
-                  type="number"
-                  placeholder="0"
-                  [(value)]="comboData.priority"
-                >
-                </app-input-field>
-              </div>
             </div>
 
             <!-- Date Range -->

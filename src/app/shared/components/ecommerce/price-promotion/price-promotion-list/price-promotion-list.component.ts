@@ -11,6 +11,7 @@ import { SearchInputComponent } from '../../../_core/search-input/search-input.c
 import { BaseListComponent } from '../../../../core/base-list.component';
 import { SortHeaderComponent } from '../../../_core/sort-header/sort-header.component';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
+import { CheckboxComponent } from '../../../form/input/checkbox.component';
 
 @Component({
   selector: 'app-price-promotion-list',
@@ -21,6 +22,7 @@ import { HasPermissionDirective } from '../../../../directives/has-permission.di
     PaginationComponent,
     SearchInputComponent,
     SortHeaderComponent,
+    CheckboxComponent,
     HasPermissionDirective,
   ],
   templateUrl: './price-promotion-list.component.html',

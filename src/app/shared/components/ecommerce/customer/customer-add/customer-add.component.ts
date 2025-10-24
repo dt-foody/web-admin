@@ -76,11 +76,6 @@ export class CustomerAddComponent implements OnInit {
     { value: 'other', label: 'Other' },
   ];
 
-  statusOptions = [
-    { value: 'true', label: 'Active' },
-    { value: 'false', label: 'Inactive' },
-  ];
-
   // UI state
   expandedAddresses: Set<number> = new Set();
 

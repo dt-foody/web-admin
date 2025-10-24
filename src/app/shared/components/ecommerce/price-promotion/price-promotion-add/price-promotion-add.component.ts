@@ -14,6 +14,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { sanitizeFormData, createFormData } from '../../../../utils/form-data.utils';
+import { SwitchComponent } from '../../../form/input/switch.component';
 
 const DEFAULT_FORM: PricePromotionFormData = {
   name: '',
@@ -40,6 +41,7 @@ const DEFAULT_FORM: PricePromotionFormData = {
     SelectComponent,
     TextAreaComponent,
     ButtonComponent,
+    SwitchComponent,
   ],
   templateUrl: './price-promotion-add.component.html',
   styles: ``,
@@ -54,11 +56,6 @@ export class PricePromotionAddComponent implements OnInit {
   // Dropdown options
   products: any[] = [];
   combos: any[] = [];
-
-  statusOptions = [
-    { value: 'true', label: 'Active' },
-    { value: 'false', label: 'Inactive' },
-  ];
 
   discountTypeOptions = [
     { value: 'percentage', label: 'Percentage (%)' },

@@ -10,7 +10,7 @@ import { SafeHtmlPipe } from '../../../pipe/safe-html.pipe';
   host: {},
 })
 export class ButtonComponent {
-  @Input() size: 'sm' | 'md' = 'md';
+  @Input() size: 'sm' | 'md' = 'sm';
   @Input() variant: 'primary' | 'outline' = 'primary';
   @Input() disabled = false;
   @Input() className = '';

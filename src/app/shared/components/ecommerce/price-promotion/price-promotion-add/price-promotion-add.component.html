@@ -8,35 +8,7 @@
     <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex items-center justify-between">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Promotion Information</h2>
-        <!-- Status Toggle (Moved to header) -->
-        <div class="flex items-center gap-3">
-          <span class="text-sm font-medium" [ngClass]="{
-            'text-green-600 dark:text-green-400': promotionData.isActive,
-            'text-gray-500 dark:text-gray-400': !promotionData.isActive
-          }">
-            {{ promotionData.isActive ? 'Active' : 'Inactive' }}
-          </span>
-          <button
-            type="button"
-            (click)="promotionData.isActive = !promotionData.isActive"
-            class="relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:ring-offset-gray-900"
-            [ngClass]="{
-              'bg-blue-600': promotionData.isActive,
-              'bg-gray-200 dark:bg-gray-700': !promotionData.isActive
-            }"
-          >
-            <span class="sr-only">Toggle status</span>
-            <span
-              aria-hidden="true"
-              class="inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition duration-200 ease-in-out"
-              [ngClass]="{
-                'translate-x-6': promotionData.isActive,
-                'translate-x-1': !promotionData.isActive
-              }"
-            >
-            </span>
-          </button>
-        </div>
+        <app-switch label="Active" [(value)]="promotionData.isActive"></app-switch>
       </div>
       <div class="p-4 sm:p-6">
         <div class="grid grid-cols-1 gap-5">

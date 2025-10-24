@@ -1,8 +1,6 @@
 <div class="space-y-6">
   <!-- Role Information Section -->
-  <div
-    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-  >
+  <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
       <h2 class="text-lg font-medium text-gray-800 dark:text-white">Role Information</h2>
     </div>
@@ -11,38 +9,21 @@
         <div class="grid grid-cols-1 gap-5">
           <!-- Role Name -->
           <div>
-            <label
-              class="mb-1 inline-block text-sm font-semibold text-gray-700 dark:text-gray-400"
-              for="role-name"
-            >
+            <label class="mb-1 inline-block text-sm font-semibold text-gray-700 dark:text-gray-400" for="role-name">
               Role Name <span class="text-red-500">*</span>
             </label>
-            <input
-              id="role-name"
-              type="text"
-              class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              placeholder="Enter role name (e.g., Admin, Manager, Editor)"
-              [(ngModel)]="roleForm.name"
-              name="roleName"
-            />
+            <app-input-field id="role-name" placeholder="Enter role name" [(value)]="roleForm.name">
+            </app-input-field>
           </div>
 
           <!-- Description -->
           <div>
-            <label
-              class="mb-1 inline-block text-sm font-semibold text-gray-700 dark:text-gray-400"
-              for="description"
-            >
+            <label class="mb-1 inline-block text-sm font-semibold text-gray-700 dark:text-gray-400" for="description">
               Description
             </label>
-            <textarea
-              id="description"
-              rows="3"
-              class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              placeholder="Enter role description (optional)"
-              [(ngModel)]="roleForm.description"
-              name="description"
-            ></textarea>
+            <app-text-area id="description" [rows]="4" placeholder="Enter role description (optional)"
+              [(value)]="roleForm.description">
+            </app-text-area>
           </div>
         </div>
       </form>
@@ -50,9 +31,7 @@
   </div>
 
   <!-- Permissions Matrix Section -->
-  <div
-    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-  >
+  <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
       <div class="flex items-center justify-between">
         <div>
@@ -67,7 +46,7 @@
           Selected:
           <span class="font-semibold text-blue-600 dark:text-blue-400">{{
             getSelectedCount()
-          }}</span>
+            }}</span>
         </div>
       </div>
     </div>
@@ -77,58 +56,32 @@
         <table class="w-full border-collapse">
           <thead>
             <tr class="border-b border-gray-200 dark:border-gray-700">
-              <th
-                class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300"
-              >
+              <th class="px-4 py-3 text-left text-sm text-gray-600 dark:text-gray-300">
                 Resource
               </th>
-              <th
-                *ngFor="let action of allActions"
-                class="px-4 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300"
-              >
+              <th *ngFor="let action of allActions"
+                class="px-4 py-3 text-center text-sm text-gray-600 dark:text-gray-300">
                 <div class="flex flex-col items-center gap-1">
                   <span class="capitalize">{{ action }}</span>
-                  <label
-                    class="flex items-center gap-1 cursor-pointer text-xs font-normal text-gray-500 dark:text-gray-400"
-                  >
-                    <input
-                      type="checkbox"
-                      class="h-3.5 w-3.5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-                      [checked]="isColumnSelected(action)"
-                      (change)="toggleColumn(action)"
-                    />
-                    <span>All</span>
-                  </label>
+                  <app-checkbox label="All" type="checkbox" [checked]="isColumnSelected(action)"
+                    (checkedChange)="toggleColumn(action)" />
                 </div>
               </th>
-              <th
-                class="px-4 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300"
-              >
+              <th class="px-4 py-3 text-center text-sm text-gray-600 dark:text-gray-300">
                 <div class="flex flex-col items-center gap-1">
                   <span>All Actions</span>
-                  <label
-                    class="flex items-center gap-1 cursor-pointer text-xs font-normal text-gray-500 dark:text-gray-400"
-                  >
-                    <input
-                      type="checkbox"
-                      class="h-3.5 w-3.5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-                      [checked]="areAllSelected()"
-                      (change)="toggleAll()"
-                    />
-                    <span>Select All</span>
-                  </label>
+                  <app-checkbox label="Select All" type="checkbox" [checked]="areAllSelected()"
+                    (checkedChange)="toggleAll()" />
                 </div>
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              *ngFor="let matrix of permissionMatrix; let i = index"
-              class="border-b border-gray-100 transition hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50"
-            >
+            <tr *ngFor="let matrix of permissionMatrix; let i = index"
+              class="border-b border-gray-100 transition hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-2">
-                  <span class="font-medium capitalize text-gray-800 dark:text-white">
+                  <span class="text-sm capitalize text-gray-800 dark:text-white">
                     {{ matrix.resource }}
                   </span>
                 </div>
@@ -136,36 +89,30 @@
               <td *ngFor="let action of allActions" class="px-4 py-3 text-center">
                 <div class="flex justify-center" *ngIf="matrix.actions[action]">
                   <label class="group relative cursor-pointer">
-                    <input
-                      type="checkbox"
-                      class="h-5 w-5 rounded border-gray-300 text-blue-600 transition focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-                      [checked]="matrix.actions[action].checked"
-                      (change)="togglePermission(matrix.resource, action)"
-                    />
+                    <app-checkbox [checked]="matrix.actions[action].checked"
+                      (checkedChange)="togglePermission(matrix.resource, action)"></app-checkbox>
+
                     <!-- Tooltip -->
                     <div
-                      class="pointer-events-none absolute -top-10 left-1/2 z-10 hidden w-48 -translate-x-1/2 rounded-lg bg-gray-900 px-3 py-2 text-xs text-white shadow-lg group-hover:block dark:bg-gray-700"
-                    >
+                      class="pointer-events-none absolute -top-10 left-1/2 z-10 hidden w-48 -translate-x-1/2 rounded-lg bg-gray-900 px-3 py-2 text-xs text-white shadow-lg group-hover:block dark:bg-gray-700">
                       {{ matrix.actions[action].description }}
                       <div
-                        class="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-gray-900 dark:bg-gray-700"
-                      ></div>
+                        class="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-gray-900 dark:bg-gray-700">
+                      </div>
                     </div>
                   </label>
                 </div>
+
                 <div *ngIf="!matrix.actions[action]" class="flex justify-center">
                   <span class="text-gray-300 dark:text-gray-700">—</span>
                 </div>
               </td>
+
               <td class="px-4 py-3 text-center">
-                <label class="flex cursor-pointer items-center justify-center">
-                  <input
-                    type="checkbox"
-                    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-                    [checked]="isRowSelected(matrix.resource)"
-                    (change)="toggleRow(matrix.resource)"
-                  />
-                </label>
+                <div class="flex justify-center">
+                  <app-checkbox type="checkbox" [checked]="isRowSelected(matrix.resource)"
+                    (checkedChange)="toggleRow(matrix.resource)" />
+                </div>
               </td>
             </tr>
           </tbody>
@@ -174,11 +121,9 @@
 
       <!-- Quick Action Buttons -->
       <div class="mt-6 flex flex-wrap gap-2">
-        <button
-          type="button"
+        <button type="button"
           class="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-          (click)="clearAll()"
-        >
+          (click)="clearAll()">
           Clear All
         </button>
       </div>
@@ -189,11 +134,9 @@
   <div *ngIf="errorMessage" class="rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
     <div class="flex items-start gap-3">
       <svg class="h-5 w-5 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
-        <path
-          fill-rule="evenodd"
+        <path fill-rule="evenodd"
           d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-          clip-rule="evenodd"
-        />
+          clip-rule="evenodd" />
       </svg>
       <p class="text-sm text-red-800 dark:text-red-200">{{ errorMessage }}</p>
     </div>
@@ -201,36 +144,21 @@
 
   <!-- Action Buttons -->
   <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-    <button
-      type="button"
+    <button type="button"
       class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-      (click)="onCancel()"
-      [disabled]="isLoading"
-    >
+      (click)="onCancel()" [disabled]="isLoading">
       Cancel
     </button>
-    <button
-      type="button"
+    <button type="button"
       class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
-      (click)="onSave()"
-      [disabled]="isLoading"
-    >
+      (click)="onSave()" [disabled]="isLoading">
       <span *ngIf="!isLoading">Save Role</span>
       <span *ngIf="isLoading" class="flex items-center gap-2">
         <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+          </path>
         </svg>
         Saving...
       </span>

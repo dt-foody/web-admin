@@ -60,18 +60,6 @@
             ></app-input-field>
           </div>
         </div>
-
-        <!-- Status -->
-        <div>
-          <app-label for="status">Account Status</app-label>
-          <app-select
-            id="status"
-            [options]="statusOptions"
-            placeholder="Select status"
-            [value]="customerData.isActive.toString()"
-            (valueChange)="handleSelectChange('isActive', $event)"
-          ></app-select>
-        </div>
       </div>
     </div>
   </div>

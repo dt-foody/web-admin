@@ -57,13 +57,20 @@ export abstract class BaseListComponent<T extends { id: string }> implements OnI
     this.fetchData();
   }
 
-  toggleSelect(id: string): void {
-    this.selected = this.selected.includes(id)
-      ? this.selected.filter((i) => i !== id)
-      : [...this.selected, id];
+  toggleSelect(id: string, checked: boolean) {
+    if (checked) {
+      // Thêm id nếu chưa có
+      if (!this.selected.includes(id)) {
+        this.selected.push(id);
+      }
+    } else {
+      // Loại bỏ id nếu unchecked
+      this.selected = this.selected.filter((item) => item !== id);
+    }
   }
 
   toggleAll(): void {
+    console.log('toggleAll');
     const ids = this.dataSources.map((p) => p.id);
     this.selected = this.isAllSelected()
       ? this.selected.filter((id) => !ids.includes(id))

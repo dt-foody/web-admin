@@ -15,6 +15,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { sanitizeFormData, createFormData } from '../../../../utils/form-data.utils';
+import { SwitchComponent } from '../../../form/input/switch.component';
 
 // Cập nhật DEFAULT_FORM với các trường mới
 const DEFAULT_FORM: CouponFormData = {
@@ -49,6 +50,7 @@ const DEFAULT_FORM: CouponFormData = {
     SelectComponent,
     TextAreaComponent,
     ButtonComponent,
+    SwitchComponent,
   ],
   templateUrl: './coupon-add.component.html',
   styles: ``,
@@ -65,11 +67,6 @@ export class CouponAddComponent implements OnInit {
   products: any[] = [];
   combos: any[] = [];
   users: any[] = []; // Mới: Dành cho applicableUsers
-
-  statusOptions = [
-    { value: 'true', label: 'Active' },
-    { value: 'false', label: 'Inactive' },
-  ];
 
   valueTypeOptions = [
     { value: 'percentage', label: 'Percentage (%)' },

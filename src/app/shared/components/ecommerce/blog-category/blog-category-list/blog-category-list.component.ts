@@ -15,6 +15,7 @@ import { HasPermissionDirective } from '../../../../directives/has-permission.di
 // Models and Services
 import { BlogCategory } from '../../../../models/blog-category.model';
 import { BlogCategoryService } from '../../../../services/api/blog-category.service';
+import { CheckboxComponent } from '../../../form/input/checkbox.component';
 
 @Component({
   selector: 'app-blog-category-list',
@@ -27,6 +28,7 @@ import { BlogCategoryService } from '../../../../services/api/blog-category.serv
     SearchInputComponent,
     SortHeaderComponent,
     HasPermissionDirective,
+    CheckboxComponent,
   ],
   templateUrl: './blog-category-list.component.html',
 })

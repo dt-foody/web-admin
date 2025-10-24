@@ -7,6 +7,7 @@ import { environment } from '../../../../../../environments/environment';
 import { ToastrService } from 'ngx-toastr';
 import { DialogService } from '@ngneat/dialog';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
+import { CheckboxComponent } from '../../../form/input/checkbox.component';
 
 interface CategoryTree extends Category {
   children?: CategoryTree[];
@@ -18,15 +19,9 @@ interface CategoryTree extends Category {
 @Component({
   selector: 'app-category-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, HasPermissionDirective],
+  imports: [CommonModule, RouterModule, HasPermissionDirective, CheckboxComponent],
   templateUrl: './category-list.component.html',
-  styles: [
-    `
-      tbody tr {
-        transition: none;
-      }
-    `,
-  ],
+  styles: ``,
 })
 export class CategoryListComponent {
   categories: Category[] = [];
@@ -138,10 +133,16 @@ export class CategoryListComponent {
   }
 
   // ===================== Select =====================
-  toggleSelect(id: string): void {
-    this.selected = this.selected.includes(id)
-      ? this.selected.filter((i) => i !== id)
-      : [...this.selected, id];
+  toggleSelect(id: string, checked: boolean) {
+    if (checked) {
+      // Thêm id nếu chưa có
+      if (!this.selected.includes(id)) {
+        this.selected.push(id);
+      }
+    } else {
+      // Loại bỏ id nếu unchecked
+      this.selected = this.selected.filter((item) => item !== id);
+    }
   }
 
   toggleAll(): void {

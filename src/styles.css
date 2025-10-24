@@ -875,13 +875,17 @@ label.required::after {
 }
 
 .ng-select-container {
-  @apply !h-11 !text-sm !rounded-lg !border !border-gray-300 dark:bg-gray-900 dark:border-gray-700 dark:focus:border-brand-800 dark:placeholder:text-white/30 dark:text-white/90 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 rounded-lg shadow-theme-xs text-gray-800;
+  @apply !min-h-11 !text-sm !rounded-lg !border !border-gray-300 dark:bg-gray-900 dark:border-gray-700 dark:focus:border-brand-800 dark:placeholder:text-white/30 dark:text-white/90 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 rounded-lg shadow-theme-xs text-gray-800;
 }
 
 .ng-select.ng-select-single .ng-select-container .ng-value-container .ng-input {
   line-height: 2.3 !important;
 }
 
+.ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-input {
+  line-height: 2.3 !important;
+}
 .ng-placeholder {
   @apply !text-gray-400;
+  top: 10px !important;
 }

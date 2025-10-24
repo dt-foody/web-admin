@@ -3,8 +3,9 @@
   <div
     class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
   >
-    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex justify-between">
       <h2 class="text-lg font-medium text-gray-800 dark:text-white">Product Information</h2>
+      <app-switch label="Active" [(value)]="productData.isActive"></app-switch>
     </div>
     <div class="p-4 sm:p-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -28,35 +29,6 @@
                 placeholder="Enter product name"
                 [(value)]="productData.name"
               ></app-input-field>
-            </div>
-
-            <!-- Category & Status -->
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-              <div>
-                <app-label for="category" className="required">Category</app-label>
-                <ng-select
-                  [items]="categories"
-                  bindLabel="label"
-                  bindValue="value"
-                  placeholder="Select category"
-                  [(ngModel)]="productData.category"
-                  [searchable]="true"
-                  [clearable]="true"
-                  name="category"
-                >
-                </ng-select>
-              </div>
-              <div>
-                <app-label for="status">Status</app-label>
-                <app-select
-                  id="status"
-                  [options]="availabilityOptions"
-                  placeholder="Select status"
-                  [value]="productData.isActive.toString()"
-                  (valueChange)="handleSelectChange('isActive', $event)"
-                >
-                </app-select>
-              </div>
             </div>
 
             <!-- Base Price & Priority -->

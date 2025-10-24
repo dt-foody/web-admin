@@ -37,20 +37,7 @@
       <thead>
         <tr class="border-b border-gray-200 dark:divide-gray-800 dark:border-gray-800">
           <th class="lg:w-14 px-5 py-4 text-left whitespace-nowrap">
-            <label class="cursor-pointer text-sm font-medium text-gray-700 select-none dark:text-gray-400">
-              <input type="checkbox" class="sr-only" (change)="toggleAll()" [checked]="isAllSelected()" />
-              <span class="flex h-4 w-4 items-center justify-center rounded-sm border-[1.25px]" [ngClass]="{
-                  'border-brand-500 bg-brand-500': isAllSelected(),
-                  'bg-transparent border-gray-300 dark:border-gray-700': !isAllSelected(),
-                }">
-                <span [ngClass]="{ 'opacity-0': !isAllSelected() }">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="1.6666" strokeLinecap="round"
-                      strokeLinejoin="round" />
-                  </svg>
-                </span>
-              </span>
-            </label>
+            <app-checkbox [checked]="isAllSelected()" (checkedChange)="toggleAll()"></app-checkbox>
           </th>
 
           <th>
@@ -61,8 +48,7 @@
 
           <th>
             <app-sort-header label="Name" key="name" [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)"
-            >
+              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)">
             </app-sort-header>
           </th>
 
@@ -109,23 +95,8 @@
         @for (coupon of dataSources; track coupon.id) {
         <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
           <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
-            <label class="cursor-pointer text-sm font-medium text-gray-700 select-none dark:text-gray-400">
-              <input type="checkbox" class="sr-only" [checked]="selected.includes(coupon.id)"
-                (change)="toggleSelect(coupon.id)" />
-              <span class="flex h-4 w-4 items-center justify-center rounded-sm border-[1.25px]" [ngClass]="{
-                    'border-brand-500 bg-brand-500': selected.includes(coupon.id),
-                    'bg-transparent border-gray-300 dark:border-gray-700': !selected.includes(
-                      coupon.id
-                    ),
-                  }">
-                <span [ngClass]="{ 'opacity-0': !selected.includes(coupon.id) }">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="1.6666" strokeLinecap="round"
-                      strokeLinejoin="round" />
-                  </svg>
-                </span>
-              </span>
-            </label>
+            <app-checkbox type="checkbox" [checked]="selected.includes(coupon.id)"
+              (checkedChange)="toggleSelect(coupon.id, $event)" />
           </td>
 
           <td class="px-5 py-4 whitespace-nowrap">
@@ -180,7 +151,8 @@
 
           <td class="px-5 py-4 whitespace-nowrap">
             <div class="flex flex-col">
-              <span class="inline-flex justify-center items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium" [ngClass]="
+              <span class="inline-flex justify-center items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium"
+                [ngClass]="
                     coupon.valueType === 'percentage'
                       ? 'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400'
                       : 'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400'

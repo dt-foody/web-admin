@@ -14,6 +14,7 @@ import { HasPermissionDirective } from '../../../../directives/has-permission.di
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../ui/button/button.component';
+import { CheckboxComponent } from '../../../form/input/checkbox.component';
 
 @Component({
   selector: 'app-user-list',
@@ -27,6 +28,7 @@ import { ButtonComponent } from '../../../ui/button/button.component';
     PaginationComponent,
     SortHeaderComponent,
     ButtonComponent,
+    CheckboxComponent,
     HasPermissionDirective,
   ],
   templateUrl: './user-list.component.html',
