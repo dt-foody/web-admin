@@ -16,8 +16,13 @@
             "outputPath": "dist/ng-tailadmin",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": ["zone.js"],
-            "allowedCommonJsDependencies": ["prismjs", "polylabel"],
+            "polyfills": [
+              "zone.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "prismjs",
+              "polylabel"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -30,7 +35,9 @@
               "node_modules/ngx-toastr/toastr.css",
               "node_modules/@ng-select/ng-select/themes/default.theme.css"
             ],
-            "scripts": ["node_modules/apexcharts/dist/apexcharts.min.js"]
+            "scripts": [
+              "node_modules/apexcharts/dist/apexcharts.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -64,7 +71,9 @@
             },
             "development": {
               "buildTarget": "ng-tailadmin:build:development",
-              "allowedHosts": ["010e42caaa94.ngrok-free.app"]
+              "allowedHosts": [
+                "010e42caaa94.ngrok-free.app"
+              ]
             }
           },
           "defaultConfiguration": "development"
@@ -75,7 +84,10 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
               {
@@ -83,8 +95,19 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"],
+            "styles": [
+              "src/styles.css"
+            ],
             "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
@@ -117,6 +140,9 @@
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }

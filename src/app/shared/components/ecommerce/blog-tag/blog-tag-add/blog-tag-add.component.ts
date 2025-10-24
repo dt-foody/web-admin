@@ -45,7 +45,7 @@ const DEFAULT_FORM: BlogTagFormData = {
     LabelComponent,
     InputFieldComponent,
     ButtonComponent,
-    SwitchComponent
+    SwitchComponent,
   ],
   templateUrl: './blog-tag-add.component.html',
 })
@@ -55,7 +55,6 @@ export class BlogTagAddComponent implements OnInit {
 
   // Form data
   formData = createFormData(DEFAULT_FORM);
-
 
   activePicker: 'bg' | 'text' | null = null;
 

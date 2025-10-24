@@ -32,7 +32,7 @@ export class SigninFormComponent {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
   ) {}
 
   togglePasswordVisibility() {
@@ -41,20 +41,18 @@ export class SigninFormComponent {
 
   onSignIn() {
     this.errorMessage = ''; // reset thông báo lỗi
-    this.authService
-      .login(this.email, this.password)
-      .subscribe({
-        next: (data) => {
-          if (data) {
-            // Thành công -> chuyển hướng đến dashboard hoặc trang chính
-            this.router.navigate(['/']); // thay '/dashboard' theo route của bạn
-          }
-        },
-        error: (err) => {
-          console.log("Err", err);
-          this.errorMessage = err.error?.message || 'Đăng nhập thất bại';
-          this.toastr.error(this.errorMessage);
+    this.authService.login(this.email, this.password).subscribe({
+      next: (data) => {
+        if (data) {
+          // Thành công -> chuyển hướng đến dashboard hoặc trang chính
+          this.router.navigate(['/']); // thay '/dashboard' theo route của bạn
         }
-      });
+      },
+      error: (err) => {
+        console.log('Err', err);
+        this.errorMessage = err.error?.message || 'Đăng nhập thất bại';
+        this.toastr.error(this.errorMessage);
+      },
+    });
   }
 }

@@ -45,7 +45,7 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
     { value: 'public', label: 'Public' },
     { value: 'private', label: 'Private' },
   ];
-  
+
   typeOptions = [
     { value: 'all', label: 'All Types' },
     { value: 'discount_code', label: 'Discount Code' },
@@ -77,14 +77,16 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
       limit: this.query.pageSize,
       // Bỏ populate 'applicableUsers' để tối ưu performance
       populate: 'applicableProducts,applicableCombos',
-      sortBy: this.query.sort?.key ? (this.query.sort.key + ':' + (this.query.sort.asc ? 'asc' : 'desc')) : undefined,
+      sortBy: this.query.sort?.key
+        ? this.query.sort.key + ':' + (this.query.sort.asc ? 'asc' : 'desc')
+        : undefined,
     };
 
     // Thêm query tìm kiếm
     if (this.query && this.query.search && this.query.search.trim()) {
       params.search = this.query.search.trim();
     }
-    
+
     // Thêm các tham số filter
     if (this.filterVisibility !== 'all') {
       params.visibility = this.filterVisibility;
@@ -99,7 +101,7 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
       this.totalResults = data.totalResults;
     });
   }
-  
+
   /**
    * Áp dụng filter và reset về trang 1
    */
@@ -178,14 +180,14 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
   isValid(coupon: Coupon): boolean {
     return !this.isExpired(coupon) && !this.isFullyUsed(coupon) && coupon.isActive;
   }
-  
+
   /**
    * Hiển thị giới hạn tổng
    */
   getMaxUsesDisplay(coupon: Coupon): string {
     return coupon.maxUses > 0 ? coupon.maxUses.toString() : 'Unlimited';
   }
-  
+
   /**
    * Hiển thị giới hạn hàng ngày
    */

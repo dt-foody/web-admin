@@ -22,9 +22,7 @@ export class UserDropdownComponent implements OnInit {
     this.isOpen = false;
   }
 
-  constructor(private authService: AuthService) {
-
-  }
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.user = this.authService.getUser();

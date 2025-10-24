@@ -43,7 +43,7 @@ const DEFAULT_COMBO: ComboFormData = {
     TextAreaComponent,
     ButtonComponent,
     ImageUploadComponent,
-    SwitchComponent
+    SwitchComponent,
   ],
 })
 export class ComboAddComponent implements OnInit {

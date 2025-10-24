@@ -60,7 +60,7 @@ export class BlogCategoryAddComponent implements OnInit {
   selectedFile: File | null = null;
 
   formData = createFormData(DEFAULT_FORM);
-  
+
   activePicker: 'bg' | 'text' | null = null;
 
   constructor(

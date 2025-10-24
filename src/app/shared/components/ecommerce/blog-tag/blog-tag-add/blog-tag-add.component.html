@@ -1,14 +1,15 @@
-<div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0-0.03]">
-  <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-    <h2 class="text-lg font-medium text-gray-800 dark:text-white">
-      Tag Information
-    </h2>
+<div
+  class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0-0.03]"
+>
+  <div
+    class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-800"
+  >
+    <h2 class="text-lg font-medium text-gray-800 dark:text-white">Tag Information</h2>
     <app-switch label="Active" [(value)]="formData.isActive"></app-switch>
   </div>
 
   <div class="p-4 sm:p-6">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
       <div class="space-y-5">
         <div>
           <app-label for="tag-name" className="required">Tag Name</app-label>

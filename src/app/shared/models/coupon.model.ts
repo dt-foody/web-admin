@@ -13,7 +13,7 @@ export interface Coupon {
   description: string;
   type: 'discount_code' | 'freeship' | 'gift';
   code: string;
-  
+
   // MỚI: Phân loại public/private
   visibility: 'public' | 'private';
   // MỚI: Danh sách người dùng được áp dụng (khi private)

@@ -1,23 +1,26 @@
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
   <div class="lg:col-span-4 space-y-6">
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Cover Image</h2>
       </div>
       <div class="p-4 sm:p-6">
         <app-image-upload [imagePreview]="imagePreview" (fileSelected)="onFileSelected($event)">
         </app-image-upload>
-        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-          Recommended: 800x400px
-        </p>
+        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Recommended: 800x400px</p>
       </div>
     </div>
   </div>
 
   <div class="lg:col-span-8 space-y-6">
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-      <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
+      <div
+        class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-800"
+      >
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Basic Information</h2>
         <app-switch label="Active" [(value)]="formData.isActive"></app-switch>
       </div>
@@ -27,15 +30,21 @@
           <div class="space-y-5">
             <div>
               <app-label for="cat-name" className="required">Category Name</app-label>
-              <app-input-field id="cat-name" placeholder="e.g., Technology, Travel, Finance"
-                [(value)]="formData.name"></app-input-field>
+              <app-input-field
+                id="cat-name"
+                placeholder="e.g., Technology, Travel, Finance"
+                [(value)]="formData.name"
+              ></app-input-field>
             </div>
             <div>
               <app-label for="cat-description">Description</app-label>
-              <textarea id="cat-description" rows="10"
+              <textarea
+                id="cat-description"
+                rows="10"
                 placeholder="A short description for the category page (good for SEO)."
                 [(ngModel)]="formData.description"
-                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
+              ></textarea>
             </div>
           </div>
           <div>
@@ -45,33 +54,46 @@
                 <div>
                   <app-label>Background Color</app-label>
                   <div class="relative">
-                    <div (click)="togglePicker('bg')"
+                    <div
+                      (click)="togglePicker('bg')"
                       class="h-10 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600"
-                      [style.background]="formData.backgroundColor"></div>
+                      [style.background]="formData.backgroundColor"
+                    ></div>
                     <div *ngIf="activePicker === 'bg'" class="absolute z-10 mt-2">
-                      <color-sketch [color]="formData.backgroundColor"
-                        (onChange)="onColorChange('backgroundColor', $any($event))"></color-sketch>
+                      <color-sketch
+                        [color]="formData.backgroundColor"
+                        (onChange)="onColorChange('backgroundColor', $any($event))"
+                      ></color-sketch>
                     </div>
                   </div>
                 </div>
                 <div>
                   <app-label>Text Color</app-label>
                   <div class="relative">
-                    <div (click)="togglePicker('text')"
+                    <div
+                      (click)="togglePicker('text')"
                       class="h-10 w-full cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600"
-                      [style.background]="formData.textColor"></div>
+                      [style.background]="formData.textColor"
+                    ></div>
                     <div *ngIf="activePicker === 'text'" class="absolute z-10 mt-2">
-                      <color-sketch [color]="formData.textColor"
-                        (onChange)="onColorChange('textColor', $any($event))"></color-sketch>
+                      <color-sketch
+                        [color]="formData.textColor"
+                        (onChange)="onColorChange('textColor', $any($event))"
+                      ></color-sketch>
                     </div>
                   </div>
                 </div>
               </div>
               <div>
                 <p class="mb-2 text-xs font-medium text-gray-600 dark:text-gray-400">Preview</p>
-                <div class="flex items-center justify-center rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
-                  <span class="rounded-md px-3 py-1 font-medium" [style.backgroundColor]="formData.backgroundColor"
-                    [style.color]="formData.textColor">
+                <div
+                  class="flex items-center justify-center rounded-lg bg-gray-100 p-4 dark:bg-gray-800"
+                >
+                  <span
+                    class="rounded-md px-3 py-1 font-medium"
+                    [style.backgroundColor]="formData.backgroundColor"
+                    [style.color]="formData.textColor"
+                  >
                     {{ formData.name || 'Sample Category' }}
                   </span>
                 </div>
@@ -82,7 +104,6 @@
       </div>
     </div>
   </div>
-
 </div>
 
 <div class="flex justify-end mt-4">

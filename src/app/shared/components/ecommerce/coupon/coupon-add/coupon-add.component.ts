@@ -72,7 +72,7 @@ export class CouponAddComponent implements OnInit {
     { value: 'percentage', label: 'Percentage (%)' },
     { value: 'fixed', label: 'Fixed Amount' },
   ];
-  
+
   // MỚI: Thêm các options cho trường mới
   typeOptions = [
     { value: 'discount_code', label: 'Discount Code' },
@@ -168,7 +168,8 @@ export class CouponAddComponent implements OnInit {
 
   // MỚI: Hàm tải danh sách người dùng
   loadUsers() {
-    this.userService.getAll({ limit: 1000, isActive: true }).subscribe({ // Giả định API
+    this.userService.getAll({ limit: 1000, isActive: true }).subscribe({
+      // Giả định API
       next: (data) => {
         if (data?.results?.length) {
           this.users = data.results;
@@ -221,8 +222,14 @@ export class CouponAddComponent implements OnInit {
     }
 
     // MỚI: Kiểm tra maxDiscountAmount
-    if (this.couponData.valueType === 'percentage' && (this.couponData.maxDiscountAmount == null || this.couponData.maxDiscountAmount <= 0)) {
-      this.toastr.error('Max discount amount is required and must be greater than 0 for percentage coupons', 'Validation Error');
+    if (
+      this.couponData.valueType === 'percentage' &&
+      (this.couponData.maxDiscountAmount == null || this.couponData.maxDiscountAmount <= 0)
+    ) {
+      this.toastr.error(
+        'Max discount amount is required and must be greater than 0 for percentage coupons',
+        'Validation Error',
+      );
       return false;
     }
 
@@ -241,12 +248,18 @@ export class CouponAddComponent implements OnInit {
 
     // Sửa: Cho phép 0 = unlimited
     if (this.couponData.maxUses < 0) {
-      this.toastr.error('Maximum total uses must be 0 or more (0 for unlimited)', 'Validation Error');
+      this.toastr.error(
+        'Maximum total uses must be 0 or more (0 for unlimited)',
+        'Validation Error',
+      );
       return false;
     }
 
     if (this.couponData.dailyMaxUses < 0) {
-      this.toastr.error('Maximum daily uses must be 0 or more (0 for unlimited)', 'Validation Error');
+      this.toastr.error(
+        'Maximum daily uses must be 0 or more (0 for unlimited)',
+        'Validation Error',
+      );
       return false;
     }
 
@@ -256,14 +269,24 @@ export class CouponAddComponent implements OnInit {
       return false;
     }
 
-    if (this.couponData.maxUses > 0 && this.couponData.dailyMaxUses > 0 && this.couponData.dailyMaxUses > this.couponData.maxUses) {
+    if (
+      this.couponData.maxUses > 0 &&
+      this.couponData.dailyMaxUses > 0 &&
+      this.couponData.dailyMaxUses > this.couponData.maxUses
+    ) {
       this.toastr.error('Daily maximum uses cannot exceed total maximum uses', 'Validation Error');
       return false;
     }
-    
+
     // MỚI: Cảnh báo (không chặn) cho coupon private
-    if (this.couponData.visibility === 'private' && (!this.couponData.applicableUsers || this.couponData.applicableUsers.length === 0)) {
-        this.toastr.warning('This coupon is private, but no users are assigned. You can assign them later.', 'Validation Warning');
+    if (
+      this.couponData.visibility === 'private' &&
+      (!this.couponData.applicableUsers || this.couponData.applicableUsers.length === 0)
+    ) {
+      this.toastr.warning(
+        'This coupon is private, but no users are assigned. You can assign them later.',
+        'Validation Warning',
+      );
     }
 
     return true;

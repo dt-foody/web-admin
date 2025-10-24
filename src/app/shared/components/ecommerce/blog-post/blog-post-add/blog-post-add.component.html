@@ -1,25 +1,28 @@
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
   <div class="lg:col-span-4 space-y-6">
-
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Cover Image</h2>
       </div>
       <div class="p-4 sm:p-6">
         <app-image-upload [imagePreview]="imagePreview" (fileSelected)="onFileSelected($event)">
         </app-image-upload>
-        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-          Recommended: 1200x630px
-        </p>
+        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Recommended: 1200x630px</p>
         <div class="mt-4">
           <app-label for="cover-image-alt">Image Alt Text</app-label>
-          <app-input-field id="cover-image-alt" placeholder="Describe the image"
-            [(value)]="postData.coverImageAlt"></app-input-field>
+          <app-input-field
+            id="cover-image-alt"
+            placeholder="Describe the image"
+            [(value)]="postData.coverImageAlt"
+          ></app-input-field>
         </div>
       </div>
     </div>
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Publishing Settings</h2>
       </div>
@@ -27,24 +30,38 @@
         <div class="grid grid-cols-1 gap-5">
           <div>
             <app-label for="status" className="required">Status</app-label>
-            <app-select id="status" [options]="statusOptions" placeholder="Select status"
-              [(value)]="postData.status"></app-select>
+            <app-select
+              id="status"
+              [options]="statusOptions"
+              placeholder="Select status"
+              [(value)]="postData.status"
+            ></app-select>
           </div>
           <div>
             <app-label for="published-at">Published Date</app-label>
-            <app-input-field id="published-at" type="date" [(value)]="postData.publishedAt"></app-input-field>
+            <app-input-field
+              id="published-at"
+              type="date"
+              [(value)]="postData.publishedAt"
+            ></app-input-field>
           </div>
           <div class="space-y-3">
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" [checked]="postData.isFeatured"
+              <input
+                type="checkbox"
+                [checked]="postData.isFeatured"
                 (change)="handleCheckboxChange('isFeatured', $any($event.target).checked)"
-                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800" />
+                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+              />
               <span class="text-sm text-gray-700 dark:text-gray-300">Featured Post</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" [checked]="postData.isPinned"
+              <input
+                type="checkbox"
+                [checked]="postData.isPinned"
                 (change)="handleCheckboxChange('isPinned', $any($event.target).checked)"
-                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800" />
+                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+              />
               <span class="text-sm text-gray-700 dark:text-gray-300">Pin to Top</span>
             </label>
           </div>
@@ -54,8 +71,9 @@
   </div>
 
   <div class="lg:col-span-8 space-y-6">
-
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Basic Information</h2>
       </div>
@@ -63,33 +81,60 @@
         <div class="grid grid-cols-1 gap-5">
           <div>
             <app-label for="title" className="required">Title</app-label>
-            <app-input-field id="title" placeholder="Enter post title" [(value)]="postData.title"></app-input-field>
+            <app-input-field
+              id="title"
+              placeholder="Enter post title"
+              [(value)]="postData.title"
+            ></app-input-field>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <app-label for="categories">Categories</app-label>
-              <ng-select id="categories" [items]="allCategories" bindLabel="name" bindValue="id" [multiple]="true"
-                placeholder="Select categories" [(ngModel)]="postData.categories" [closeOnSelect]="false">
+              <ng-select
+                id="categories"
+                [items]="allCategories"
+                bindLabel="name"
+                bindValue="id"
+                [multiple]="true"
+                placeholder="Select categories"
+                [(ngModel)]="postData.categories"
+                [closeOnSelect]="false"
+              >
               </ng-select>
             </div>
             <div>
               <app-label for="tags">Tags</app-label>
-              <ng-select id="tags" [items]="allTags" bindLabel="name" bindValue="id" [multiple]="true"
-                placeholder="Select tags" [(ngModel)]="postData.tags" [closeOnSelect]="false">
+              <ng-select
+                id="tags"
+                [items]="allTags"
+                bindLabel="name"
+                bindValue="id"
+                [multiple]="true"
+                placeholder="Select tags"
+                [(ngModel)]="postData.tags"
+                [closeOnSelect]="false"
+              >
               </ng-select>
             </div>
           </div>
           <div>
             <app-label for="summary">Summary</app-label>
-            <textarea id="summary" rows="3" placeholder="Brief description of the post" [(ngModel)]="postData.summary"
-              class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+            <textarea
+              id="summary"
+              rows="3"
+              placeholder="Brief description of the post"
+              [(ngModel)]="postData.summary"
+              class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
+            ></textarea>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">SEO Settings</h2>
       </div>
@@ -97,15 +142,24 @@
         <div class="grid grid-cols-1 gap-5">
           <div>
             <app-label for="seo-title">SEO Title</app-label>
-            <app-input-field id="seo-title" placeholder="Custom title for search engines"
-              [(value)]="postData.seoTitle"></app-input-field>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Leave empty to use post title</p>
+            <app-input-field
+              id="seo-title"
+              placeholder="Custom title for search engines"
+              [(value)]="postData.seoTitle"
+            ></app-input-field>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Leave empty to use post title
+            </p>
           </div>
           <div>
             <app-label for="seo-description">SEO Description</app-label>
-            <textarea id="seo-description" rows="3" placeholder="Meta description (160 characters)"
+            <textarea
+              id="seo-description"
+              rows="3"
+              placeholder="Meta description (160 characters)"
               [(value)]="postData.seoDescription"
-              class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"></textarea>
+              class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
+            ></textarea>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ postData.seoDescription.length || 0 }} / 160 characters
             </p>
@@ -113,40 +167,60 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <div class="lg:col-span-12">
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
       <div class="flex border-b border-gray-200 px-4 pt-2 dark:border-gray-800">
-        <button (click)="viewMode = 'write'" [ngClass]="{
-          'border-blue-500 text-blue-600 dark:text-blue-400': viewMode === 'write',
-          'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200': viewMode !== 'write'
-        }" class="flex-shrink-0 border-b-2 px-4 py-3 text-sm font-medium focus:outline-none">
+        <button
+          (click)="viewMode = 'write'"
+          [ngClass]="{
+            'border-blue-500 text-blue-600 dark:text-blue-400': viewMode === 'write',
+            'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200':
+              viewMode !== 'write',
+          }"
+          class="flex-shrink-0 border-b-2 px-4 py-3 text-sm font-medium focus:outline-none"
+        >
           Write
         </button>
 
-        <button (click)="viewMode = 'preview'" [ngClass]="{
-          'border-blue-500 text-blue-600 dark:text-blue-400': viewMode === 'preview',
-          'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200': viewMode !== 'preview'
-        }" class="flex-shrink-0 border-b-2 px-4 py-3 text-sm font-medium focus:outline-none">
+        <button
+          (click)="viewMode = 'preview'"
+          [ngClass]="{
+            'border-blue-500 text-blue-600 dark:text-blue-400': viewMode === 'preview',
+            'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200':
+              viewMode !== 'preview',
+          }"
+          class="flex-shrink-0 border-b-2 px-4 py-3 text-sm font-medium focus:outline-none"
+        >
           Preview
         </button>
       </div>
 
       <div class="p-4 sm:p-6">
         <div *ngIf="viewMode === 'write'">
-          <ckeditor [editor]="Editor" [(ngModel)]="postData.content" [config]="editorConfig" (ready)="onReady($event)">
+          <ckeditor
+            [editor]="Editor"
+            [(ngModel)]="postData.content"
+            [config]="editorConfig"
+            (ready)="onReady($event)"
+          >
           </ckeditor>
         </div>
 
         <div *ngIf="viewMode === 'preview'">
-          <div
-            class="rounded-lg  p-5 min-h-[300px] h-full">
-            <article *ngIf="postData.content" class="prose prose-lg dark:prose-invert max-w-none"
-              [innerHTML]="postData.content | safeHtml"> </article>
-            <div *ngIf="!postData.content" class="flex items-center justify-center h-full min-h-[250px]">
+          <div class="rounded-lg p-5 min-h-[300px] h-full">
+            <article
+              *ngIf="postData.content"
+              class="prose prose-lg dark:prose-invert max-w-none"
+              [innerHTML]="postData.content | safeHtml"
+            ></article>
+            <div
+              *ngIf="!postData.content"
+              class="flex items-center justify-center h-full min-h-[250px]"
+            >
               <span class="text-sm text-gray-500 dark:text-gray-400">
                 Nothing to preview. Start writing in the editor.
               </span>
@@ -165,5 +239,4 @@
       </app-button>
     </div>
   </div>
-
 </div>

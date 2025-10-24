@@ -49,7 +49,7 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
   ) {}
 
   // --- Các phương thức chính ---
@@ -58,9 +58,9 @@ export class AuthService {
    * Đăng nhập và lưu trữ thông tin
    */
   login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/auth/login`, { email, password }).pipe(
-      tap((res) => this.handleAuthSuccess(res))
-    );
+    return this.http
+      .post<AuthResponse>(`${this.API_URL}/auth/login`, { email, password })
+      .pipe(tap((res) => this.handleAuthSuccess(res)));
   }
 
   /**
@@ -113,7 +113,7 @@ export class AuthService {
         // Dọn dẹp refreshTokenRequest$ sau khi observable hoàn tất để lần sau có thể refresh tiếp
         tap(() => {
           this.refreshTokenRequest$ = null;
-        })
+        }),
       );
 
     return this.refreshTokenRequest$;

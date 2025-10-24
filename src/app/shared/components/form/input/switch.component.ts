@@ -31,7 +31,7 @@ export class SwitchComponent {
   @Input() label: string = '';
   @Input() disabled: boolean = false;
   @Input() color: 'blue' | 'gray' = 'blue';
-  
+
   // Thay đổi 1: Dùng @Input() value thay vì defaultChecked.
   @Input() value: boolean = false;
 
