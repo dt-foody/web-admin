@@ -2,7 +2,7 @@
   class="fixed flex flex-col top-0 px-3 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200"
   [ngClass]="{
     'w-[240px]': (isExpanded$ | async) || (isMobileOpen$ | async) || (isHovered$ | async),
-    'w-[90px]': !((isExpanded$ | async) || (isMobileOpen$ | async) || (isHovered$ | async)),
+    'w-[80px]': !((isExpanded$ | async) || (isMobileOpen$ | async) || (isHovered$ | async)),
     'translate-x-0': isMobileOpen$ | async,
     '-translate-x-full': !(isMobileOpen$ | async),
     'xl:translate-x-0': true,
@@ -165,7 +165,11 @@
                       routerLinkActive="menu-item-active"
                       [routerLinkActiveOptions]="{ exact: true }"
                       class="menu-item group"
-                      [ngClass]="{ 'menu-item-inactive': !isActive(nav.path) }"
+                      [ngClass]="{
+                        'xl:justify-center': !((isExpanded$ | async) || (isHovered$ | async)),
+                        'xl:justify-start': (isExpanded$ | async) || (isHovered$ | async),
+                        'menu-item-inactive': !isActive(nav.path)
+                      }"
                     >
                       <span
                         class="menu-item-icon-size"
@@ -176,7 +180,11 @@
                         [innerHTML]="nav.icon | safeHtml"
                       >
                       </span>
-                      <span class="menu-item-text">
+                      <span class="menu-item-text"
+                        [ngClass]="{
+                          'hidden': !((isExpanded$ | async) || (isHovered$ | async))
+                        }"
+                      >
                         @if (
                           (isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async)
                         ) {

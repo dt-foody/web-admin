@@ -40,7 +40,7 @@ export class InputFieldComponent {
   @Input() id?: string = '';
   @Input() name?: string = '';
   @Input() placeholder?: string = '';
-  @Input() value: string | number | undefined = '';
+  @Input() value: string | number | any = '';
   @Input() min?: string;
   @Input() max?: string;
   @Input() step?: number;

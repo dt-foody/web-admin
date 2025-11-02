@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, signal, TemplateRef, ViewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Category } from '../../../../models/category.model';
 import { CategoryService } from '../../../../services/api/category.service';
@@ -23,7 +23,7 @@ interface CategoryTree extends Category {
   templateUrl: './category-list.component.html',
   styles: ``,
 })
-export class CategoryListComponent {
+export class CategoryListComponent implements OnInit {
   categories: Category[] = [];
   categoryTree = signal<CategoryTree[]>([]);
   flattenedTree = signal<CategoryTree[]>([]);

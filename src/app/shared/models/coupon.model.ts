@@ -1,87 +1,85 @@
-// Dùng để định nghĩa kiểu dữ liệu User cơ bản, bạn có thể thay thế bằng interface User đầy đủ
+// Định nghĩa các kiểu dữ liệu cơ bản
+// (Bạn có thể đặt file này ở một file chung, ví dụ: 'shared.model.ts')
 export interface BasicUser {
   id: string;
   name: string;
+  // email?: string;
 }
 
-// Interface chính, đại diện cho dữ liệu coupon từ API
+// ===== Enums / Types (Khớp với Backend Model) =====
+export type CouponType = 'discount_code' | 'freeship' | 'gift';
+export type ValueType = 'fixed' | 'percentage';
+export type CouponStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'EXPIRED';
+
+// ===== Interface chính (Coupon) =====
 export interface Coupon {
-  id: string;
+  id: string; // Do plugin toJSON tự động map từ _id
 
   // Thông tin cơ bản
   name: string;
   description: string;
-  type: 'discount_code' | 'freeship' | 'gift';
-  code: string;
+  code?: string; // Mã công khai, có thể null (sparse: true)
 
-  // MỚI: Phân loại public/private
-  visibility: 'public' | 'private';
-  // MỚI: Danh sách người dùng được áp dụng (khi private)
-  applicableUsers?: any[]; // Có thể là string[] (chỉ ID) hoặc BasicUser[] (khi populate)
+  // Loại coupon
+  type: CouponType;
 
-  // Áp dụng cho sản phẩm / combo
-  applicableProducts?: any[]; // lưu ObjectId
-  applicableCombos?: any[]; // lưu ObjectId
-
-  // Giá trị giảm giá
+  // Quy tắc giảm giá
   value: number;
-  valueType: 'percentage' | 'fixed';
-  // MỚI: Giảm giá tối đa cho loại percentage
-  maxDiscountAmount?: number;
-
-  // Điều kiện áp dụng
+  valueType: ValueType;
+  maxDiscountAmount: number;
   minOrderAmount: number;
 
-  // Thời gian hiệu lực
+  // Hiệu lực
   startDate: string | Date;
   endDate: string | Date;
 
   // Giới hạn sử dụng
-  maxUses: number; // tổng số lần có thể dùng
-  usedCount: number; // số lần đã dùng
-  // MỚI: Giới hạn sử dụng cho mỗi người dùng
-  maxUsesPerUser: number;
+  maxUses: number; // Tổng số lần dùng
+  usedCount: number; // Đã dùng bao nhiêu
+  maxUsesPerUser: number; // Giới hạn mỗi user
 
-  dailyMaxUses: number; // số lần tối đa trong 1 ngày
-  lastUsedDate?: string | Date;
-  dailyUsedCount: number; // số lần đã dùng trong ngày
+  // Cấu hình hiển thị / hành vi
+  public: boolean; // Hiển thị công khai?
+  claimable: boolean; // Cho phép user "lưu" về?
+  autoApply: boolean; // Tự động áp dụng?
+  stackable: boolean; // Có thể dùng chung với coupon khác?
+
+  // Điều kiện động
+  conditions: any; // JSON object cho các điều kiện runtime
 
   // Trạng thái
-  isActive: boolean;
+  status: CouponStatus;
 
-  // Audit & Soft delete
-  createdBy: any; // Có thể là string (ID) hoặc BasicUser (khi populate)
-  isDeleted: boolean;
-  deletedAt?: string | Date | null;
-  deletedBy?: any;
-
-  // Timestamps
+  // Audit
+  createdBy: string | BasicUser; // Có thể là ID hoặc object User đã populate
   createdAt: string | Date;
   updatedAt: string | Date;
 }
 
-// Dùng cho form thêm/sửa Coupon
+// ===== Interface cho Form (Tạo/Cập nhật Coupon) =====
+// Dùng cho component form của Angular
 export interface CouponFormData {
   name: string;
   description: string;
-  type: 'discount_code' | 'freeship' | 'gift';
-  code: string;
+  code?: string;
+  type: CouponType;
 
-  // MỚI: Các trường để quản lý public/private và giới hạn
-  visibility: 'public' | 'private';
-  applicableUsers?: string[]; // Form sẽ quản lý danh sách ID của người dùng
-  maxDiscountAmount?: number;
+  value: number;
+  valueType: ValueType;
+  maxDiscountAmount: number;
+  minOrderAmount: number;
+
+  startDate: string | Date | any; // 'any' cho component date picker
+  endDate: string | Date | any;
+
+  maxUses: number;
   maxUsesPerUser: number;
 
-  // Các trường cũ
-  applicableProducts?: string[];
-  applicableCombos?: string[];
-  value: number;
-  valueType: 'percentage' | 'fixed';
-  minOrderAmount: number;
-  startDate: string | Date | any; // 'any' để linh hoạt với các component chọn ngày
-  endDate: string | Date | any;
-  maxUses: number;
-  dailyMaxUses: number;
-  isActive: boolean;
+  public: boolean;
+  claimable: boolean;
+  autoApply: boolean;
+  stackable: boolean;
+
+  conditions: any; // Nhập JSON dưới dạng text
+  status: CouponStatus;
 }

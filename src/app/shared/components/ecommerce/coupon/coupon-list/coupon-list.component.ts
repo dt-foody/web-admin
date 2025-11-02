@@ -1,7 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild, ElementRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Coupon } from '../../../../models/coupon.model';
+import { Coupon, CouponStatus } from '../../../../models/coupon.model'; // Import CouponStatus
 import { CouponService } from '../../../../services/api/coupon.service';
 import { DialogService } from '@ngneat/dialog';
 import { ToastrService } from 'ngx-toastr';
@@ -15,7 +15,7 @@ import { CheckboxComponent } from '../../../form/input/checkbox.component';
 
 @Component({
   selector: 'app-coupon-list',
-  standalone: true, // Đảm bảo component là standalone
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -25,7 +25,7 @@ import { CheckboxComponent } from '../../../form/input/checkbox.component';
     SortHeaderComponent,
     CheckboxComponent,
     HasPermissionDirective,
-    DatePipe, // Thêm DatePipe để sử dụng trong template gốc
+    DatePipe,
   ],
   templateUrl: './coupon-list.component.html',
   styles: ``,
@@ -36,14 +36,15 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
 
   itemToDelete: Coupon | null = null;
 
-  // Thêm các tùy chọn filter
-  filterVisibility: 'all' | 'public' | 'private' = 'all';
+  // Cập nhật filter
+  filterVisibility: 'all' | 'true' | 'false' = 'all'; // Thay đổi giá trị
   filterType: 'all' | 'discount_code' | 'freeship' | 'gift' = 'all';
+  filterStatus: 'all' | CouponStatus = 'all'; // Thêm filter status
 
   visibilityOptions = [
     { value: 'all', label: 'All Visibilities' },
-    { value: 'public', label: 'Public' },
-    { value: 'private', label: 'Private' },
+    { value: 'true', label: 'Public' }, // Cập nhật value
+    { value: 'false', label: 'Private' }, // Cập nhật value
   ];
 
   typeOptions = [
@@ -51,6 +52,14 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
     { value: 'discount_code', label: 'Discount Code' },
     { value: 'freeship', label: 'Free Shipping' },
     { value: 'gift', label: 'Gift' },
+  ];
+
+  statusOptions = [
+    { value: 'all', label: 'All Statuses' },
+    { value: 'DRAFT', label: 'Draft' },
+    { value: 'ACTIVE', label: 'Active' },
+    { value: 'PAUSED', label: 'Paused' },
+    { value: 'EXPIRED', label: 'Expired' },
   ];
 
   constructor(
@@ -64,7 +73,6 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
 
   override ngOnInit(): void {
     console.log('CouponListComponent init logic');
-    // Call base init
     super.ngOnInit();
   }
 
@@ -75,24 +83,25 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
     const params: any = {
       page: this.query.page,
       limit: this.query.pageSize,
-      // Bỏ populate 'applicableUsers' để tối ưu performance
-      populate: 'applicableProducts,applicableCombos',
+      // populate: 'applicableProducts,applicableCombos', // XÓA: Các trường này không còn
       sortBy: this.query.sort?.key
         ? this.query.sort.key + ':' + (this.query.sort.asc ? 'asc' : 'desc')
         : undefined,
     };
 
-    // Thêm query tìm kiếm
     if (this.query && this.query.search && this.query.search.trim()) {
       params.search = this.query.search.trim();
     }
 
-    // Thêm các tham số filter
+    // Cập nhật filter
     if (this.filterVisibility !== 'all') {
-      params.visibility = this.filterVisibility;
+      params.public = this.filterVisibility === 'true'; // Gửi boolean
     }
     if (this.filterType !== 'all') {
       params.type = this.filterType;
+    }
+    if (this.filterStatus !== 'all') {
+      params.status = this.filterStatus; // Thêm filter status
     }
 
     this.couponService.getAll(params).subscribe((data) => {
@@ -138,13 +147,16 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
   }
 
   /**
-   * Bật/tắt trạng thái Active
+   * Bật/tắt trạng thái (ACTIVE <-> PAUSED)
    */
-  handleToggleActive(coupon: Coupon): void {
-    this.couponService.update(coupon.id, { isActive: !coupon.isActive }).subscribe({
+  handleToggleStatus(coupon: Coupon): void {
+    // Chỉ toggle giữa ACTIVE và PAUSED
+    const newStatus = coupon.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE';
+
+    this.couponService.update(coupon.id, { status: newStatus }).subscribe({
       next: () => {
-        coupon.isActive = !coupon.isActive;
-        this.toastr.success('Update successfully!', 'Coupon');
+        coupon.status = newStatus; // Cập nhật local data
+        this.toastr.success(`Status updated to ${newStatus}`, 'Coupon');
       },
       error: () => {
         this.toastr.error('Update failed!', 'Coupon');
@@ -158,6 +170,8 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
    * Kiểm tra coupon đã hết hạn
    */
   isExpired(coupon: Coupon): boolean {
+    // Ưu tiên trạng thái từ backend nếu có
+    if (coupon.status === 'EXPIRED') return true;
     const now = new Date();
     const endDate = new Date(coupon.endDate);
     return endDate < now;
@@ -178,7 +192,8 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
    * Kiểm tra coupon còn hợp lệ
    */
   isValid(coupon: Coupon): boolean {
-    return !this.isExpired(coupon) && !this.isFullyUsed(coupon) && coupon.isActive;
+    // Cập nhật để dùng status
+    return !this.isExpired(coupon) && !this.isFullyUsed(coupon) && coupon.status === 'ACTIVE';
   }
 
   /**
@@ -189,11 +204,11 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
   }
 
   /**
-   * Hiển thị giới hạn hàng ngày
+   * XÓA: Hiển thị giới hạn hàng ngày
    */
-  getDailyMaxUsesDisplay(coupon: Coupon): string {
-    return coupon.dailyMaxUses > 0 ? coupon.dailyMaxUses.toString() : 'Unlimited';
-  }
+  // getDailyMaxUsesDisplay(coupon: Coupon): string {
+  //   return coupon.dailyMaxUses > 0 ? coupon.dailyMaxUses.toString() : 'Unlimited';
+  // }
 
   /**
    * Hiển thị giới hạn mỗi người dùng

@@ -1,46 +1,69 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Thêm NgIf
+import { Component, computed, OnInit, signal, WritableSignal } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { forkJoin } from 'rxjs';
+
+import { ConditionsBuilderComponent } from '../../../form/conditions-builder/conditions-builder.component';
+
+// Component UI
 import { LabelComponent } from '../../../form/label/label.component';
 import { InputFieldComponent } from '../../../form/input/input-field.component';
 import { SelectComponent } from '../../../form/select/select.component';
 import { TextAreaComponent } from '../../../form/input/text-area.component';
 import { ButtonComponent } from '../../../ui/button/button.component';
-import { CouponFormData } from '../../../../models/coupon.model';
-import { CouponService } from '../../../../services/api/coupon.service';
-import { ProductService } from '../../../../services/api/product.service';
-import { ComboService } from '../../../../services/api/combo.service';
-import { UserService } from '../../../../services/api/user.service'; // Giả định bạn có service này
-import { ToastrService } from 'ngx-toastr';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { sanitizeFormData, createFormData } from '../../../../utils/form-data.utils';
 import { SwitchComponent } from '../../../form/input/switch.component';
 
-// Cập nhật DEFAULT_FORM với các trường mới
+// Models
+import { Coupon, CouponFormData } from '../../../../models/coupon.model';
+import { Voucher, BasicCustomer } from '../../../../models/voucher.model';
+import { ConditionGroup, Field, Operator } from '../../../../models/conditions.model';
+
+// Services
+import { CouponService } from '../../../../services/api/coupon.service';
+import { VoucherService } from '../../../../services/api/voucher.service';
+import { CustomerService } from '../../../../services/api/customer.service';
+import { CategoryService } from '../../../../services/api/category.service';
+import { ProductService } from '../../../../services/api/product.service';
+import { ComboService } from '../../../../services/api/combo.service';
+
+// Utils
+import { sanitizeFormData, createFormData } from '../../../../utils/form-data.utils';
+
+// ========= Defaults =========
 const DEFAULT_FORM: CouponFormData = {
   name: '',
   description: '',
-  type: 'discount_code', // Cập nhật
   code: '',
-  visibility: 'public', // Mới
-  applicableUsers: [], // Mới
-  maxDiscountAmount: 0, // Mới (dùng null cho giá trị ban đầu)
-  maxUsesPerUser: 1, // Mới
-  applicableProducts: [],
-  applicableCombos: [],
+  type: 'discount_code',
   value: 0,
   valueType: 'percentage',
+  maxDiscountAmount: 0,
   minOrderAmount: 0,
   startDate: '',
   endDate: '',
   maxUses: 0,
-  dailyMaxUses: 0,
-  isActive: true,
+  maxUsesPerUser: 1,
+  public: true,
+  claimable: false,
+  autoApply: false,
+  stackable: false,
+  conditions: null,
+  status: 'DRAFT',
 };
+
+// Form phát hành voucher
+interface VoucherIssueFormData {
+  customerIds: string[];
+  usageLimit: number;
+  expiredAt: string | null;
+}
 
 @Component({
   selector: 'app-coupon-add',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -51,87 +74,190 @@ const DEFAULT_FORM: CouponFormData = {
     TextAreaComponent,
     ButtonComponent,
     SwitchComponent,
+    DatePipe,
+    ConditionsBuilderComponent,
   ],
   templateUrl: './coupon-add.component.html',
   styles: ``,
-  standalone: true, // Thêm standalone: true
 })
 export class CouponAddComponent implements OnInit {
   couponId: string | null = null;
-  isEditMode: boolean = false;
+  isEditMode = false;
 
-  // Form data
   couponData = createFormData(DEFAULT_FORM);
 
-  // Dropdown options
-  products: any[] = [];
-  combos: any[] = [];
-  users: any[] = []; // Mới: Dành cho applicableUsers
+  currentTab: 'details' | 'vouchers' = 'details';
+
+  allCustomers: BasicCustomer[] = [];
+  issuedVouchers: Voucher[] = [];
+  voucherIssueForm: VoucherIssueFormData = {
+    customerIds: [],
+    usageLimit: 1,
+    expiredAt: null,
+  };
+  isLoadingVoucherData = false;
 
   valueTypeOptions = [
     { value: 'percentage', label: 'Percentage (%)' },
     { value: 'fixed', label: 'Fixed Amount' },
   ];
 
-  // MỚI: Thêm các options cho trường mới
   typeOptions = [
     { value: 'discount_code', label: 'Discount Code' },
     { value: 'freeship', label: 'Free Shipping' },
     { value: 'gift', label: 'Gift' },
   ];
 
-  visibilityOptions = [
-    { value: 'public', label: 'Public (For everyone)' },
-    { value: 'private', label: 'Private (For specific users)' },
+  statusOptions = [
+    { value: 'DRAFT', label: 'Draft' },
+    { value: 'ACTIVE', label: 'Active' },
+    { value: 'PAUSED', label: 'Paused' },
+    { value: 'EXPIRED', label: 'Expired' },
   ];
+
+  fields: Field[] = [
+    {
+      id: 'customer_name',
+      group: 'Customer',
+      name: 'Customer Name',
+      type: 'text',
+      operators: [
+        Operator.EQUALS,
+        Operator.NOT_EQUALS,
+        Operator.CONTAINS,
+        Operator.DOES_NOT_CONTAIN,
+        Operator.IS_EMPTY,
+        Operator.IS_NOT_EMPTY,
+      ],
+    },
+    {
+      id: 'customer_age',
+      group: 'Customer',
+      name: 'Customer Age',
+      type: 'number',
+      operators: [Operator.EQUALS, Operator.GREATER_THAN, Operator.LESS_THAN],
+    },
+    {
+      id: 'customer_is_new',
+      group: 'Customer',
+      name: 'Customer Is New',
+      type: 'boolean',
+      operators: [Operator.EQUALS, Operator.NOT_EQUALS],
+    },
+    {
+      id: 'product_id',
+      group: 'Product',
+      name: 'Product',
+      type: 'multi-select',
+      operators: [Operator.IN, Operator.NOT_IN],
+      source: {
+        valueField: 'id',
+        labelField: 'name',
+        optionsLoader: (params) => this.productService.getAll({ ...params }),
+      },
+    },
+    {
+      id: 'combo_id',
+      group: 'Combo',
+      name: 'Combo',
+      type: 'multi-select',
+      operators: [Operator.IN, Operator.NOT_IN],
+      source: {
+        valueField: 'id',
+        labelField: 'name',
+        optionsLoader: (params) => this.comboService.getAll({ ...params }),
+      },
+    },
+    {
+      id: 'category_id',
+      group: 'Category',
+      name: 'Category',
+      type: 'multi-select',
+      operators: [Operator.IN, Operator.NOT_IN],
+      source: {
+        valueField: 'id',
+        labelField: 'name',
+        optionsLoader: (params) => this.categoryService.getAll({ ...params }),
+      },
+    },
+    {
+      id: 'order_count',
+      group: 'Order',
+      name: 'Order Count',
+      type: 'number',
+      operators: [Operator.EQUALS, Operator.GREATER_THAN, Operator.LESS_THAN],
+    },
+    {
+      id: 'order_date',
+      group: 'Order',
+      name: 'Order Date',
+      type: 'date',
+      operators: [Operator.BEFORE, Operator.AFTER, Operator.BETWEEN],
+    },
+    {
+      id: 'order_contains_product_count',
+      group: 'Order',
+      name: 'Number of Products in Order',
+      type: 'number',
+      operators: [Operator.GREATER_THAN, Operator.LESS_THAN, Operator.EQUALS],
+    },
+  ];
+
+  // The root condition group state, managed by the parent component
+  rootGroup: WritableSignal<ConditionGroup> = signal<ConditionGroup>({
+    id: 'root',
+    operator: 'AND',
+    conditions: [],
+  });
 
   constructor(
     private couponService: CouponService,
+    private voucherService: VoucherService,
+    private customerService: CustomerService,
+    private categoryService: CategoryService,
     private productService: ProductService,
-    private comboService: ComboService,
-    private userService: UserService, // MỚI: Inject UserService
     private toastr: ToastrService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
+    private comboService: ComboService,
   ) {}
 
   ngOnInit() {
-    this.loadProducts();
-    this.loadCombos();
-    this.loadUsers(); // MỚI: Tải danh sách người dùng
-
     this.activatedRoute.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (id) {
         this.isEditMode = true;
         this.couponId = id;
         this.loadCoupon(id);
+        this.loadVoucherData(id);
       } else {
-        // Set default dates for new coupon
         const now = new Date();
         const endDate = new Date();
-        endDate.setDate(endDate.getDate() + 30); // Default 30 days validity
-
+        endDate.setDate(endDate.getDate() + 30);
         this.couponData.startDate = this.formatDateTimeLocal(now);
         this.couponData.endDate = this.formatDateTimeLocal(endDate);
+        this.couponData.status = 'DRAFT';
       }
     });
   }
 
   loadCoupon(id: string) {
     this.couponService.getById(id).subscribe({
-      next: (data: any) => {
+      next: (data: Coupon) => {
         this.couponData = {
-          ...createFormData(DEFAULT_FORM), // Bắt đầu với default để đảm bảo tất cả các trường đều tồn tại
+          ...createFormData(DEFAULT_FORM),
           ...data,
           startDate: this.formatDateTimeLocal(new Date(data.startDate)),
           endDate: this.formatDateTimeLocal(new Date(data.endDate)),
-          applicableProducts: data.applicableProducts?.map((p: any) => p.id || p) || [],
-          applicableCombos: data.applicableCombos?.map((c: any) => c.id || c) || [],
-          // MỚI: Đảm bảo applicableUsers được map chính xác
-          applicableUsers: data.applicableUsers?.map((u: any) => u.id || u) || [],
-          maxDiscountAmount: data.maxDiscountAmount || null, // Đảm bảo là null nếu không có
+          conditions: data.conditions || null,
+          maxDiscountAmount: data.maxDiscountAmount ?? 0,
+          code: data.code ?? '',
         };
+
+        // ✅ Nếu coupon đã có điều kiện (rootGroup đã được build), set lại vào builder
+        if (data.conditions) {
+          this.rootGroup.set(data.conditions);
+        }
       },
       error: (err) => {
         console.error(err);
@@ -140,193 +266,135 @@ export class CouponAddComponent implements OnInit {
     });
   }
 
-  loadProducts() {
-    this.productService.getAll({ limit: 1000, isActive: true }).subscribe({
-      next: (data) => {
-        if (data?.results?.length) {
-          this.products = data.results;
-        }
+  loadVoucherData(couponId: string) {
+    this.isLoadingVoucherData = true;
+    forkJoin({
+      customers: this.customerService.getAll({ limit: 2000 }),
+      vouchers: this.voucherService.getAll({
+        coupon: couponId,
+        limit: 1000,
+        populate: 'customer',
+        sortBy: 'createdAt:desc',
+      }),
+    }).subscribe({
+      next: ({ customers, vouchers }) => {
+        this.allCustomers = customers.results || [];
+        this.issuedVouchers = vouchers.results || [];
+        this.isLoadingVoucherData = false;
       },
       error: (err) => {
-        console.error('Error loading products:', err);
+        console.error('Error loading voucher data:', err);
+        this.toastr.error('Could not load customer or voucher list', 'Error');
+        this.isLoadingVoucherData = false;
       },
     });
   }
 
-  loadCombos() {
-    this.comboService.getAll({ limit: 1000, isActive: true }).subscribe({
-      next: (data) => {
-        if (data?.results?.length) {
-          this.combos = data.results;
-        }
-      },
-      error: (err) => {
-        console.error('Error loading combos:', err);
-      },
-    });
-  }
-
-  // MỚI: Hàm tải danh sách người dùng
-  loadUsers() {
-    this.userService.getAll({ limit: 1000, isActive: true }).subscribe({
-      // Giả định API
-      next: (data) => {
-        if (data?.results?.length) {
-          this.users = data.results;
-        }
-      },
-      error: (err) => {
-        console.error('Error loading users:', err);
-      },
-    });
-  }
-
-  // Format date for datetime-local input
   formatDateTimeLocal(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
-
-  handleSelectChange(field: keyof CouponFormData, value: string) {
-    if (field === 'isActive') {
-      this.couponData[field] = value === 'true';
-    } else {
-      (this.couponData as any)[field] = value;
+    if (!date || !(date instanceof Date)) return '';
+    try {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      const hh = String(date.getHours()).padStart(2, '0');
+      const mm = String(date.getMinutes()).padStart(2, '0');
+      return `${y}-${m}-${d}T${hh}:${mm}`;
+    } catch (e) {
+      console.error('Error formatting date:', e, date);
+      return '';
     }
   }
 
-  // Cập nhật Validate form
   validateForm(): boolean {
-    if (!this.couponData.name.trim()) {
+    if (!this.couponData.name?.trim()) {
       this.toastr.error('Coupon name is required', 'Validation Error');
       return false;
     }
-
-    if (!this.couponData.code?.trim()) {
-      this.toastr.error('Coupon code is required', 'Validation Error');
+    if (this.couponData.value < 0) {
+      this.toastr.error('Discount value must be 0 or more', 'Validation Error');
       return false;
     }
-
-    if (this.couponData.value <= 0) {
-      this.toastr.error('Discount value must be greater than 0', 'Validation Error');
-      return false;
-    }
-
     if (this.couponData.valueType === 'percentage' && this.couponData.value > 100) {
       this.toastr.error('Percentage discount cannot exceed 100%', 'Validation Error');
       return false;
     }
-
-    // MỚI: Kiểm tra maxDiscountAmount
-    if (
-      this.couponData.valueType === 'percentage' &&
-      (this.couponData.maxDiscountAmount == null || this.couponData.maxDiscountAmount <= 0)
-    ) {
-      this.toastr.error(
-        'Max discount amount is required and must be greater than 0 for percentage coupons',
-        'Validation Error',
-      );
+    if (this.couponData.valueType === 'percentage' && this.couponData.maxDiscountAmount < 0) {
+      this.toastr.error('Max discount amount must be 0 or more', 'Validation Error');
       return false;
     }
-
     if (!this.couponData.startDate || !this.couponData.endDate) {
       this.toastr.error('Start date and end date are required', 'Validation Error');
       return false;
     }
-
     const startDate = new Date(this.couponData.startDate);
     const endDate = new Date(this.couponData.endDate);
-
     if (endDate <= startDate) {
       this.toastr.error('End date must be after start date', 'Validation Error');
       return false;
     }
-
-    // Sửa: Cho phép 0 = unlimited
     if (this.couponData.maxUses < 0) {
-      this.toastr.error(
-        'Maximum total uses must be 0 or more (0 for unlimited)',
-        'Validation Error',
-      );
+      this.toastr.error('Maximum total uses must be 0 or more', 'Validation Error');
       return false;
     }
-
-    if (this.couponData.dailyMaxUses < 0) {
-      this.toastr.error(
-        'Maximum daily uses must be 0 or more (0 for unlimited)',
-        'Validation Error',
-      );
-      return false;
-    }
-
-    // MỚI: Kiểm tra maxUsesPerUser
     if (this.couponData.maxUsesPerUser <= 0) {
       this.toastr.error('Maximum uses per user must be at least 1', 'Validation Error');
       return false;
     }
-
-    if (
-      this.couponData.maxUses > 0 &&
-      this.couponData.dailyMaxUses > 0 &&
-      this.couponData.dailyMaxUses > this.couponData.maxUses
-    ) {
-      this.toastr.error('Daily maximum uses cannot exceed total maximum uses', 'Validation Error');
+    if (!this.couponData.status) {
+      this.toastr.error('Status is required', 'Validation Error');
       return false;
-    }
-
-    // MỚI: Cảnh báo (không chặn) cho coupon private
-    if (
-      this.couponData.visibility === 'private' &&
-      (!this.couponData.applicableUsers || this.couponData.applicableUsers.length === 0)
-    ) {
-      this.toastr.warning(
-        'This coupon is private, but no users are assigned. You can assign them later.',
-        'Validation Warning',
-      );
     }
 
     return true;
   }
 
-  // Cập nhật Submit handlers
-  onSave() {
+  onSave(andContinue: boolean = false) {
+    console.log('rootGroup', this.rootGroup());
+    if (this.currentTab !== 'details') {
+      this.toastr.info('Please switch to the "Coupon Details" tab to save changes.');
+      return;
+    }
     if (!this.validateForm()) return;
 
     const validKeys = Object.keys(DEFAULT_FORM) as (keyof CouponFormData)[];
     const sanitized = sanitizeFormData<CouponFormData>(this.couponData, validKeys);
 
-    // Dọn dẹp dữ liệu trước khi gửi
-    if (sanitized.applicableProducts?.length === 0) {
-      delete sanitized.applicableProducts;
-    }
-    if (sanitized.applicableCombos?.length === 0) {
-      delete sanitized.applicableCombos;
-    }
-    // MỚI: Dọn dẹp applicableUsers
-    if (sanitized.applicableUsers?.length === 0) {
-      delete sanitized.applicableUsers;
-    }
-    // MỚI: Xóa maxDiscountAmount nếu là 'fixed'
     if (sanitized.valueType === 'fixed') {
-      delete sanitized.maxDiscountAmount;
+      sanitized.maxDiscountAmount = 0;
+    }
+    if (sanitized.maxDiscountAmount == null) {
+      sanitized.maxDiscountAmount = 0;
+    }
+    if (!sanitized.code?.trim()) {
+      (sanitized as any).code = null;
+    }
+
+    // ✅ THÊM DÒNG NÀY - GẮN rootGroup.conditions VÀO
+    if (this.rootGroup()) {
+      (sanitized as any).conditions = this.rootGroup();
     }
 
     const obs =
       this.isEditMode && this.couponId
-        ? this.couponService.update(this.couponId, sanitized)
-        : this.couponService.create(sanitized);
+        ? this.couponService.update(this.couponId, sanitized as any)
+        : this.couponService.create(sanitized as any);
 
     obs.subscribe({
-      next: () => {
+      next: (response: any) => {
         this.toastr.success(
           this.isEditMode ? 'Coupon updated successfully!' : 'Coupon created successfully!',
           'Success',
         );
-        this.router.navigateByUrl('/coupon');
+        const couponId = this.couponId || response.id;
+        if (andContinue) {
+          if (!this.isEditMode) {
+            this.router.navigate(['/coupon/edit', couponId]);
+          } else {
+            this.loadCoupon(couponId);
+          }
+        } else {
+          this.router.navigateByUrl('/coupon');
+        }
       },
       error: (err) => {
         console.error(err);
@@ -339,5 +407,53 @@ export class CouponAddComponent implements OnInit {
 
   onCancel() {
     this.router.navigateByUrl('/coupon');
+  }
+
+  onIssueVouchers() {
+    if (!this.couponId) return;
+    if (!this.voucherIssueForm.customerIds || this.voucherIssueForm.customerIds.length === 0) {
+      this.toastr.error('Please select at least one customer', 'Error');
+      return;
+    }
+    // const payload = {
+    //   coupon: this.couponId,
+    //   customers: this.voucherIssueForm.customerIds,
+    //   issueMode: 'ADMIN',
+    //   usageLimit: this.voucherIssueForm.usageLimit || 1,
+    //   expiredAt: this.voucherIssueForm.expiredAt || undefined,
+    // };
+    // this.voucherService.bulkIssue(payload).subscribe({
+    //   next: (result: any) => {
+    //     this.toastr.success(`Successfully issued ${result.createdCount || 0} vouchers!`, 'Success');
+    //     this.voucherIssueForm.customerIds = [];
+    //     this.loadVoucherData(this.couponId!);
+    //   },
+    //   error: (err) => {
+    //     console.error('Error issuing vouchers:', err);
+    //     this.toastr.error(err?.error?.message || 'Failed to issue vouchers', 'Error');
+    //   },
+    // });
+  }
+
+  onRevokeVoucher(voucher: Voucher) {
+    if (
+      !confirm(`Are you sure you want to revoke voucher ${voucher.code}? This cannot be undone.`)
+    ) {
+      return;
+    }
+    // this.voucherService.revoke(voucher.id).subscribe({
+    //   next: () => {
+    //     this.toastr.success(`Voucher ${voucher.code} has been revoked.`, 'Success');
+    //     const index = this.issuedVouchers.findIndex((v) => v.id === voucher.id);
+    //     if (index > -1) {
+    //       this.issuedVouchers[index].status = 'REVOKED';
+    //       this.issuedVouchers[index].revokeAt = new Date();
+    //     }
+    //   },
+    //   error: (err: any) => {
+    //     console.error('Error revoking voucher:', err);
+    //     this.toastr.error(err?.error?.message || 'Failed to revoke voucher', 'Error');
+    //   },
+    // });
   }
 }

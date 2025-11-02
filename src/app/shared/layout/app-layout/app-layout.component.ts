@@ -28,7 +28,7 @@ export class AppLayoutComponent {
       'transition-all',
       'duration-300',
       'ease-in-out',
-      this.isExpanded$ || this.isHovered$ ? 'xl:ml-[240px]' : 'xl:ml-[90px]',
+      this.isExpanded$ || this.isHovered$ ? 'xl:ml-[240px]' : 'xl:ml-[80px]',
       this.isMobileOpen$ ? 'ml-0' : '',
     ];
   }
