@@ -21,14 +21,31 @@
         <!-- Form Fields Column - Right Side -->
         <div class="lg:col-span-9">
           <div class="grid grid-cols-1 gap-5">
-            <!-- Product Name -->
-            <div>
-              <app-label for="product-name" className="required">Product Name</app-label>
-              <app-input-field
-                id="product-name"
-                placeholder="Enter product name"
-                [(value)]="productData.name"
-              ></app-input-field>
+            <!-- Product Name & Categories -->
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div>
+                <app-label for="product-name" className="required">Product Name</app-label>
+                <app-input-field
+                  id="product-name"
+                  placeholder="Enter product name"
+                  [(value)]="productData.name"
+                ></app-input-field>
+              </div>
+
+              <div>
+                <app-label for="category" className="required">Category</app-label>
+                <ng-select
+                  [items]="categories"
+                  bindLabel="label"
+                  bindValue="value"
+                  placeholder="Select category"
+                  [(ngModel)]="productData.category"
+                  [searchable]="true"
+                  [clearable]="true"
+                  name="category"
+                >
+                </ng-select>
+              </div>
             </div>
 
             <!-- Base Price & Priority -->
@@ -276,7 +293,7 @@
             <!-- Options List -->
             <div class="space-y-3">
               <div class="flex items-center justify-between">
-                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Options</label>
+                <app-label>Options</app-label>
                 <button
                   (click)="addOption(groupIndex)"
                   class="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
