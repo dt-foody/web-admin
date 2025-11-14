@@ -1,0 +1,58 @@
+<div *ngIf="isLoading" class="flex h-96 items-center justify-center">
+  <span class="text-gray-500 dark:text-gray-400">Loading post...</span>
+</div>
+
+<div *ngIf="!isLoading && post" class="mx-auto max-w-4xl py-6 px-4 sm:px-6 lg:px-8">
+  <div class="space-y-6">
+    <header class="space-y-4">
+      <div *ngIf="post.categories?.length > 0" class="flex flex-wrap gap-2">
+        <span
+          *ngFor="let category of post.categories"
+          class="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+        >
+          {{ category.name }}
+        </span>
+      </div>
+
+      <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+        {{ post.title }}
+      </h1>
+
+      <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+        <span *ngIf="post.createdBy?.name"> By {{ post.createdBy.name }} </span>
+        <span *ngIf="post.createdBy?.name && post.publishedAt">&bull;</span>
+        <span *ngIf="post.publishedAt">
+          {{ post.publishedAt | date: 'longDate' }}
+        </span>
+      </div>
+    </header>
+
+    <div *ngIf="post.coverImage" class="aspect-video w-full overflow-hidden rounded-2xl">
+      <img
+        [src]="post.coverImage"
+        [alt]="post.coverImageAlt || post.title"
+        class="h-full w-full object-cover"
+      />
+    </div>
+
+    <article
+      class="prose prose-lg dark:prose-invert max-w-none"
+      [innerHTML]="post.content | safeHtml"
+    ></article>
+
+    <footer
+      *ngIf="post.tags?.length > 0"
+      class="mt-12 border-t border-gray-200 pt-6 dark:border-gray-700"
+    >
+      <h3 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tags:</h3>
+      <div class="flex flex-wrap gap-2">
+        <span
+          *ngFor="let tag of post.tags"
+          class="inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+        >
+          {{ tag.name }}
+        </span>
+      </div>
+    </footer>
+  </div>
+</div>

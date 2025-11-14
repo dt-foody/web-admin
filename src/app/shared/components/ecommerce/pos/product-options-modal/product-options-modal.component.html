@@ -1,0 +1,168 @@
+<div class="flex flex-col h-full max-h-[90vh] bg-white rounded-2xl overflow-hidden">
+  <header class="flex-shrink-0 px-4 py-3 border-b border-gray-200 flex items-center">
+    <button
+      (click)="closeModal()"
+      class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors flex-shrink-0"
+    >
+      <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
+
+    <div class="flex-1 text-center pr-10">
+      <h2 class="text-lg font-bold text-gray-900 truncate">
+        {{ productForOptions?.name }}
+      </h2>
+      <p class="text-center text-sm text-gray-500 mt-0.5">
+        Giá gốc: {{ productForOptions?.basePrice | number: '1.0-0' }}đ
+      </p>
+    </div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto p-4 space-y-4">
+    <div *ngFor="let group of productForOptions?.optionGroups; let groupIndex = index">
+      <div class="bg-gray-50 rounded-2xl p-4 border border-gray-200">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex-1">
+            <h3 class="font-semibold text-base text-gray-900">{{ group.name }}</h3>
+            <p class="text-sm text-gray-500 mt-0.5">
+              {{ getGroupSelectionText(group) }}
+            </p>
+          </div>
+          <span
+            *ngIf="group.minOptions > 0"
+            class="px-2.5 py-1 text-xs font-medium rounded-full flex-shrink-0 ml-2"
+            [class.bg-red-100]="getGroupError(group)"
+            [class.text-red-700]="getGroupError(group)"
+            [class.bg-green-100]="!getGroupError(group)"
+            [class.text-green-700]="!getGroupError(group)"
+          >
+            {{ getGroupError(group) ? 'Bắt buộc' : 'Đã chọn' }}
+          </span>
+        </div>
+
+        <div
+          *ngIf="getGroupError(group)"
+          class="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl"
+        >
+          <p class="text-sm text-red-700 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            {{ getGroupError(group) }}
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div
+            *ngFor="let option of group.options"
+            (click)="onOptionChange(group, option, $event)"
+            tabindex="0"
+            (keydown.enter)="onOptionChange(group, option, $event)"
+            (keydown.space)="onOptionChange(group, option, $event)"
+            class="relative flex items-center justify-between p-3 bg-white rounded-xl border-2 transition-all cursor-pointer hover:border-gray-300"
+            [class.border-blue-500]="isOptionSelected(group.name, option.name)"
+            [class.bg-blue-50]="isOptionSelected(group.name, option.name)"
+            [class.border-gray-200]="!isOptionSelected(group.name, option.name)"
+          >
+            <div class="flex items-center gap-3 flex-1">
+              <div
+                *ngIf="group.maxOptions === 1"
+                class="flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
+                [class.border-blue-500]="isOptionSelected(group.name, option.name)"
+                [class.border-gray-300]="!isOptionSelected(group.name, option.name)"
+              >
+                <div
+                  *ngIf="isOptionSelected(group.name, option.name)"
+                  class="w-2.5 h-2.5 bg-blue-500 rounded-full"
+                ></div>
+              </div>
+              <div
+                *ngIf="group.maxOptions > 1"
+                class="flex-shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all"
+                [class.border-blue-500]="isOptionSelected(group.name, option.name)"
+                [class.bg-blue-500]="isOptionSelected(group.name, option.name)"
+                [class.border-gray-300]="!isOptionSelected(group.name, option.name)"
+              >
+                <svg
+                  *ngIf="isOptionSelected(group.name, option.name)"
+                  class="w-3.5 h-3.5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <span
+                class="font-medium text-gray-900"
+                [class.text-blue-700]="isOptionSelected(group.name, option.name)"
+              >
+                {{ option.name }}
+              </span>
+            </div>
+            <span
+              class="font-semibold text-gray-900 ml-3"
+              [class.text-blue-600]="isOptionSelected(group.name, option.name)"
+            >
+              <span *ngIf="option.priceModifier > 0">+</span
+              >{{ option.priceModifier | number: '1.0-0' }}đ
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-200">
+      <label for="note" class="block text-base font-semibold text-gray-900 mb-3">
+        Ghi chú cho quán
+      </label>
+      <textarea
+        id="note"
+        [(ngModel)]="note"
+        placeholder="Ví dụ: Ít đường, không cay, thêm đá..."
+        class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all resize-none text-gray-900 placeholder-gray-400"
+        rows="3"
+      ></textarea>
+    </div>
+  </main>
+
+  <footer class="flex-shrink-0 p-3 bg-white border-t border-gray-200">
+    <button
+      (click)="onAddToCart()"
+      [disabled]="!isFormValid"
+      class="w-full py-3 rounded-xl font-bold text-base transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+      [class.bg-blue-600]="isFormValid"
+      [class.hover:bg-blue-700]="isFormValid"
+      [class.text-white]="isFormValid"
+      [class.bg-gray-300]="!isFormValid"
+      [class.text-gray-500]="!isFormValid"
+    >
+      <span class="flex items-center justify-center gap-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+          />
+        </svg>
+        <span>Thêm vào giỏ - {{ totalPrice | number: '1.0-0' }}đ</span>
+      </span>
+    </button>
+  </footer>
+</div>

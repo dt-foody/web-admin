@@ -25,11 +25,11 @@ export interface Product {
   // Thông tin cơ bản
   name: string;
   description?: string;
-  basePrice: number | string;
+  basePrice: number;
   category: string | Category | any;
   sku?: string;
 
-  thumbnailUrl?: string;
+  image?: string;
 
   // Quản lý trạng thái
   isActive: boolean;
@@ -54,7 +54,7 @@ export interface ProductFormData {
   description: string;
   basePrice: number;
   category: any;
-  thumbnailUrl: string;
+  image: string;
   isActive: boolean;
   priority: number;
   optionGroups: ProductOptionGroup[];

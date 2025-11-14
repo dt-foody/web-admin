@@ -1,7 +1,13 @@
 <button
-  type="button"
+  [attr.type]="type"
+  [attr.aria-label]="iconOnly ? ariaLabel : null"
+  [attr.aria-busy]="loading ? 'true' : null"
+  [disabled]="disabled || loading"
   [ngClass]="
-    'inline-flex items-center justify-center gap-2 rounded-lg transition ' +
+    'inline-flex items-center justify-center rounded-lg font-medium transition ' +
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 ' +
+    (iconOnly ? 'gap-0' : 'gap-2') +
+    ' ' +
     className +
     ' ' +
     sizeClasses +
@@ -10,14 +16,29 @@
     ' ' +
     disabledClasses
   "
-  [disabled]="disabled"
   (click)="onClick($event)"
 >
-  @if (startIcon) {
-    <span class="flex items-center" [innerHTML]="startIcon | safeHtml"></span>
+  @if (startIcon && !iconOnly) {
+    <span class="flex items-center" [innerHTML]="startIcon || '' | safeHtml"></span>
   }
-  <ng-content></ng-content>
-  @if (endIcon) {
-    <span class="flex items-center" [innerHTML]="endIcon | safeHtml"></span>
+
+  @if (!iconOnly) {
+    <ng-content></ng-content>
+  }
+
+  @if (iconOnly) {
+    <span class="flex items-center" [innerHTML]="startIcon || endIcon || '' | safeHtml"></span>
+  }
+
+  @if (endIcon && !iconOnly) {
+    <span class="flex items-center" [innerHTML]="endIcon || '' | safeHtml"></span>
+  }
+
+  @if (loading) {
+    <span
+      class="ml-2 inline-block animate-spin rounded-full border-2 border-current border-r-transparent"
+      [ngClass]="spinnerSize"
+      aria-hidden="true"
+    ></span>
   }
 </button>

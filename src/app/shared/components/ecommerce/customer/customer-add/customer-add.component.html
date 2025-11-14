@@ -1,5 +1,4 @@
 <div class="space-y-6">
-  <!-- Customer Info Section -->
   <div
     class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
   >
@@ -8,7 +7,6 @@
     </div>
     <div class="p-4 sm:p-6">
       <div class="grid grid-cols-1 gap-5">
-        <!-- Full Name -->
         <div>
           <app-label for="full-name" className="required">Full Name</app-label>
           <app-input-field
@@ -18,38 +16,161 @@
           ></app-input-field>
         </div>
 
-        <!-- Email & Phone -->
-        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <div>
-            <app-label for="email" className="required">Email</app-label>
-            <app-input-field
-              id="email"
-              type="email"
-              placeholder="example@email.com"
-              [(value)]="customerData.email"
-            ></app-input-field>
+        <div>
+          <div class="mb-2 flex items-center justify-between">
+            <app-label>Emails</app-label>
+            <app-button variant="outline" size="xs" (btnClick)="addEmail()" type="button">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="mr-1"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Add
+            </app-button>
           </div>
-          <div>
-            <app-label for="phone" className="required">Phone Number</app-label>
-            <app-input-field
-              id="phone"
-              type="tel"
-              placeholder="+84 123 456 789"
-              [(value)]="customerData.phone"
-            ></app-input-field>
+          <div class="space-y-3">
+            <div
+              *ngFor="let email of customerData.emails; let i = index"
+              class="flex items-center gap-2"
+            >
+              <ng-select
+                [id]="'email-type-' + i"
+                [items]="contactOptions"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="email.type"
+                [searchable]="false"
+                [clearable]="false"
+                class="custom-ng-select w-[120px] flex-shrink-0"
+              >
+              </ng-select>
+              <app-input-field
+                [id]="'email-value-' + i"
+                type="email"
+                placeholder="example@email.com"
+                [(value)]="email.value"
+                class="flex-1"
+              ></app-input-field>
+              <button
+                (click)="removeEmail(i)"
+                type="button"
+                class="flex-shrink-0 rounded p-1.5 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                title="Remove email"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Gender & Birth Date -->
+        <div>
+          <div class="mb-2 flex items-center justify-between">
+            <app-label>Phone Numbers</app-label>
+            <app-button variant="outline" size="xs" (btnClick)="addPhone()" type="button">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="mr-1"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Add
+            </app-button>
+          </div>
+          <div class="space-y-3">
+            <div
+              *ngFor="let phone of customerData.phones; let i = index"
+              class="flex items-center gap-2"
+            >
+              <ng-select
+                [id]="'phone-type-' + i"
+                [items]="contactOptions"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="phone.type"
+                [searchable]="false"
+                [clearable]="false"
+                class="custom-ng-select w-[120px] flex-shrink-0"
+              >
+              </ng-select>
+              <app-input-field
+                [id]="'phone-value-' + i"
+                type="tel"
+                placeholder="+84 123 456 789"
+                [(value)]="phone.value"
+                class="flex-1"
+              ></app-input-field>
+              <button
+                (click)="removePhone(i)"
+                type="button"
+                class="flex-shrink-0 rounded p-1.5 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                title="Remove phone number"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div>
             <app-label for="gender">Gender</app-label>
-            <app-select
+            <ng-select
               id="gender"
-              [options]="genderOptions"
+              [items]="genderOptions"
+              bindLabel="label"
+              bindValue="value"
               placeholder="Select gender"
-              [(value)]="customerData.gender"
-            ></app-select>
+              [(ngModel)]="customerData.gender"
+              [searchable]="false"
+              [clearable]="true"
+              class="custom-ng-select"
+            >
+            </ng-select>
           </div>
           <div>
             <app-label for="birth-date">Birth Date</app-label>
@@ -64,7 +185,6 @@
     </div>
   </div>
 
-  <!-- Addresses Section -->
   <div
     class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
   >
@@ -92,7 +212,6 @@
     </div>
     <div class="p-4 sm:p-6">
       <div class="space-y-4">
-        <!-- Empty State -->
         <div
           *ngIf="customerData.addresses.length === 0"
           class="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-gray-700"
@@ -121,18 +240,17 @@
           >
         </div>
 
-        <!-- Addresses List -->
         <div
           *ngFor="let address of customerData.addresses; let addressIndex = index"
           class="rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/50"
         >
-          <!-- Address Header -->
           <div
-            class="flex items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/50"
+            class="flex items-center justify-between rounded-t-lg border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/50"
           >
             <div class="flex items-center gap-3">
               <button
                 (click)="toggleAddress(addressIndex)"
+                type="button"
                 class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
               >
                 <svg
@@ -170,10 +288,10 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <!-- Set Default -->
               <button
                 *ngIf="!address.isDefault"
                 (click)="setDefaultAddress(addressIndex)"
+                type="button"
                 class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                 title="Set as default"
               >
@@ -193,11 +311,12 @@
                   />
                 </svg>
               </button>
-              <!-- Move Up -->
               <button
                 *ngIf="addressIndex > 0"
                 (click)="moveAddressUp(addressIndex)"
+                type="button"
                 class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                title="Move up"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -213,11 +332,12 @@
                   <path d="M18 15l-6-6-6 6" />
                 </svg>
               </button>
-              <!-- Move Down -->
               <button
                 *ngIf="addressIndex < customerData.addresses.length - 1"
                 (click)="moveAddressDown(addressIndex)"
+                type="button"
                 class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                title="Move down"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -233,10 +353,11 @@
                   <path d="M6 9l6 6 6-6" />
                 </svg>
               </button>
-              <!-- Delete -->
               <button
                 (click)="removeAddress(addressIndex)"
+                type="button"
                 class="rounded p-1.5 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                title="Remove address"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -257,9 +378,7 @@
             </div>
           </div>
 
-          <!-- Address Content (Expandable) -->
           <div *ngIf="isAddressExpanded(addressIndex)" class="p-4 space-y-4">
-            <!-- Label -->
             <div>
               <app-label [for]="'address-label-' + addressIndex">Label (Optional)</app-label>
               <app-input-field
@@ -269,7 +388,6 @@
               ></app-input-field>
             </div>
 
-            <!-- Recipient Info -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <app-label [for]="'recipient-name-' + addressIndex" className="required"
@@ -294,7 +412,6 @@
               </div>
             </div>
 
-            <!-- Address Details -->
             <div>
               <app-label [for]="'street-' + addressIndex" className="required"
                 >Street Address</app-label
@@ -342,7 +459,6 @@
     </div>
   </div>
 
-  <!-- Action Buttons -->
   <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
     <app-button variant="outline" (btnClick)="onCancel()">Cancel</app-button>
     <app-button variant="primary" (btnClick)="onSave()">

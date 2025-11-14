@@ -176,11 +176,11 @@
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex flex-col">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {{ order?.customer?.name || 'Guest' }}
+                  {{ order?.profile?.name || 'Guest' }}
                 </span>
-                @if (order?.customer?.phone) {
+                @if (order?.profile?.phone) {
                   <span class="text-xs text-gray-500 dark:text-gray-400">{{
-                    order?.customer?.phone
+                    order?.profile?.phone
                   }}</span>
                 }
               </div>
@@ -240,7 +240,7 @@
                 class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize"
                 [ngClass]="getShippingStatusColor(order?.shipping?.status || 'pending')"
               >
-                {{ order.shipping.status || 'pending' }}
+                {{ order.shipping?.status || 'pending' }}
               </span>
             </td>
 

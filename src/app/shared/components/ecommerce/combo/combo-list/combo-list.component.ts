@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild, ElementRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Combo } from '../../../../models/combo.model';
+// --- IMPORT CẬP NHẬT ---
+import { Combo, ComboPricingMode, DiscountType } from '../../../../models/combo.model';
 import { ComboService } from '../../../../services/api/combo.service';
 import { environment } from '../../../../../../environments/environment';
 import { DialogService } from '@ngneat/dialog';
@@ -35,6 +36,9 @@ export class ComboListComponent extends BaseListComponent<Combo> implements OnIn
 
   itemToDelete: Combo | null = null;
 
+  // Khai báo enum để dùng trong template (nếu cần, nhưng logic đã đưa vào TS)
+  public ComboPricingMode = ComboPricingMode;
+
   constructor(
     private comboService: ComboService,
     private router: Router,
@@ -46,7 +50,6 @@ export class ComboListComponent extends BaseListComponent<Combo> implements OnIn
 
   override ngOnInit(): void {
     console.log('ComboListComponent init logic');
-
     // Gọi lại base init
     super.ngOnInit();
   }
@@ -70,7 +73,7 @@ export class ComboListComponent extends BaseListComponent<Combo> implements OnIn
       this.totalResults = data.totalResults;
 
       this.dataSources.forEach((el) => {
-        el.thumbnailUrl = el.thumbnailUrl ? `${environment.urlBaseImage}${el.thumbnailUrl}` : '';
+        el.image = el.image ? `${environment.urlBaseImage}${el.image}` : '';
       });
     });
   }
@@ -112,6 +115,30 @@ export class ComboListComponent extends BaseListComponent<Combo> implements OnIn
     }
 
     return { label: 'Active', color: 'green' };
+  }
+
+  // --- HÀM MỚI ĐỂ HIỂN THỊ GIÁ ---
+  /**
+   * Hiển thị thông tin giá/giảm giá dựa trên pricingMode
+   */
+  getComboPriceDisplay(combo: Combo): string {
+    switch (combo.pricingMode) {
+      case ComboPricingMode.FIXED:
+        // getFormattedPrice được kế thừa từ BaseListComponent
+        return this.getFormattedPrice(combo.comboPrice);
+      case ComboPricingMode.SLOT_PRICE:
+        return 'By Slot';
+      case ComboPricingMode.DISCOUNT:
+        if (combo.discountType === DiscountType.PERCENT) {
+          return `${combo.discountValue}% Off`;
+        }
+        if (combo.discountType === DiscountType.AMOUNT) {
+          return `${this.getFormattedPrice(combo.discountValue)} Off`;
+        }
+        return 'Discount'; // Fallback
+      default:
+        return '-';
+    }
   }
 
   formatDateRange(startDate?: string | Date, endDate?: string | Date): string {

@@ -1,0 +1,98 @@
+<div class="p-4 border-b border-gray-200 dark:border-gray-700">
+  <div class="flex justify-between items-center">
+    <h4 class="text-md font-semibold text-gray-900 dark:text-white">Tìm hoặc Tạo Khách hàng</h4>
+  </div>
+</div>
+
+<div class="p-4">
+  <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
+    <button
+      (click)="activeTab = 'search'"
+      class="px-4 py-2 text-sm font-medium"
+      [ngClass]="
+        activeTab === 'search'
+          ? 'border-b-2 border-brand-500 text-brand-600'
+          : 'text-gray-500 hover:text-gray-700'
+      "
+    >
+      Tìm khách hàng
+    </button>
+    <button
+      (click)="activeTab = 'create'"
+      class="px-4 py-2 text-sm font-medium"
+      [ngClass]="
+        activeTab === 'create'
+          ? 'border-b-2 border-brand-500 text-brand-600'
+          : 'text-gray-500 hover:text-gray-700'
+      "
+    >
+      Tạo khách mới
+    </button>
+  </div>
+
+  @if (activeTab === 'search') {
+    <div class="space-y-4">
+      <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Tìm bằng Tên hoặc SĐT</div>
+      <ng-select
+        [items]="customers"
+        bindLabel="name"
+        bindValue="id"
+        placeholder="Chọn khách hàng..."
+        [(ngModel)]="selectedCustomerId"
+        [searchable]="true"
+        [clearable]="true"
+      >
+        <ng-template ng-option-tmp let-item="item">
+          <div class="flex flex-col">
+            <span class="font-medium">{{ item.name }}</span>
+            @if (item.phones && item.phones.length > 0) {
+              <span class="text-xs text-gray-500">{{ item.phones[0].value }}</span>
+            }
+          </div>
+        </ng-template>
+      </ng-select>
+
+      <button
+        (click)="onSelectCustomer()"
+        [disabled]="!selectedCustomerId"
+        class="w-full px-4 py-2 rounded-lg bg-brand-500 text-white font-medium hover:bg-brand-600 disabled:opacity-50"
+      >
+        Chọn khách hàng
+      </button>
+    </div>
+  }
+
+  @if (activeTab === 'create') {
+    <div class="space-y-4">
+      <div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Tên khách hàng</div>
+        <input
+          type="text"
+          class="w-full mt-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800"
+          placeholder="Nguyễn Văn A"
+          [(ngModel)]="newCustomer.name"
+        />
+      </div>
+      <div>
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Số điện thoại</div>
+        <input
+          type="tel"
+          class="w-full mt-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800"
+          placeholder="0905..."
+          [(ngModel)]="newCustomer.phone"
+        />
+      </div>
+      <button
+        (click)="onCreateCustomer()"
+        [disabled]="isCreating"
+        class="w-full px-4 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 disabled:opacity-50"
+      >
+        @if (isCreating) {
+          <span>Đang tạo...</span>
+        } @else {
+          Tạo và Chọn
+        }
+      </button>
+    </div>
+  }
+</div>

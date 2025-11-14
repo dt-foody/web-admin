@@ -1,77 +1,82 @@
 import { Product } from './product.model';
 
+/**
+ * Enum định nghĩa 3 chế độ tính giá
+ */
+export enum ComboPricingMode {
+  FIXED = 'FIXED',
+  SLOT_PRICE = 'SLOT_PRICE',
+  DISCOUNT = 'DISCOUNT',
+}
+
+/**
+ * MỚI: Enum định nghĩa loại giảm giá
+ */
+export enum DiscountType {
+  PERCENT = 'PERCENT',
+  AMOUNT = 'AMOUNT',
+  NONE = 'NONE', // Mặc định khi không phải MODE_DISCOUNT
+}
+
 export interface ComboSelectableProduct {
-  /** ID của sản phẩm có thể chọn trong slot này */
   product: any;
-
-  /** Giá cố định trong combo (độc lập với giá sản phẩm gốc) */
-  fixedPrice: number;
-
-  /** Giới hạn số lượng sản phẩm này có thể chọn */
-  maxQuantity: number;
+  snapshotPrice: number;
+  additionalPrice: number;
+  slotPrice: number;
 }
 
 export interface ComboItem {
-  /** Tên vị trí trong combo (VD: Đồ uống chính, Món ăn kèm) */
   slotName: string;
-
-  /** Danh sách các sản phẩm có thể chọn cho vị trí này */
   selectableProducts: ComboSelectableProduct[];
-
-  /** Có bắt buộc chọn 1 sản phẩm cho slot này không */
-  isRequired: boolean;
+  minSelection: number;
+  maxSelection: number;
 }
 
+// --- CẬP NHẬT COMBO INTERFACE ---
 export interface Combo {
-  /** ID của combo */
   id: string;
-
-  /** Tên combo */
   name: string;
-
-  /** Mô tả chi tiết combo */
   description: string;
-
-  /** Giá tổng combo (đã giảm) */
-  comboPrice: number;
-
-  /** Ảnh đại diện combo */
-  thumbnailUrl?: string;
-
-  /** Ngày bắt đầu và kết thúc áp dụng */
+  image?: string;
   startDate: Date | string | any;
   endDate: Date | string | any;
-
-  /** Danh sách các thành phần (slot) trong combo */
   items: ComboItem[];
-
-  /** Trạng thái hiển thị/bán */
   isActive: boolean;
-
-  /** Thứ tự ưu tiên hiển thị */
   priority: number;
-
-  /** Người tạo combo */
   createdBy: any;
-
-  /** Trạng thái xóa mềm */
   isDeleted?: boolean;
   deletedAt?: Date | string;
   deletedBy?: any;
-
-  /** Tự động thêm khi tạo/sửa */
   createdAt?: Date | string;
   updatedAt?: Date | string;
+
+  // --- CÁC TRƯỜNG MỚI ĐÃ REFACTOR ---
+  pricingMode: ComboPricingMode;
+  comboPrice: number; // Vẫn dùng cho MODE_FIXED
+
+  /** MỚI: Loại giảm giá (PERCENT | AMOUNT | NONE) */
+  discountType: DiscountType;
+  /** MỚI: Giá trị giảm (VD: 30 (cho 30%) hoặc 20000 (cho 20k VND)) */
+  discountValue: number;
+
+  /** BỎ: discountAmount */
+  /** BỎ: discountPercent */
 }
 
+// --- CẬP NHẬT COMBOFORM INTERFACE ---
 export interface ComboFormData {
   name: string;
   description: string;
-  comboPrice: number;
-  thumbnailUrl?: string;
+  image?: string;
   startDate: Date | string | any;
   endDate: Date | string | any;
   items: ComboItem[];
   isActive: boolean;
   priority: number;
+
+  // --- CÁC TRƯỜNG MỚI ĐÃ REFACTOR ---
+  pricingMode: ComboPricingMode;
+  comboPrice: number;
+  discountType: DiscountType;
+  discountValue: number;
 }

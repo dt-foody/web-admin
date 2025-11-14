@@ -30,7 +30,7 @@ const DEFAULT_FORM: ProductFormData = {
   description: '',
   basePrice: 0,
   category: null,
-  thumbnailUrl: '',
+  image: '',
   isActive: true,
   priority: 0,
   optionGroups: [],
@@ -99,8 +99,7 @@ export class ProductAddComponent implements OnInit {
     this.productService.getById(id).subscribe({
       next: (data: any) => {
         this.productData = { ...data };
-        if (data.thumbnailUrl)
-          this.imagePreview = `${environment.urlBaseImage}${data.thumbnailUrl}`;
+        if (data.image) this.imagePreview = `${environment.urlBaseImage}${data.image}`;
       },
       error: (err) => {
         console.error(err);
@@ -308,7 +307,7 @@ export class ProductAddComponent implements OnInit {
 
     // Upload lên server
     this.fileService.uploadFile(file).subscribe({
-      next: (res) => (this.productData.thumbnailUrl = res.url),
+      next: (res) => (this.productData.image = res.url),
       error: (err) => {
         console.error(err);
         this.toastr.error('Upload failed!', 'Image');

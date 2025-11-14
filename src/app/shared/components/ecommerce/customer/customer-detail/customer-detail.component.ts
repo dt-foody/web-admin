@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Customer } from '../../../../models/customer.model';
+import { Customer, CustomerEmail, CustomerPhone } from '../../../../models/customer.model'; // Import thêm
 import { CustomerService } from '../../../../services/api/customer.service';
 import { ToastrService } from 'ngx-toastr';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
 
+// --- (GIỮ NGUYÊN CÁC INTERFACE MOCK DATA) ---
 interface OrderHistory {
   id: string;
   orderId: string;
@@ -14,7 +15,6 @@ interface OrderHistory {
   status: 'pending' | 'processing' | 'completed' | 'cancelled';
   items: number;
 }
-
 interface LoyaltyPoint {
   id: string;
   points: number;
@@ -23,13 +23,13 @@ interface LoyaltyPoint {
   date: Date;
   orderId?: string;
 }
-
 interface Activity {
   id: string;
   type: 'order' | 'login' | 'profile_update' | 'address_added' | 'review';
   description: string;
   date: Date;
 }
+// --- (HẾT PHẦN GIỮ NGUYÊN) ---
 
 @Component({
   selector: 'app-customer-detail',
@@ -42,17 +42,21 @@ export class CustomerDetailComponent implements OnInit {
   loading = true;
   activeTab: 'overview' | 'orders' | 'loyalty' | 'activity' = 'overview';
 
-  // Mock data - Replace with actual API calls
+  // THÊM MỚI: Thuộc tính để hiển thị email/phone chính
+  displayEmail: CustomerEmail | null = null;
+  displayPhone: CustomerPhone | null = null;
+
+  // --- (GIỮ NGUYÊN MOCK DATA VÀ STATS) ---
   orderHistory: OrderHistory[] = [];
   loyaltyPoints: LoyaltyPoint[] = [];
   activities: Activity[] = [];
-
   stats = {
     totalOrders: 0,
     totalSpent: 0,
     averageOrderValue: 0,
     loyaltyPoints: 0,
   };
+  // --- (HẾT PHẦN GIỮ NGUYÊN) ---
 
   constructor(
     private route: ActivatedRoute,
@@ -65,9 +69,9 @@ export class CustomerDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadCustomerDetail(id);
-      this.loadOrderHistory(id);
-      this.loadLoyaltyPoints(id);
-      this.loadActivities(id);
+      this.loadOrderHistory(id); // (Bạn sẽ thay bằng API thật)
+      this.loadLoyaltyPoints(id); // (Bạn sẽ thay bằng API thật)
+      this.loadActivities(id); // (Bạn sẽ thay bằng API thật)
     }
   }
 
@@ -75,19 +79,28 @@ export class CustomerDetailComponent implements OnInit {
     this.customerService.getById(id).subscribe({
       next: (data) => {
         this.customer = data;
+
+        // CẬP NHẬT: Logic tìm email/phone chính
+        if (data.emails) {
+          this.displayEmail = data.emails[0] || null;
+        }
+        if (data.phones) {
+          this.displayPhone = data.phones[0] || null;
+        }
+        // Hết phần cập nhật
+
         this.loading = false;
       },
       error: (err) => {
         this.toastr.error('Failed to load customer details', 'Error');
         this.loading = false;
-        this.router.navigate(['/customer/list']);
+        this.router.navigate(['/customer/list']); // Sửa lại /list
       },
     });
   }
 
+  // --- (GIỮ NGUYÊN CÁC HÀM loadOrderHistory, loadLoyaltyPoints, loadActivities) ---
   loadOrderHistory(customerId: string): void {
-    // Replace with actual API call
-    // Example mock data
     this.orderHistory = [
       {
         id: '1',
@@ -106,14 +119,13 @@ export class CustomerDetailComponent implements OnInit {
         items: 5,
       },
     ];
-
     this.stats.totalOrders = this.orderHistory.length;
     this.stats.totalSpent = this.orderHistory.reduce((sum, order) => sum + order.total, 0);
-    this.stats.averageOrderValue = this.stats.totalSpent / this.stats.totalOrders;
+    this.stats.averageOrderValue =
+      this.stats.totalSpent > 0 ? this.stats.totalSpent / this.stats.totalOrders : 0;
   }
 
   loadLoyaltyPoints(customerId: string): void {
-    // Replace with actual API call
     this.loyaltyPoints = [
       {
         id: '1',
@@ -131,12 +143,10 @@ export class CustomerDetailComponent implements OnInit {
         date: new Date('2024-09-25'),
       },
     ];
-
     this.stats.loyaltyPoints = this.loyaltyPoints.reduce((sum, point) => sum + point.points, 0);
   }
 
   loadActivities(customerId: string): void {
-    // Replace with actual API call
     this.activities = [
       {
         id: '1',
@@ -152,7 +162,9 @@ export class CustomerDetailComponent implements OnInit {
       },
     ];
   }
+  // --- (HẾT PHẦN GIỮ NGUYÊN) ---
 
+  // --- (GIỮ NGUYÊN TẤT CẢ CÁC HÀM HELPER VÀ HANDLER) ---
   setActiveTab(tab: 'overview' | 'orders' | 'loyalty' | 'activity'): void {
     this.activeTab = tab;
   }
@@ -237,7 +249,6 @@ export class CustomerDetailComponent implements OnInit {
 
   handleToggleActive(): void {
     if (!this.customer) return;
-
     this.customerService.update(this.customer.id, { isActive: !this.customer.isActive }).subscribe({
       next: () => {
         if (this.customer) {
@@ -252,6 +263,6 @@ export class CustomerDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/customer/list']);
+    this.router.navigate(['/customer/list']); // Sửa lại /list
   }
 }

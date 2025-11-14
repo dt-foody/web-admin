@@ -1,0 +1,76 @@
+<div class="relative pt-2">
+  <div
+    class="absolute top-7 left-0 right-0 h-0.5 bg-gray-200 dark:bg-gray-700"
+    style="margin-left: 5%; margin-right: 5%"
+  ></div>
+
+  <div
+    class="absolute top-7 left-0 h-0.5 bg-gradient-to-r transition-all duration-500"
+    style="margin-left: 5%"
+    [style.width]="activeLineWidth"
+    [style.background]="activeLineGradient"
+  ></div>
+
+  <div class="flex items-start justify-between relative">
+    <button
+      *ngFor="let status of timelineStatuses; trackBy: trackByStatusKey"
+      type="button"
+      (click)="onStatusClick(status)"
+      [disabled]="!status.isClickable"
+      class="flex flex-col items-center flex-1 relative group p-2"
+      [ngClass]="{
+        'cursor-pointer': status.isClickable,
+        'cursor-default': !status.isClickable,
+      }"
+    >
+      <div class="relative z-10 mb-2">
+        <div
+          class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300"
+          [ngClass]="{
+            'bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg': status.isActive,
+            'bg-gray-200 dark:bg-gray-700': !status.isActive,
+            'ring-4 ring-blue-200 dark:ring-blue-800 scale-110': status.isCurrent,
+            'group-hover:scale-105 group-hover:ring-2 group-hover:ring-blue-300 dark:group-hover:ring-blue-700':
+              status.isClickable,
+          }"
+        >
+          <svg
+            *ngIf="status.isPast"
+            class="w-5 h-5 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="3"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+
+          <div
+            *ngIf="status.isActive && !status.isPast"
+            class="w-3 h-3 bg-white rounded-full"
+          ></div>
+
+          <div
+            *ngIf="!status.isActive"
+            class="w-3 h-3 border-2 border-gray-400 dark:border-gray-500 rounded-full"
+          ></div>
+        </div>
+      </div>
+
+      <span
+        class="text-xs font-medium text-center px-2 transition-colors"
+        [ngClass]="{
+          'text-gray-900 dark:text-white font-semibold': status.isActive,
+          'text-gray-400 dark:text-gray-500': !status.isActive,
+          'group-hover:text-blue-600 dark:group-hover:text-blue-400': status.isClickable,
+        }"
+      >
+        {{ status.label }}
+      </span>
+    </button>
+  </div>
+</div>

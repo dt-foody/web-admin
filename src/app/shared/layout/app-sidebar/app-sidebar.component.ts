@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, QueryList, ViewChildren, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  QueryList,
+  ViewChildren,
+  ChangeDetectorRef,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { SidebarService } from '../../services/sidebar.service';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { SafeHtmlPipe } from '../../pipe/safe-html.pipe';
@@ -48,6 +56,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
       subItems: [
         { name: 'Customer', path: '/customer' },
         { name: 'Order', path: '/order' },
+        { name: 'Pos', path: '/pos' },
       ],
     },
     {

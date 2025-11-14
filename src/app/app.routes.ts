@@ -65,6 +65,8 @@ import { BlogTagListPageComponent } from './pages/blog-tag/list/list.component';
 import { BlogCategoryListPageComponent } from './pages/blog-category/list/list.component';
 import { AddBlogCategoryPageComponent } from './pages/blog-category/add/add.component';
 import { EditBlogCategoryPageComponent } from './pages/blog-category/edit/edit.component';
+import { DetailBlogPostPageComponent } from './pages/blog-post/detail/detail.component';
+import { PosTerminalComponent } from './shared/components/ecommerce/pos/pos-terminal/pos-terminal.component';
 
 export const routes: Routes = [
   {
@@ -351,6 +353,10 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'pos',
+        component: PosTerminalComponent,
+      },
+      {
         path: 'blog-post',
         children: [
           {
@@ -375,6 +381,13 @@ export const routes: Routes = [
             title: 'Edit Blog Post Management',
             canActivate: [PermissionGuard],
             data: { permissions: ['blogPost.update'] },
+          },
+          {
+            path: 'detail/:id',
+            component: DetailBlogPostPageComponent,
+            title: 'Detail Blog Management',
+            canActivate: [PermissionGuard],
+            data: { permissions: ['blogPost.read'] },
           },
         ],
       },

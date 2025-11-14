@@ -61,14 +61,14 @@
       <thead>
         <tr class="border-b border-gray-200 dark:divide-gray-800 dark:border-gray-800">
           <th class="lg:w-14 px-5 py-4 text-left whitespace-nowrap">
-            <label
+            <div
               class="cursor-pointer text-sm font-medium text-gray-700 select-none dark:text-gray-400"
             >
               <app-checkbox
                 [checked]="isAllSelected()"
                 (checkedChange)="toggleAll()"
               ></app-checkbox>
-            </label>
+            </div>
           </th>
 
           <th>

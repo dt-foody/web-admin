@@ -2,52 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LabelComponent } from '../../../form/label/label.component';
 import { InputFieldComponent } from '../../../form/input/input-field.component';
-import { SelectComponent } from '../../../form/select/select.component';
 import { ButtonComponent } from '../../../ui/button/button.component';
 import { CustomerService } from '../../../../services/api/customer.service';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { createFormData, deepSanitize } from '../../../../utils/form-data.utils';
+import { CustomerFormData } from '../../../../models/customer.model';
+import { NgSelectModule } from '@ng-select/ng-select'; // Import NgSelectModule
 
-interface CustomerFormData {
-  name: string;
-  email: string;
-  phone: string;
-  gender?: 'male' | 'female' | 'other';
-  birthDate?: any;
-  isActive: boolean;
-  addresses: {
-    label: string;
-    recipientName: string;
-    recipientPhone: string;
-    street: string;
-    ward: string;
-    district: string;
-    city: string;
-    isDefault?: boolean;
-  }[];
-}
-
+// DEFAULT_FORM: emails, phones, addresses là mảng rỗng
 const DEFAULT_FORM: CustomerFormData = {
   name: '',
-  email: '',
-  phone: '',
+  emails: [],
+  phones: [],
   gender: undefined,
   birthDate: '',
   isActive: true,
-  addresses: [
-    {
-      label: '',
-      recipientName: '',
-      recipientPhone: '',
-      street: '',
-      ward: '',
-      district: '',
-      city: '',
-      isDefault: false,
-    },
-  ],
+  addresses: [],
 };
 
 @Component({
@@ -57,17 +29,15 @@ const DEFAULT_FORM: CustomerFormData = {
     FormsModule,
     LabelComponent,
     InputFieldComponent,
-    SelectComponent,
     ButtonComponent,
+    NgSelectModule, // Thêm NgSelectModule
   ],
   templateUrl: './customer-add.component.html',
-  styles: ``,
 })
 export class CustomerAddComponent implements OnInit {
   customerId: string | null = null;
   isEditMode: boolean = false;
 
-  // Form data
   customerData = createFormData(DEFAULT_FORM);
 
   genderOptions = [
@@ -76,7 +46,12 @@ export class CustomerAddComponent implements OnInit {
     { value: 'other', label: 'Other' },
   ];
 
-  // UI state
+  contactOptions = [
+    { value: 'Home', label: 'Home' },
+    { value: 'Company', label: 'Company' },
+    { value: 'Other', label: 'Other' },
+  ];
+
   expandedAddresses: Set<number> = new Set();
 
   constructor(
@@ -87,13 +62,18 @@ export class CustomerAddComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.customerData.emails = [];
+    this.customerData.phones = [];
     this.customerData.addresses = [];
+
     this.activatedRoute.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (id) {
         this.isEditMode = true;
         this.customerId = id;
         this.loadCustomer(id);
+      } else {
+        // Không thêm email/phone mặc định khi tạo mới
       }
     });
   }
@@ -102,9 +82,14 @@ export class CustomerAddComponent implements OnInit {
     this.customerService.getById(id).subscribe({
       next: (data: any) => {
         this.customerData = {
+          ...DEFAULT_FORM,
           ...data,
           birthDate: data.birthDate ? new Date(data.birthDate).toISOString().split('T')[0] : '',
+          emails: data.emails || [],
+          phones: data.phones || [],
+          addresses: data.addresses || [],
         };
+        // Không tự động thêm email/phone nếu mảng rỗng
       },
       error: (err) => {
         console.error(err);
@@ -113,7 +98,33 @@ export class CustomerAddComponent implements OnInit {
     });
   }
 
-  // Address management
+  // --- Quản lý Email ---
+  addEmail() {
+    this.customerData.emails.push({
+      type: 'Other',
+      value: '',
+    });
+  }
+
+  removeEmail(index: number) {
+    // Cho phép xóa mục cuối cùng
+    this.customerData.emails.splice(index, 1);
+  }
+
+  // --- Quản lý Phone ---
+  addPhone() {
+    this.customerData.phones.push({
+      type: 'Other',
+      value: '',
+    });
+  }
+
+  removePhone(index: number) {
+    // Cho phép xóa mục cuối cùng
+    this.customerData.phones.splice(index, 1);
+  }
+
+  // --- Address management ---
   toggleAddress(index: number) {
     if (this.expandedAddresses.has(index)) {
       this.expandedAddresses.delete(index);
@@ -144,8 +155,6 @@ export class CustomerAddComponent implements OnInit {
     const wasDefault = this.customerData.addresses[index].isDefault;
     this.customerData.addresses.splice(index, 1);
     this.expandedAddresses.delete(index);
-
-    // If removed address was default, set first address as default
     if (wasDefault && this.customerData.addresses.length > 0) {
       this.customerData.addresses[0].isDefault = true;
     }
@@ -159,17 +168,19 @@ export class CustomerAddComponent implements OnInit {
 
   moveAddressUp(index: number) {
     if (index > 0) {
-      const temp = this.customerData.addresses[index];
-      this.customerData.addresses[index] = this.customerData.addresses[index - 1];
-      this.customerData.addresses[index - 1] = temp;
+      [this.customerData.addresses[index], this.customerData.addresses[index - 1]] = [
+        this.customerData.addresses[index - 1],
+        this.customerData.addresses[index],
+      ];
     }
   }
 
   moveAddressDown(index: number) {
     if (index < this.customerData.addresses.length - 1) {
-      const temp = this.customerData.addresses[index];
-      this.customerData.addresses[index] = this.customerData.addresses[index + 1];
-      this.customerData.addresses[index + 1] = temp;
+      [this.customerData.addresses[index], this.customerData.addresses[index + 1]] = [
+        this.customerData.addresses[index + 1],
+        this.customerData.addresses[index],
+      ];
     }
   }
 
@@ -181,30 +192,28 @@ export class CustomerAddComponent implements OnInit {
     }
   }
 
-  // Validate form
+  // --- Validate form ---
   validateForm(): boolean {
+    // 1. Tên là bắt buộc
     if (!this.customerData.name.trim()) {
       this.toastr.error('Full name is required', 'Validation');
       return false;
     }
 
-    if (!this.customerData.email.trim()) {
-      this.toastr.error('Email is required', 'Validation');
-      return false;
-    }
-
+    // 2. Email là tùy chọn, nhưng nếu nhập thì phải đúng định dạng
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.customerData.email)) {
-      this.toastr.error('Invalid email format', 'Validation');
-      return false;
+    for (let i = 0; i < this.customerData.emails.length; i++) {
+      const emailVal = this.customerData.emails[i].value.trim();
+      if (emailVal && !emailRegex.test(emailVal)) {
+        this.toastr.error(`Email ${i + 1}: Invalid email format`, 'Validation');
+        return false;
+      }
     }
 
-    if (!this.customerData.phone.trim()) {
-      this.toastr.error('Phone number is required', 'Validation');
-      return false;
-    }
+    // 3. Phone là tùy chọn
+    // (Không có validation)
 
-    // Validate addresses
+    // 4. Địa chỉ là tùy chọn, nhưng nếu thêm thì phải điền đủ trường bắt buộc
     for (let i = 0; i < this.customerData.addresses.length; i++) {
       const addr = this.customerData.addresses[i];
       if (!addr.recipientName.trim()) {
@@ -224,16 +233,21 @@ export class CustomerAddComponent implements OnInit {
     return true;
   }
 
-  // Submit handlers
+  // --- Submit handlers ---
   onSave() {
     if (!this.validateForm()) return;
 
-    const sanitized = deepSanitize(this.customerData, DEFAULT_FORM);
+    // Sanitize: Xóa các trường rỗng (như email, phone nếu người dùng chỉ nhập khoảng trắng)
+    const sanitizedData = deepSanitize(this.customerData, DEFAULT_FORM);
+
+    // Lọc ra các email/phone rỗng mà người dùng có thể đã thêm nhưng không nhập
+    sanitizedData.emails = sanitizedData.emails.filter((e) => e.value.trim());
+    sanitizedData.phones = sanitizedData.phones.filter((p) => p.value.trim());
 
     const obs =
       this.isEditMode && this.customerId
-        ? this.customerService.update(this.customerId, sanitized)
-        : this.customerService.create(sanitized);
+        ? this.customerService.update(this.customerId, sanitizedData)
+        : this.customerService.create(sanitizedData);
 
     obs.subscribe({
       next: () => {

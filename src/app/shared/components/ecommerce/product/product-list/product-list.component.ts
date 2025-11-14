@@ -70,7 +70,7 @@ export class ProductListComponent extends BaseListComponent<Product> implements 
       this.totalResults = data.totalResults;
 
       this.dataSources.forEach((el) => {
-        el.thumbnailUrl = el.thumbnailUrl ? `${environment.urlBaseImage}${el.thumbnailUrl}` : '';
+        el.image = el.image ? `${environment.urlBaseImage}${el.image}` : '';
       });
     });
   }

@@ -1,11 +1,9 @@
 <div
   class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
 >
-  <!-- Header -->
   <div
     class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
   >
-    <!-- Search and Filter -->
     <div class="flex gap-3 sm:justify-between">
       <app-search-input placeholder="Search combos..." (search)="onSearchChange($event)">
       </app-search-input>
@@ -36,7 +34,6 @@
     </div>
   </div>
 
-  <!-- Table -->
   <div class="overflow-x-auto custom-scrollbar">
     <table class="w-full">
       <thead>
@@ -59,14 +56,13 @@
           <th>
             <app-sort-header
               label="Price"
-              key="comboPrice"
+              key="pricingMode"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
               (sortChange)="onSortChange($event)"
             >
             </app-sort-header>
           </th>
-
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
@@ -129,7 +125,7 @@
               <div class="flex items-center gap-3">
                 <div class="h-12 w-12">
                   <img
-                    [src]="combo.thumbnailUrl || '/images/placeholder.jpg'"
+                    [src]="combo.image || '/images/placeholder.jpg'"
                     class="h-12 w-12 rounded-md object-cover"
                     alt=""
                   />
@@ -148,11 +144,32 @@
             </td>
 
             <td class="px-5 py-4 whitespace-nowrap">
-              <p class="text-sm font-semibold text-brand-600 dark:text-brand-400">
-                {{ getFormattedPrice(combo.comboPrice) }}
-              </p>
-            </td>
+              <div class="flex flex-col gap-1">
+                <span
+                  class="text-sm font-semibold"
+                  [ngClass]="{
+                    'text-brand-600 dark:text-brand-400': combo.pricingMode === 'FIXED',
+                    'text-gray-700 dark:text-gray-300': combo.pricingMode !== 'FIXED',
+                  }"
+                >
+                  {{ getComboPriceDisplay(combo) }}
+                </span>
 
+                <span
+                  class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize"
+                  [ngClass]="{
+                    'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400':
+                      combo.pricingMode === 'FIXED',
+                    'bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400':
+                      combo.pricingMode === 'SLOT_PRICE',
+                    'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400':
+                      combo.pricingMode === 'DISCOUNT',
+                  }"
+                >
+                  {{ combo.pricingMode.toLowerCase() }}
+                </span>
+              </div>
+            </td>
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex flex-col gap-1">
                 <span
@@ -248,9 +265,8 @@
 
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex gap-2">
-                <!-- Edit Icon -->
                 <button
-                  *hasPermission="'product.update'"
+                  *hasPermission="'combo.update'"
                   (click)="handleEdit(combo)"
                   class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
                 >
@@ -269,9 +285,8 @@
                     />
                   </svg>
                 </button>
-                <!-- Delete Icon -->
                 <button
-                  *hasPermission="'product.delete'"
+                  *hasPermission="'combo.delete'"
                   (click)="handleDelete(combo)"
                   class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
                 >
@@ -294,7 +309,6 @@
     </table>
   </div>
 
-  <!-- Pagination -->
   <app-pagination
     [page]="query.page"
     [totalPages]="totalPages"

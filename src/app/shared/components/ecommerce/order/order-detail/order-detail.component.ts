@@ -1,259 +1,156 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Order } from '../../../../models/order.model';
-import { OrderService } from '../../../../services/api/order.service';
-import { ToastrService } from 'ngx-toastr';
-import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
-
-interface StatusHistory {
-  id: string;
-  status: string;
-  timestamp: Date;
-  updatedBy?: string;
-  note?: string;
-}
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { StatusTimelineComponent } from '../../../ui/status-timeline/status-timeline.component';
+import { ButtonComponent } from '../../../ui/button/button.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-order-detail',
-  imports: [CommonModule, RouterModule, HasPermissionDirective],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    NgSelectModule,
+    StatusTimelineComponent,
+    ButtonComponent,
+  ],
   templateUrl: './order-detail.component.html',
   styles: ``,
 })
 export class OrderDetailComponent implements OnInit {
-  order: Order | null = null;
-  loading = true;
-  activeTab: 'overview' | 'items' | 'shipping' | 'payment' | 'history' = 'overview';
-
-  // Mock status history - Replace with actual API calls
-  statusHistory: StatusHistory[] = [];
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private orderService: OrderService,
-    private toastr: ToastrService,
-  ) {}
-
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadOrderDetail(id);
-      this.loadStatusHistory(id);
-    }
-  }
-
-  loadOrderDetail(id: string): void {
-    this.orderService.getById(id, { populate: 'customer' }).subscribe({
-      next: (data) => {
-        this.order = data;
-        this.loading = false;
+  // Dữ liệu order (giữ nguyên)
+  public order: any = {
+    orderId: 'ORD-2024-001',
+    status: 'preparing',
+    createdAt: '2024-11-09T10:30:00',
+    updatedAt: '2024-11-09T14:20:00',
+    note: 'Giao hàng trước 5h chiều',
+    items: [
+      { id: 1, name: 'Cà phê muối', price: 40000, quantity: 1, note: null },
+      { id: 2, name: 'Phê muối sữa chua', price: 45000, quantity: 2, note: null },
+      { id: 3, name: 'Cà phê nâu', price: 27000, quantity: 2, note: null },
+      { id: 4, name: 'Cà phê đen', price: 27000, quantity: 2, note: null },
+    ],
+    profile: {
+      name: 'Nguyễn Văn A',
+      email: 'nguyenvana@email.com',
+      phone: '0123456789',
+    },
+    shipping: {
+      status: 'preparing',
+      address: {
+        recipientName: 'Nguyễn Văn A',
+        recipientPhone: '0123456789',
+        street: '123 Đường ABC',
+        ward: 'Phường XYZ',
+        district: 'Quận 1',
+        city: 'TP. Hồ Chí Minh',
+        label: 'Nhà riêng',
       },
-      error: (err) => {
-        this.toastr.error('Failed to load order details', 'Error');
-        this.loading = false;
-        this.router.navigate(['/order/list']);
-      },
-    });
+    },
+    payment: {
+      method: 'cash',
+      status: 'pending',
+      transactionId: null,
+    },
+    totalAmount: 278000,
+    discountAmount: 20000,
+    shippingFee: 0,
+    grandTotal: 258000,
+  };
+
+  // Các mảng trạng thái (giữ nguyên)
+  public orderStatuses = [
+    { key: 'pending', label: 'Chờ xác nhận', color: 'bg-yellow-500' },
+    { key: 'confirmed', label: 'Đã xác nhận', color: 'bg-blue-500' },
+    { key: 'preparing', label: 'Đang chuẩn bị', color: 'bg-purple-500' },
+    { key: 'delivering', label: 'Đang giao', color: 'bg-indigo-500' },
+    { key: 'completed', label: 'Hoàn thành', color: 'bg-green-500' },
+    { key: 'canceled', label: 'Đã hủy', color: 'bg-red-500' },
+  ];
+  public shippingStatuses = [
+    { key: 'pending', label: 'Chưa giao', color: 'bg-gray-400' },
+    { key: 'preparing', label: 'Đang chuẩn bị', color: 'bg-yellow-500' },
+    { key: 'in_transit', label: 'Đang vận chuyển', color: 'bg-blue-500' },
+    { key: 'delivered', label: 'Đã giao', color: 'bg-green-500' },
+  ];
+  public paymentStatuses = [
+    { key: 'pending', label: 'Chưa thanh toán', color: 'bg-yellow-500' },
+    { key: 'paid', label: 'Đã thanh toán', color: 'bg-green-500' },
+    { key: 'refunded', label: 'Đã hoàn tiền', color: 'bg-purple-500' },
+  ];
+
+  public filteredOrderStatuses: any[] = [];
+  public orderStatusIndex: number = 0;
+
+  constructor() {}
+
+  ngOnInit() {
+    this.filteredOrderStatuses = this.orderStatuses.filter((s) => s.key !== 'canceled');
+    this.updateOrderStatusIndex();
   }
 
-  loadStatusHistory(orderId: string): void {
-    // Replace with actual API call
-    this.statusHistory = [
-      {
-        id: '1',
-        status: 'pending',
-        timestamp: new Date('2024-10-05T10:00:00'),
-        updatedBy: 'System',
-        note: 'Order created',
-      },
-      {
-        id: '2',
-        status: 'confirmed',
-        timestamp: new Date('2024-10-05T10:30:00'),
-        updatedBy: 'Admin',
-        note: 'Order confirmed by admin',
-      },
-    ];
+  // --- CÁC HÀM HELPER (giữ nguyên) ---
+  private getCurrentStatusIndex(statuses: any[], currentStatus: string): number {
+    return statuses.findIndex((s) => s.key === currentStatus);
   }
 
-  setActiveTab(tab: 'overview' | 'items' | 'shipping' | 'payment' | 'history'): void {
-    this.activeTab = tab;
-  }
-
-  formatDate(date?: string | Date): string {
-    if (!date) return '-';
-    const d = new Date(date);
-    return new Intl.DateTimeFormat('vi-VN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    }).format(d);
-  }
-
-  formatDateTime(date?: string | Date): string {
-    if (!date) return '-';
-    const d = new Date(date);
-    return new Intl.DateTimeFormat('vi-VN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(d);
-  }
-
-  parseFloat(value: any): number {
-    const num = Number.parseFloat(value);
-    return isNaN(num) ? 0 : num;
-  }
-
-  formatCurrency(amount: number | string): string {
-    const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+  public formatCurrency(amount: number): string {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
       currency: 'VND',
-    }).format(num);
+    }).format(amount);
   }
 
-  getOrderStatusClass(status: string): string {
-    const classes: any = {
-      pending:
-        'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30',
-      confirmed:
-        'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/30',
-      preparing:
-        'bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/30',
-      delivering:
-        'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/30',
-      completed:
-        'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/30',
-      canceled:
-        'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30',
-    };
-    return (
-      classes[status] ||
-      'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/30'
-    );
-  }
-
-  getOrderStatusLabel(status: string): string {
-    const labels: any = {
-      pending: 'Pending',
-      confirmed: 'Confirmed',
-      preparing: 'Preparing',
-      delivering: 'Delivering',
-      completed: 'Completed',
-      canceled: 'Canceled',
-    };
-    return labels[status] || status;
-  }
-
-  getPaymentStatusClass(status: string): string {
-    const classes: any = {
-      pending: 'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400',
-      paid: 'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400',
-      failed: 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400',
-    };
-    return classes[status] || 'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400';
-  }
-
-  getPaymentStatusLabel(status: string): string {
-    const labels: any = {
-      pending: 'Pending',
-      paid: 'Paid',
-      failed: 'Failed',
-    };
-    return labels[status] || status;
-  }
-
-  getPaymentMethodLabel(method: string): string {
-    const labels: any = {
-      cash: 'Cash on Delivery',
-      momo: 'MoMo Wallet',
-      vnpay: 'VNPay',
-    };
-    return labels[method] || method;
-  }
-
-  getShippingStatusClass(status: string): string {
-    const classes: any = {
-      pending: 'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400',
-      delivering: 'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400',
-      delivered: 'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400',
-      failed: 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400',
-    };
-    return classes[status] || 'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400';
-  }
-
-  getShippingStatusLabel(status: string): string {
-    const labels: any = {
-      pending: 'Pending',
-      delivering: 'Delivering',
-      delivered: 'Delivered',
-      failed: 'Failed',
-    };
-    return labels[status] || status;
-  }
-
-  handleUpdateStatus(newStatus: any): void {
-    if (!this.order) return;
-
-    this.orderService.update(this.order.id, { status: newStatus }).subscribe({
-      next: () => {
-        if (this.order) {
-          this.order.status = newStatus as any;
-          this.toastr.success('Order status updated successfully', 'Order');
-          this.loadStatusHistory(this.order.id);
-        }
-      },
-      error: () => {
-        this.toastr.error('Failed to update order status', 'Order');
-      },
+  public formatDateTime(date: string): string {
+    return new Date(date).toLocaleString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   }
 
-  handleConfirmPayment(): void {
-    if (!this.order) return;
-
-    this.orderService
-      .update(this.order.id, {
-        payment: { ...this.order.payment, status: 'paid' },
-      })
-      .subscribe({
-        next: () => {
-          if (this.order) {
-            this.order.payment.status = 'paid';
-            this.toastr.success('Payment confirmed successfully', 'Payment');
-          }
-        },
-        error: () => {
-          this.toastr.error('Failed to confirm payment', 'Payment');
-        },
-      });
+  // --- HÀM MỚI ĐỂ CẬP NHẬT TRẠNG THÁI ---
+  private updateOrderStatusIndex() {
+    this.orderStatusIndex = this.getCurrentStatusIndex(
+      this.filteredOrderStatuses,
+      this.order.status,
+    );
   }
 
-  handlePrintInvoice(): void {
-    window.print();
+  public setOrderStatus(statusKey: string) {
+    // Không cho phép set về trạng thái cũ hoặc set trạng thái đã hủy
+    if (this.order.status === statusKey || statusKey === 'canceled') return;
+
+    // (Tùy chọn) Không cho phép quay lui trạng thái
+    // const newIndex = this.getCurrentStatusIndex(this.filteredOrderStatuses, statusKey);
+    // if (newIndex < this.orderStatusIndex) return;
+
+    console.log('Chuyển trạng thái đơn hàng sang:', statusKey);
+    this.order.status = statusKey;
+    this.updateOrderStatusIndex();
+    // Tại đây bạn có thể gọi service để cập nhật lên server
+    // this.orderService.updateStatus(this.order.orderId, statusKey).subscribe(...)
   }
 
-  handleSendMessage(): void {
-    // Implement send message functionality
-    this.toastr.info('Message feature coming soon', 'Info');
+  // Hàm trackBy để tối ưu *ngFor
+  public trackByStatusKey(index: number, status: any): string {
+    return status.key;
   }
 
-  handleCreateShipping(): void {
-    // Implement create shipping tracking
-    this.toastr.info('Shipping tracking feature coming soon', 'Info');
-  }
+  public handleStatusUpdate(newStatusKey: string) {
+    // Logic này được chuyển từ component con ra component cha
+    if (this.order.status === newStatusKey || newStatusKey === 'canceled') return;
 
-  goBack(): void {
-    this.router.navigate(['/order/list']);
-  }
+    console.log('Chuyển trạng thái đơn hàng sang:', newStatusKey);
+    this.order.status = newStatusKey;
 
-  viewCustomer(): void {
-    if (this.order && typeof this.order.customer === 'object') {
-      this.router.navigate(['/customer/detail', this.order.customer.id]);
-    }
+    // Lưu ý: Vì this.order.status đã thay đổi,
+    // [currentStatus]="order.status" sẽ tự động cập nhật component con.
   }
 }

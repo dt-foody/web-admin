@@ -148,14 +148,41 @@
 
             <!-- Email -->
             <td class="px-5 py-4">
-              <span class="text-sm text-gray-600 dark:text-gray-400 max-w-[200px] truncate block">{{
-                customer.email
-              }}</span>
+              @if (customer.emails && customer.emails.length > 0) {
+                <div class="flex flex-col">
+                  <span
+                    class="text-sm text-gray-600 dark:text-gray-400 max-w-[200px] truncate block"
+                    [title]="customer.emails[0].value"
+                  >
+                    {{ customer.emails[0].value }}
+                  </span>
+                  @if (customer.emails.length > 1) {
+                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                      + {{ customer.emails.length - 1 }} more
+                    </span>
+                  }
+                </div>
+              } @else {
+                <span class="text-xs text-gray-400 dark:text-gray-500">No email</span>
+              }
             </td>
 
             <!-- Phone -->
             <td class="px-5 py-4 whitespace-nowrap">
-              <span class="text-sm text-gray-600 dark:text-gray-400">{{ customer.phone }}</span>
+              @if (customer.phones && customer.phones.length > 0) {
+                <div class="flex flex-col">
+                  <span class="text-sm text-gray-600 dark:text-gray-400">
+                    {{ customer.phones[0].value }}
+                  </span>
+                  @if (customer.phones.length > 1) {
+                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                      + {{ customer.phones.length - 1 }} more
+                    </span>
+                  }
+                </div>
+              } @else {
+                <span class="text-xs text-gray-400 dark:text-gray-500">No phone</span>
+              }
             </td>
 
             <!-- Gender -->

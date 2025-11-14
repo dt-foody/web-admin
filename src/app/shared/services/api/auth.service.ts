@@ -16,6 +16,7 @@ export interface AuthResponse {
     email: string;
     id: string;
   };
+  me: any;
   tokens: {
     access: {
       token: string;
@@ -38,6 +39,7 @@ export class AuthService {
   private readonly TOKEN_KEY = 'access_token';
   private readonly REFRESH_KEY = 'refresh_token';
   private readonly USER_KEY = 'auth_user';
+  private readonly ME_KEY = 'auth_me';
   private readonly PERMISSION_KEY = 'permissions';
 
   // Quản lý request refresh token đang chạy để tránh race condition
@@ -133,7 +135,10 @@ export class AuthService {
     }
     if (res.user) {
       this.setUser(res.user);
-      this.userSubject.next(res.user); // Cập nhật trạng thái user cho toàn ứng dụng
+      this.userSubject.next(res.user);
+    }
+    if (res.me) {
+      this.setMe(res.me);
     }
     if (res.permissions) {
       this.setPermissions(res.permissions);
@@ -174,6 +179,10 @@ export class AuthService {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
   }
 
+  private setMe(me: any): void {
+    localStorage.setItem(this.ME_KEY, JSON.stringify(me));
+  }
+
   private setPermissions(permissions: string[]): void {
     localStorage.setItem(this.PERMISSION_KEY, JSON.stringify(permissions));
   }
@@ -190,8 +199,11 @@ export class AuthService {
   getMe(): Observable<any> {
     return this.http.get<any>(`${this.API_URL}/auth/me`).pipe(
       tap((res) => {
-        if (res) {
-          this.setUser(res);
+        if (res.user) {
+          this.setUser(res.user);
+        }
+        if (res.me) {
+          this.setMe(res.me);
         }
         if (res.permissions) {
           this.setPermissions(res.permissions);

@@ -80,7 +80,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     const params: any = {
       page: this.query.page,
       limit: this.query.pageSize,
-      populate: 'customer',
+      populate: 'profile',
       sortBy: this.query.sort?.key + ':' + (this.query.sort?.asc ? 'asc' : 'desc'),
     };
 

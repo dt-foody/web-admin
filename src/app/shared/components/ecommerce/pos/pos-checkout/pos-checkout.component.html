@@ -1,0 +1,67 @@
+@if (cart$ | async; as cart) {
+  <div class="flex-1 p-4 space-y-2 overflow-y-auto">
+    <h3 class="text-md font-semibold text-gray-900 dark:text-white">Thanh toán</h3>
+
+    <div class="space-y-2 py-4 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-600 dark:text-gray-400">Tổng phụ</span>
+        <span class="font-medium text-gray-800 dark:text-gray-200">
+          {{ cart.totalAmount | number: '1.0-0' }}đ
+        </span>
+      </div>
+      <div class="flex justify-between text-sm items-center">
+        <span class="text-gray-600 dark:text-gray-400">Giảm giá</span>
+        <input
+          type="number"
+          class="w-24 text-right px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+          placeholder="0"
+          [(ngModel)]="discount"
+          (ngModelChange)="onDiscountChange()"
+        />
+      </div>
+    </div>
+
+    <div class="flex justify-between items-center py-1">
+      <span class="text-md font-bold text-gray-900 dark:text-white">Tổng cộng</span>
+      <span class="text-xl font-bold text-brand-600 dark:text-brand-400">
+        {{ cart.grandTotal | number: '1.0-0' }}đ
+      </span>
+    </div>
+  </div>
+
+  <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+    <h4 class="text-sm font-medium text-gray-800 dark:text-white">Phương thức thanh toán</h4>
+    <div class="grid grid-cols-2 gap-2">
+      <app-button
+        (btnClick)="onSelectPayment('cash')"
+        [variant]="paymentMethod === 'cash' ? 'primary' : 'outline'"
+        size="md"
+        className="w-full"
+      >
+        Tiền mặt
+      </app-button>
+
+      <app-button
+        (btnClick)="onSelectPayment('payos')"
+        [variant]="paymentMethod === 'payos' ? 'primary' : 'outline'"
+        size="md"
+        className="w-full"
+      >
+        Chuyển khoản
+      </app-button>
+    </div>
+
+    <app-button
+      variant="primary"
+      (btnClick)="onCompleteOrder()"
+      [disabled]="cart.items.length === 0 || isSubmitting"
+      className="w-full text-lg"
+    >
+      @if (isSubmitting) {
+        Đang xử lý...
+      } @else {
+        THANH TOÁN
+      }
+    </app-button>
+  </div>
+}
