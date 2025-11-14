@@ -3,10 +3,11 @@ import { DialogRef } from '@ngneat/dialog';
 import { Product, ProductOption, ProductOptionGroup } from '../../../../models/product.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { OrderItemOption } from '../../../../models/order.model'; // SỬA: Import OrderItemOption
 
 @Component({
   selector: 'app-product-options-modal',
-  standalone: true, // Thêm standalone: true nếu đây là component mới
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './product-options-modal.component.html',
 })
@@ -40,14 +41,13 @@ export class ProductOptionsModalComponent {
   }
 
   onOptionChange(group: ProductOptionGroup, option: ProductOption, event: Event) {
-    event.preventDefault(); // Giữ nguyên logic này, nó rất tốt
-    this.selectedOptions = { ...this.selectedOptions }; // Đảm bảo change detection
+    event.preventDefault();
+    this.selectedOptions = { ...this.selectedOptions };
     const currentOptions = [...(this.selectedOptions[group.name] || [])];
     const isSelected = currentOptions.some((o) => o.name === option.name);
 
     if (group.maxOptions === 1) {
       if (isSelected && group.minOptions === 0) {
-        // Cho phép bỏ chọn (rất hay)
         this.selectedOptions[group.name] = [];
       } else {
         this.selectedOptions[group.name] = [option];
@@ -64,10 +64,6 @@ export class ProductOptionsModalComponent {
   get totalPrice(): number {
     const base = this.productForOptions?.basePrice ?? 0;
     const options = Object.values(this.selectedOptions ?? {}).flat();
-
-    // **CẢI TIẾN:** Đơn giản hóa logic.
-    // Logic `opt.type === 'percentage'` dường như bị lỗi vì 'type' không có
-    // trong model. Giờ nó chỉ cộng `priceModifier`.
     return options.reduce((price, opt) => price + opt.priceModifier, base);
   }
 
@@ -78,7 +74,6 @@ export class ProductOptionsModalComponent {
 
   get isFormValid(): boolean {
     if (!this.productForOptions?.optionGroups) return true;
-
     for (const group of this.productForOptions.optionGroups) {
       const selectedCount = this.selectedOptions[group.name]?.length || 0;
       if (selectedCount < group.minOptions) {
@@ -111,9 +106,23 @@ export class ProductOptionsModalComponent {
 
   onAddToCart() {
     if (this.isFormValid && this.productForOptions) {
+      // SỬA: "Làm phẳng" (flatten) options trước khi đóng
+      const flatOptions: OrderItemOption[] = [];
+      for (const groupName in this.selectedOptions) {
+        const options = this.selectedOptions[groupName];
+        options.forEach((opt) => {
+          flatOptions.push({
+            groupName: groupName,
+            optionName: opt.name,
+            priceModifier: opt.priceModifier,
+          });
+        });
+      }
+
+      // SỬA: Gửi về object chuẩn cho service
       this.dialogRef.close({
         product: this.productForOptions,
-        options: this.selectedOptions,
+        options: flatOptions, // Gửi mảng đã làm phẳng
         totalPrice: this.totalPrice,
         note: this.note,
       });

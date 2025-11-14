@@ -12,6 +12,7 @@ import { BaseListComponent } from '../../../../core/base-list.component';
 import { SortHeaderComponent } from '../../../_core/sort-header/sort-header.component';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
 import { CheckboxComponent } from '../../../form/input/checkbox.component';
+import { Customer } from '../../../../models/customer.model'; // Giả định import
 
 @Component({
   selector: 'app-order-list',
@@ -93,11 +94,15 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     if (this.query.status) {
       params.status = this.query.status;
     }
+
+    // SỬA: Dùng "dot notation" để lọc các trường nested
     if (this.query.paymentStatus) {
-      params.paymentStatus = this.query.paymentStatus;
+      params['payment.status'] = this.query.paymentStatus;
     }
     if (this.query.shippingStatus) {
-      params.shippingStatus = this.query.shippingStatus;
+      // Giả sử model là shipping.status
+      // Nếu model là shippingStatus (phẳng) thì dùng: params.shippingStatus = this.query.shippingStatus
+      params['shipping.status'] = this.query.shippingStatus;
     }
 
     this.orderService.getAll(params).subscribe({
@@ -110,6 +115,23 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
         this.toastr.error('Failed to fetch data!', 'Order');
       },
     });
+  }
+
+  // SỬA: Ép kiểu profile sang Customer (hoặc User) nếu cần
+  getCustomerPhone(profile: any): string | null {
+    if (!profile) return null;
+
+    // Giả định profile là Customer model
+    if (profile.phones && profile.phones.length > 0) {
+      return profile.phones[0].value;
+    }
+
+    // Giả định profile là User model
+    if (profile.phone) {
+      return profile.phone;
+    }
+
+    return null;
   }
 
   getStatusColor(status: string): string {

@@ -1,16 +1,13 @@
 <div
   class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
 >
-  <!-- Header -->
   <div
     class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
   >
-    <!-- Search and Filters -->
     <div class="flex flex-wrap gap-3">
       <app-search-input placeholder="Search orders..." (search)="onSearchChange($event)">
       </app-search-input>
 
-      <!-- Status Filter -->
       <select
         [(ngModel)]="query.status"
         (change)="onFilterChange()"
@@ -21,7 +18,6 @@
         }
       </select>
 
-      <!-- Payment Status Filter -->
       <select
         [(ngModel)]="query.paymentStatus"
         (change)="onFilterChange()"
@@ -32,7 +28,6 @@
         }
       </select>
 
-      <!-- Shipping Status Filter -->
       <select
         [(ngModel)]="query.shippingStatus"
         (change)="onFilterChange()"
@@ -70,7 +65,6 @@
     </div>
   </div>
 
-  <!-- Table -->
   <div class="overflow-x-auto custom-scrollbar">
     <table class="w-full">
       <thead>
@@ -93,7 +87,7 @@
           <th>
             <app-sort-header
               label="Customer"
-              key="customer"
+              key="profile"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
               (sortChange)="onSortChange($event)"
@@ -178,10 +172,10 @@
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ order?.profile?.name || 'Guest' }}
                 </span>
-                @if (order?.profile?.phone) {
-                  <span class="text-xs text-gray-500 dark:text-gray-400">{{
-                    order?.profile?.phone
-                  }}</span>
+                @if (getCustomerPhone(order.profile)) {
+                  <span class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ getCustomerPhone(order.profile) }}
+                  </span>
                 }
               </div>
             </td>
@@ -238,9 +232,11 @@
             <td class="px-5 py-4 whitespace-nowrap">
               <span
                 class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize"
-                [ngClass]="getShippingStatusColor(order?.shipping?.status || 'pending')"
+                [ngClass]="getShippingStatusColor(order?.shipping?.status || 'n/a')"
               >
-                {{ order.shipping?.status || 'pending' }}
+                {{
+                  order?.shipping?.status || (order.orderType === 'Delivery' ? 'pending' : 'n/a')
+                }}
               </span>
             </td>
 
@@ -252,7 +248,6 @@
 
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex gap-2">
-                <!-- View Icon -->
                 <button
                   *hasPermission="'order.read'"
                   (click)="handleView(order)"
@@ -279,7 +274,6 @@
                     />
                   </svg>
                 </button>
-                <!-- Edit Icon -->
                 <button
                   *hasPermission="'order.update'"
                   (click)="handleEdit(order)"
@@ -301,7 +295,6 @@
                     />
                   </svg>
                 </button>
-                <!-- Delete Icon -->
                 <button
                   *hasPermission="'order.delete'"
                   (click)="handleDelete(order)"
@@ -327,7 +320,6 @@
     </table>
   </div>
 
-  <!-- Pagination -->
   <app-pagination
     [page]="query.page"
     [totalPages]="totalPages"

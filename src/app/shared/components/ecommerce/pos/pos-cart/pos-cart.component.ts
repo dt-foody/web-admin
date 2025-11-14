@@ -1,5 +1,3 @@
-// src/app/features/pos/components/pos-cart/pos-cart.component.ts
-
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +9,7 @@ import { CustomerService } from '../../../../services/api/customer.service';
 import { PosStateService } from '../../../../services/api/pos.service';
 import { ButtonComponent } from '../../../ui/button/button.component';
 import { TextAreaComponent } from '../../../form/input/text-area.component';
+import { Order, OrderItemOption } from '../../../../models/order.model'; // SỬA: Import Order
 
 @Component({
   selector: 'app-pos-cart',
@@ -47,16 +46,23 @@ export class PosCartComponent implements OnInit {
   ngOnInit() {
     this.customerService.getAll({ limit: 1000 }).subscribe((res: any) => {
       this.customers = res.data || res.results || [];
+      // SỬA: Kích hoạt kiểm tra khách hàng sau khi đã tải xong
+      this.checkSelectedCustomer(this.posState.getCurrentCart().profile);
     });
 
     this.cart$.subscribe((cart) => {
-      if (cart.customer) {
-        const customerId = (cart.customer as any).id || cart.customer;
-        this.selectedCustomer = this.customers.find((c) => c.id === customerId) || null;
-      } else {
-        this.selectedCustomer = null;
-      }
+      // SỬA: Lắng nghe 'profile' thay vì 'customer'
+      this.checkSelectedCustomer(cart.profile);
     });
+  }
+
+  // SỬA: Tách logic kiểm tra khách hàng
+  checkSelectedCustomer(profileId: string | null) {
+    if (profileId) {
+      this.selectedCustomer = this.customers.find((c) => c.id === profileId) || null;
+    } else {
+      this.selectedCustomer = null;
+    }
   }
 
   openCustomerModal() {
@@ -81,15 +87,26 @@ export class PosCartComponent implements OnInit {
     this.posState.setCustomer(null);
   }
 
-  // --- (Các hàm khác giữ nguyên) ---
-  onQuantityChange(id: string, event: Event) {
+  // SỬA: Đổi tên tham số 'id' -> 'itemId'
+  onQuantityChange(itemId: string, event: Event) {
     const newQuantity = (event.target as HTMLInputElement).valueAsNumber;
-    this.posState.updateQuantity(id, newQuantity || 0);
+    this.posState.updateQuantity(itemId, newQuantity || 0);
   }
-  onRemoveItem(id: string) {
-    this.posState.removeItem(id);
+
+  // SỬA: Đổi tên tham số 'id' -> 'itemId'
+  onRemoveItem(itemId: string) {
+    this.posState.removeItem(itemId);
   }
-  onOrderTypeChange(type: 'TakeAway' | 'DineIn' | 'Delivery') {
+
+  // SỬA: Thêm type cho 'type'
+  onOrderTypeChange(type: Order['orderType']) {
     this.posState.setOrderType(type);
+  }
+
+  public getOptionsString(options: OrderItemOption[]): string {
+    if (!options || options.length === 0) {
+      return '';
+    }
+    return options.map((o) => o.optionName).join(', ');
   }
 }

@@ -229,11 +229,11 @@
                       bindLabel="name"
                       bindValue="id"
                       placeholder="Select product"
-                      [(ngModel)]="item.product"
-                      (change)="onProductChange(i, item.product)"
+                      [(ngModel)]="item.item"
+                      (change)="onProductChange(i, item.item)"
                       [searchable]="true"
                       [clearable]="false"
-                      [name]="'product-' + i"
+                      [name]="'item-product-' + i"
                     >
                       <ng-template ng-option-tmp let-item="item">
                         <span class="font-medium">{{ item.name }}</span>
@@ -286,11 +286,11 @@
                       bindLabel="name"
                       bindValue="id"
                       placeholder="Select combo"
-                      [(ngModel)]="item.combo"
-                      (change)="onComboChange(i, item.combo || '')"
+                      [(ngModel)]="item.item"
+                      (change)="onComboChange(i, item.item || '')"
                       [searchable]="true"
                       [clearable]="false"
-                      [name]="'combo-' + i"
+                      [name]="'item-combo-' + i"
                     >
                       <ng-template ng-option-tmp let-item="item">
                         <span class="font-medium">{{ item.name }}</span>

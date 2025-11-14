@@ -73,10 +73,15 @@
       </div>
     }
 
-    @for (item of cart.items; track item.product) {
+    @for (item of cart.items; track item.item) {
       <div class="flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
         <div class="flex-1 min-w-0">
           <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ item.name }}</p>
+          @if (item.options && item.options.length > 0) {
+            <p class="text-xs text-gray-500 truncate">
+              {{ getOptionsString(item.options) }}
+            </p>
+          }
           <p class="text-sm font-semibold text-brand-600 dark:text-brand-400">
             {{ item.price | number: '1.0-0' }}đ
           </p>
@@ -86,7 +91,7 @@
           type="number"
           class="w-16 text-center px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
           [value]="item.quantity"
-          (change)="onQuantityChange(item.product, $event)"
+          (change)="onQuantityChange($any(item.item), $event)"
           min="1"
         />
 
@@ -101,7 +106,7 @@
           ariaLabel="Xóa sản phẩm"
           [startIcon]="iconRemove"
           className="!text-red-500 hover:!text-red-700 border-0"
-          (btnClick)="onRemoveItem(item.product)"
+          (btnClick)="onRemoveItem($any(item.item))"
         >
         </app-button>
       </div>
@@ -109,43 +114,15 @@
   </div>
 
   <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
-    @if (cart.orderType === 'Delivery' && cart.shipping) {
-      <div class="space-y-2">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Thông tin Giao hàng</div>
-
-        <input
-          type="text"
-          class="w-full mt-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800"
-          placeholder="Tên người nhận"
-          [(ngModel)]="cart.shipping.address.recipientName"
-        />
-
-        <input
-          type="text"
-          class="w-full mt-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800"
-          placeholder="SĐT người nhận"
-          [(ngModel)]="cart.shipping.address.recipientPhone"
-        />
-
-        <input
-          type="text"
-          class="w-full mt-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800"
-          placeholder="Địa chỉ (số nhà, đường...)"
-          [(ngModel)]="cart.shipping.address.street"
-        />
-
-        <input
-          type="text"
-          class="w-full mt-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800"
-          placeholder="Thành phố"
-          [(ngModel)]="cart.shipping.address.city"
-        />
-      </div>
-    }
+    @if (cart.orderType === 'Delivery' && cart.shipping) {}
 
     <div>
       <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Ghi chú đơn hàng:</div>
-      <app-text-area placeholder="VD: Ít đường, thêm đá..." [(value)]="cart.note"></app-text-area>
+      <app-text-area
+        placeholder="VD: Ít đường, thêm đá..."
+        [value]="cart.note"
+        (valueChange)="posState.setNote($event)"
+      ></app-text-area>
     </div>
   </div>
 }

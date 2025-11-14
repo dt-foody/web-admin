@@ -58,10 +58,10 @@ export class PosCheckoutComponent {
     }
 
     // 2. Build Payload
-    // Dùng Partial<Order> để tạo payload, chỉ gửi những gì cần thiết
+    // SỬA: Dùng Partial<Order> và các trường chuẩn
     const payload: Partial<Order> = {
-      profile: cart.customer ? (cart.customer as Customer).id || cart.customer : undefined,
-      profileType: cart.customer ? 'Customer' : undefined,
+      profile: cart.profile ? cart.profile : undefined, // SỬA
+      profileType: cart.profileType ? cart.profileType : undefined, // SỬA
       items: cart.items,
       totalAmount: cart.totalAmount,
       discountAmount: cart.discountAmount,
@@ -72,14 +72,14 @@ export class PosCheckoutComponent {
         method: this.paymentMethod,
         status: 'paid', // POS luôn là 'paid'
       },
-      shipping: cart.shipping ? cart.shipping : undefined, // Gửi null/undefined nếu không có
+      shipping: cart.shipping ? cart.shipping : undefined,
       note: cart.note,
       channel: 'POS',
       orderType: cart.orderType,
       status: 'completed', // Đơn POS luôn hoàn thành
     };
 
-    // 3. Gọi API
+    // 3. Gọi API (dùng as any để pass check)
     this.orderService.create(payload as any).subscribe({
       next: (order: any) => {
         this.toastr.success(`Tạo đơn hàng #${order.orderCode || order.orderId} thành công!`);

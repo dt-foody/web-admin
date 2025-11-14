@@ -255,7 +255,9 @@
             <!-- Group Settings -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <app-label [for]="'group-name-' + groupIndex">Group Name *</app-label>
+                <app-label [for]="'group-name-' + groupIndex" className="required"
+                  >Group Name</app-label
+                >
                 <app-input-field
                   [id]="'group-name-' + groupIndex"
                   placeholder="e.g., Size, Toppings"
@@ -329,8 +331,11 @@
                 class="grid grid-cols-1 gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-600 dark:bg-gray-800 md:grid-cols-12"
               >
                 <div class="md:col-span-4">
-                  <app-label [for]="'option-name-' + groupIndex + '-' + optionIndex" class="text-xs"
-                    >Option Name *</app-label
+                  <app-label
+                    [for]="'option-name-' + groupIndex + '-' + optionIndex"
+                    class="text-xs"
+                    className="required"
+                    >Option Name</app-label
                   >
                   <app-input-field
                     [id]="'option-name-' + groupIndex + '-' + optionIndex"
@@ -367,7 +372,7 @@
                   </app-select>
                 </div>
 
-                <div class="flex items-end gap-2 md:col-span-2">
+                <div class="flex items-center justify-end gap-2 md:col-span-2">
                   <label class="inline-flex items-center gap-2">
                     <input
                       type="checkbox"

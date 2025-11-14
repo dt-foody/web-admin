@@ -3,7 +3,17 @@ import { CommonModule } from '@angular/common';
 import { LabelComponent } from '../../../form/label/label.component';
 import { InputFieldComponent } from '../../../form/input/input-field.component';
 import { ButtonComponent } from '../../../ui/button/button.component';
-import { OrderItem, OrderPayment, OrderShipping, Order } from '../../../../models/order.model';
+// Import chính xác các model
+import {
+  OrderItem,
+  OrderPayment,
+  OrderShipping,
+  Order,
+  OrderStatus, // Thêm các type
+  PaymentMethod,
+  PaymentStatus,
+  ShippingStatus,
+} from '../../../../models/order.model';
 import { Product } from '../../../../models/product.model';
 import { Combo } from '../../../../models/combo.model';
 import { Customer } from '../../../../models/customer.model';
@@ -30,27 +40,28 @@ interface OrderFormData {
   shippingFee: number;
   grandTotal: number;
   payment: OrderPayment;
-  shipping?: OrderShipping; // Shipping là tùy chọn
-  status: 'pending' | 'confirmed' | 'preparing' | 'delivering' | 'completed' | 'canceled';
+  shipping?: OrderShipping | null; // Cho phép null
+  status: OrderStatus;
   note: string;
 }
 
 // Form mặc định, đã cập nhật
 const DEFAULT_FORM: OrderFormData = {
-  profile: null, // Khách vãng lai là mặc định
+  profile: null,
   profileType: null,
-  orderType: 'TakeAway', // Mặc định là mang đi
-  channel: 'AdminPanel', // Mặc định là tạo từ admin
-  items: [], // Mặc định là rỗng
+  orderType: 'TakeAway',
+  channel: 'AdminPanel',
+  items: [],
   totalAmount: 0,
   discountAmount: 0,
   shippingFee: 0,
   grandTotal: 0,
   payment: {
-    method: 'cash',
-    status: 'pending',
+    method: 'cash' as PaymentMethod,
+    status: 'pending' as PaymentStatus,
   },
-  status: 'pending',
+  shipping: null, // Mặc định là null
+  status: 'pending' as OrderStatus,
   note: '',
 };
 
@@ -77,6 +88,7 @@ export class OrderAddComponent implements OnInit {
   products: Product[] = [];
   combos: Combo[] = [];
 
+  // Map này dùng để điều khiển UI (radio button)
   itemTypes: Map<number, 'product' | 'combo'> = new Map();
 
   // Options
@@ -128,7 +140,7 @@ export class OrderAddComponent implements OnInit {
     private comboService: ComboService,
     private customerService: CustomerService,
     private toastr: ToastrService,
-    public router: Router, // public để HTML có thể gọi
+    public router: Router,
     private activatedRoute: ActivatedRoute,
   ) {}
 
@@ -150,12 +162,16 @@ export class OrderAddComponent implements OnInit {
 
   loadOrder(id: string) {
     this.orderService.getById(id).subscribe({
-      next: (data: any) => {
-        this.orderData = { ...DEFAULT_FORM, ...data };
+      next: (data: Order) => {
+        // Ép kiểu data về OrderFormData (hoặc any nếu cần)
+        this.orderData = { ...DEFAULT_FORM, ...(data as any) };
         this.itemTypes.clear();
+
+        // SỬA: Dùng itemType từ model
         this.orderData.items.forEach((item, index) => {
-          this.itemTypes.set(index, item.combo ? 'combo' : 'product');
+          this.itemTypes.set(index, item.itemType === 'Combo' ? 'combo' : 'product');
         });
+
         this.calculateTotals();
       },
       error: (err) => {
@@ -167,9 +183,7 @@ export class OrderAddComponent implements OnInit {
 
   loadCustomers() {
     this.customerService.getAll({ limit: 1000 }).subscribe({
-      // Sửa lại nếu service khác
       next: (data: any) => {
-        // Giả sử data trả về có .data hoặc .results
         this.customers = data.data || data.results || [];
       },
       error: (err) => console.error(err),
@@ -212,7 +226,12 @@ export class OrderAddComponent implements OnInit {
 
       if (defaultAddress) {
         this.ensureShippingExists();
-        this.orderData.shipping!.address = { ...defaultAddress };
+        // SỬA: Gán đúng vào address
+        this.orderData.shipping!.address = {
+          ...defaultAddress,
+          recipientName: defaultAddress.recipientName || customer?.name || '',
+          recipientPhone: defaultAddress.recipientPhone || customer?.phones?.[0]?.value || '',
+        };
         this.toastr.info(`Default shipping address for ${customer?.name} has been auto-filled.`);
       }
     }
@@ -223,7 +242,7 @@ export class OrderAddComponent implements OnInit {
     if (type === 'Delivery') {
       this.ensureShippingExists();
     } else {
-      this.orderData.shipping = undefined;
+      this.orderData.shipping = null; // SỬA: Gán về null
       this.orderData.shippingFee = 0;
       this.calculateTotals();
     }
@@ -240,7 +259,7 @@ export class OrderAddComponent implements OnInit {
           district: '',
           city: '',
         },
-        status: 'pending',
+        status: 'pending' as ShippingStatus,
       };
     }
   }
@@ -248,11 +267,16 @@ export class OrderAddComponent implements OnInit {
   // --- Quản lý Order Items ---
 
   addOrderItem() {
+    // SỬA: Tạo OrderItem mới theo đúng model
     const newItem: OrderItem = {
-      product: '',
-      name: '',
+      item: '', // Sẽ là ID của product/combo
+      itemType: 'Product', // Mặc định là product
+      name: '', // Sẽ snapshot
       quantity: 1,
+      basePrice: 0,
       price: 0,
+      options: [],
+      comboSelections: [],
       note: '',
     };
     this.orderData.items.push(newItem);
@@ -281,25 +305,30 @@ export class OrderAddComponent implements OnInit {
   onItemTypeChange(index: number, type: 'product' | 'combo') {
     this.itemTypes.set(index, type);
     const item = this.orderData.items[index];
-    if (type === 'product') {
-      item.combo = undefined;
-      item.product = '';
-    } else {
-      item.product = undefined;
-      item.combo = '';
-    }
+
+    // SỬA: Reset item theo model mới
+    item.itemType = type === 'product' ? 'Product' : 'Combo';
+    item.item = '';
     item.name = '';
+    item.basePrice = 0;
     item.price = 0;
     item.quantity = 1;
+    item.options = [];
+    item.comboSelections = [];
   }
 
   onProductChange(index: number, productId: string) {
     const product = this.products.find((p) => p.id === productId);
     if (product) {
-      this.orderData.items[index].product = productId;
-      this.orderData.items[index].name = product.name;
-      this.orderData.items[index].price = (product as any).basePrice || (product as any).price; // Chỉnh lại key giá nếu cần
-      this.orderData.items[index].combo = undefined;
+      const item = this.orderData.items[index];
+      // SỬA: Gán vào item và itemType
+      item.item = productId;
+      item.itemType = 'Product';
+      item.name = product.name;
+      const price = (product as any).basePrice || (product as any).price; // Chỉnh lại key giá nếu cần
+      item.basePrice = price;
+      item.price = price;
+      item.comboSelections = []; // Xóa lựa chọn combo (nếu có)
       this.calculateTotals();
     }
   }
@@ -307,10 +336,15 @@ export class OrderAddComponent implements OnInit {
   onComboChange(index: number, comboId: string) {
     const combo = this.combos.find((c) => c.id === comboId);
     if (combo) {
-      this.orderData.items[index].combo = comboId;
-      this.orderData.items[index].name = combo.name;
-      this.orderData.items[index].price = (combo as any).comboPrice || (combo as any).price; // Chỉnh lại key giá nếu cần
-      this.orderData.items[index].product = undefined;
+      const item = this.orderData.items[index];
+      // SỬA: Gán vào item và itemType
+      item.item = comboId;
+      item.itemType = 'Combo';
+      item.name = combo.name;
+      const price = (combo as any).comboPrice || (combo as any).price; // Chỉnh lại key giá nếu cần
+      item.basePrice = price;
+      item.price = price;
+      item.options = []; // Xóa tùy chọn (nếu có)
       this.calculateTotals();
     }
   }
@@ -358,13 +392,9 @@ export class OrderAddComponent implements OnInit {
 
     for (let i = 0; i < this.orderData.items.length; i++) {
       const item = this.orderData.items[i];
-      const itemType = this.getItemType(i);
-      if (itemType === 'product' && !item.product) {
-        this.toastr.error(`Item ${i + 1}: Please select a product`, 'Validation Error');
-        return false;
-      }
-      if (itemType === 'combo' && !item.combo) {
-        this.toastr.error(`Item ${i + 1}: Please select a combo`, 'Validation Error');
+      // SỬA: Kiểm tra item.item
+      if (!item.item) {
+        this.toastr.error(`Item ${i + 1}: Please select a product or combo`, 'Validation Error');
         return false;
       }
       if (item.quantity <= 0) {
@@ -405,21 +435,14 @@ export class OrderAddComponent implements OnInit {
 
     const sanitized: any = deepSanitize(this.orderData, DEFAULT_FORM);
 
-    // Đảm bảo profileType được gửi
     if (sanitized.profile) {
       sanitized.profileType = 'Customer';
     } else {
       sanitized.profileType = null;
     }
 
-    // Đảm bảo item.product và item.combo không cùng tồn tại
-    sanitized.items.forEach((item: any, index: number) => {
-      if (this.getItemType(index) === 'product') {
-        item.combo = null;
-      } else {
-        item.product = null;
-      }
-    });
+    // SỬA: Xóa bỏ logic set item.product/item.combo = null vì không còn cần thiết
+    // (Model đã đúng cấu trúc)
 
     const obs =
       this.isEditMode && this.orderId

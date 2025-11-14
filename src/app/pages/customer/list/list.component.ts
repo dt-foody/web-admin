@@ -3,7 +3,7 @@ import { PageBreadcrumbComponent } from '../../../shared/components/common/page-
 import { CustomerListComponent } from '../../../shared/components/ecommerce/customer/customer-list/customer-list.component';
 
 @Component({
-  selector: 'app-[customers]',
+  selector: 'app-list-customer',
   imports: [PageBreadcrumbComponent, CustomerListComponent],
   templateUrl: './list.component.html',
   styles: ``,
