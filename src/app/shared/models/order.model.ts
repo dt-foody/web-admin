@@ -29,24 +29,12 @@ export type ShippingStatus =
   | 'failed'
   | 'canceled';
 
-/* ============================================================
- * 2. SUB-INTERFACES (Khớp với Mongoose Schema)
- * ============================================================ */
-
-/**
- * Tùy chọn SẢN PHẨM (đã lưu trong DB - cấu trúc phẳng)
- * (Khớp OrderItemOptionSchema)
- */
 export interface OrderItemOption {
   groupName: string;
   optionName: string;
   priceModifier: number;
 }
 
-/**
- * Lựa chọn COMBO (đã lưu trong DB - cấu trúc phẳng)
- * (Khớp OrderItemComboSelectionSchema)
- */
 export interface OrderItemComboSelection {
   slotName: string;
   product: string | Product; // ObjectId (ref 'Product')
@@ -54,12 +42,8 @@ export interface OrderItemComboSelection {
   options: OrderItemOption[];
 }
 
-/**
- * Một MỤC HÀNG trong đơn hàng
- * (Khớp OrderItemSchema)
- */
 export interface OrderItem {
-  _id?: string; // id của sub-document
+  id?: string; // id của sub-document
   item: any; // string | Product | Combo; // ObjectId (refPath: 'itemType')
   itemType: 'Product' | 'Combo';
   name: string; // Tên snapshot
@@ -71,10 +55,6 @@ export interface OrderItem {
   note?: string;
 }
 
-/**
- * Thông tin thanh toán
- * (Khớp payment schema)
- */
 export interface OrderPayment {
   method: PaymentMethod;
   status: PaymentStatus;
@@ -83,9 +63,6 @@ export interface OrderPayment {
   qrCode?: string;
 }
 
-/**
- * Địa chỉ giao hàng (Con của Shipping)
- */
 export interface OrderShippingAddress {
   label?: string;
   recipientName: string;
@@ -96,19 +73,11 @@ export interface OrderShippingAddress {
   city: string;
 }
 
-/**
- * Thông tin giao hàng
- * (Khớp shipping schema)
- */
 export interface OrderShipping {
   address: OrderShippingAddress;
   status: ShippingStatus;
 }
 
-/**
- * Snapshot coupon đã áp dụng
- * (Khớp appliedCoupons schema)
- */
 export interface OrderAppliedCoupon {
   id: string; // ObjectId (ref 'Coupon')
   code: string;
@@ -116,12 +85,8 @@ export interface OrderAppliedCoupon {
   value: number;
 }
 
-/* ============================================================
- * 3. MAIN ORDER INTERFACE (Khớp OrderSchema)
- * ============================================================ */
-
 export interface Order {
-  id: string; // _id từ MongoDB
+  id: string;
   orderId: number; // ID tăng tự động
   orderCode: number; // Mã cho PayOS
 
