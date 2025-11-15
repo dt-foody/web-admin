@@ -2,17 +2,15 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { Customer } from '../../../../models/customer.model';
 import { OrderPayment, Order } from '../../../../models/order.model';
 import { OrderService } from '../../../../services/api/order.service';
 import { PosStateService } from '../../../../services/api/pos.service';
-import { InputFieldComponent } from '../../../form/input/input-field.component';
 import { ButtonComponent } from '../../../ui/button/button.component';
 
 @Component({
   selector: 'app-pos-checkout',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, InputFieldComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent],
   templateUrl: './pos-checkout.component.html',
 })
 export class PosCheckoutComponent {

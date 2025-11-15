@@ -105,6 +105,10 @@ export class OrderAddComponent implements OnInit {
   // Map điều khiển UI (radio button)
   itemTypes: Map<number, 'product' | 'combo'> = new Map();
 
+  // === MỚI: Map quản lý trạng thái Mở/Đóng của item ===
+  itemExpandedState: Map<number, boolean> = new Map();
+  // =================================================
+
   // Quản lý địa chỉ
   selectedCustomer: Customer | null = null;
   selectedShippingAddressId: string = 'new';
@@ -197,8 +201,11 @@ export class OrderAddComponent implements OnInit {
         }
 
         this.itemTypes.clear();
+        this.itemExpandedState.clear(); // Xóa trạng thái cũ
         this.orderData.items.forEach((item, index) => {
           this.itemTypes.set(index, item.itemType === 'Combo' ? 'combo' : 'product');
+          // Mặc định ban đầu là thu gọn khi load (hoặc 'true' nếu muốn mở)
+          this.itemExpandedState.set(index, false);
         });
         this.calculateTotals();
       },
@@ -350,24 +357,57 @@ export class OrderAddComponent implements OnInit {
       note: '',
     };
     this.orderData.items.push(newItem);
-    this.itemTypes.set(this.orderData.items.length - 1, 'product');
+    const newIndex = this.orderData.items.length - 1;
+
+    this.itemTypes.set(newIndex, 'product');
+
+    // === MỚI ===
+    // Mặc định item mới là 'mở'
+    this.itemExpandedState.set(newIndex, true);
+    // ===========
   }
 
   removeOrderItem(index: number) {
     this.orderData.items.splice(index, 1);
+
+    // Cập nhật itemTypes Map
     this.itemTypes.delete(index);
-    const newMap = new Map<number, 'product' | 'combo'>();
+    const newTypeMap = new Map<number, 'product' | 'combo'>();
     this.itemTypes.forEach((value, key) => {
-      if (key > index) newMap.set(key - 1, value);
-      else if (key < index) newMap.set(key, value);
+      if (key > index) newTypeMap.set(key - 1, value);
+      else if (key < index) newTypeMap.set(key, value);
     });
-    this.itemTypes = newMap;
+    this.itemTypes = newTypeMap;
+
+    // === MỚI ===
+    // Cập nhật itemExpandedState Map
+    this.itemExpandedState.delete(index);
+    const newExpandedMap = new Map<number, boolean>();
+    this.itemExpandedState.forEach((value, key) => {
+      if (key > index) newExpandedMap.set(key - 1, value);
+      else if (key < index) newExpandedMap.set(key, value);
+    });
+    this.itemExpandedState = newExpandedMap;
+    // ===========
+
     this.calculateTotals();
   }
 
   getItemType(index: number): 'product' | 'combo' {
     return this.itemTypes.get(index) || 'product';
   }
+
+  // === MỚI: Các hàm quản lý Mở/Đóng ===
+  toggleItemExpansion(index: number) {
+    const currentState = this.isItemExpanded(index);
+    this.itemExpandedState.set(index, !currentState);
+  }
+
+  isItemExpanded(index: number): boolean {
+    // Mặc định là 'true' (mở) nếu chưa có trong map
+    return this.itemExpandedState.get(index) ?? true;
+  }
+  // =====================================
 
   onItemTypeChange(index: number, type: 'product' | 'combo') {
     this.itemTypes.set(index, type);
