@@ -23,8 +23,7 @@
                 order.payment.status === 'pending'
                   ? 'Chưa thanh toán'
                   : order.payment.status === 'paid'
-                    ? 'Đã thanh
-              toán'
+                    ? 'Đã thanh toán'
                     : 'Đã hoàn tiền'
               }}
             </span>
@@ -45,8 +44,7 @@
                 order.shipping.status === 'pending'
                   ? 'Chưa giao'
                   : order.shipping.status === 'preparing'
-                    ? 'Đang chuẩn
-              bị'
+                    ? 'Đang chuẩn bị'
                     : order.shipping.status === 'in_transit'
                       ? 'Đang vận chuyển'
                       : 'Đã giao'

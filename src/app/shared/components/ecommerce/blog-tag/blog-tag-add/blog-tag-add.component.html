@@ -4,39 +4,39 @@
   <div
     class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-800"
   >
-    <h2 class="text-lg font-medium text-gray-800 dark:text-white">Tag Information</h2>
-    <app-switch label="Active" [(value)]="formData.isActive"></app-switch>
+    <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thông tin Thẻ</h2>
+    <app-switch label="Hoạt động" [(value)]="formData.isActive"></app-switch>
   </div>
 
   <div class="p-4 sm:p-6">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="space-y-5">
         <div>
-          <app-label for="tag-name" className="required">Tag Name</app-label>
+          <app-label for="tag-name" className="required">Tên Thẻ</app-label>
           <app-input-field
             id="tag-name"
-            placeholder="e.g., JavaScript, React"
+            placeholder="Ví dụ: JavaScript, React"
             [(value)]="formData.name"
           ></app-input-field>
         </div>
         <div>
-          <app-label for="tag-description">Description</app-label>
+          <app-label for="tag-description">Mô tả</app-label>
           <textarea
             id="tag-description"
             [(ngModel)]="formData.description"
             rows="5"
-            placeholder="A short description for SEO purposes."
+            placeholder="Mô tả ngắn cho SEO."
             class="block w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 transition focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white dark:placeholder-gray-400"
           ></textarea>
         </div>
       </div>
 
       <div>
-        <app-label>Color Scheme</app-label>
+        <app-label>Bảng màu</app-label>
         <div class="mt-2 space-y-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <app-label>Background Color</app-label>
+              <app-label>Màu nền</app-label>
               <div class="relative">
                 <div
                   (click)="togglePicker('bg')"
@@ -52,7 +52,7 @@
               </div>
             </div>
             <div>
-              <app-label>Text Color</app-label>
+              <app-label>Màu chữ</app-label>
               <div class="relative">
                 <div
                   (click)="togglePicker('text')"
@@ -69,7 +69,7 @@
             </div>
           </div>
           <div>
-            <p class="mb-2 text-xs font-medium text-gray-600 dark:text-gray-400">Preview</p>
+            <p class="mb-2 text-xs font-medium text-gray-600 dark:text-gray-400">Xem trước</p>
             <div
               class="flex items-center justify-center rounded-lg bg-gray-100 p-4 dark:bg-gray-800"
             >
@@ -78,7 +78,7 @@
                 [style.backgroundColor]="formData.backgroundColor"
                 [style.color]="formData.textColor"
               >
-                {{ formData.name || 'Sample Tag' }}
+                {{ formData.name || 'Thẻ mẫu' }}
               </span>
             </div>
           </div>
@@ -89,9 +89,9 @@
 </div>
 <div class="flex justify-end mt-4">
   <div class="flex flex-shrink-0 gap-3">
-    <app-button size="sm" variant="outline" (btnClick)="onCancel()">Cancel</app-button>
+    <app-button size="sm" variant="outline" (btnClick)="onCancel()">Hủy</app-button>
     <app-button size="sm" variant="primary" (btnClick)="onSave()">
-      {{ isEditMode ? 'Update Tag' : 'Create Tag' }}
+      {{ isEditMode ? 'Cập nhật Thẻ' : 'Tạo Thẻ' }}
     </app-button>
   </div>
 </div>

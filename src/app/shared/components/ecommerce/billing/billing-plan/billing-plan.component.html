@@ -1,17 +1,17 @@
 <div class="px-6 py-5">
-  <h3 class="text-base font-medium text-gray-800 dark:text-white/90">Plan Details</h3>
+  <h3 class="text-base font-medium text-gray-800 dark:text-white/90">Chi tiết gói</h3>
 </div>
 <div
   class="grid grid-cols-1 gap-6 border-t border-gray-200 p-4 sm:p-6 lg:grid-cols-1 xl:grid-cols-2 dark:border-gray-800"
 >
-  <!-- List -->
+  <!-- Thông tin gói -->
   <div>
     <ul
       class="divide-y divide-gray-100 rounded-t-xl border border-gray-200 p-5 dark:divide-gray-800 dark:border-gray-800"
     >
       <li class="py-3 first:pt-0">
         <span class="block space-y-1.5 text-sm font-normal text-gray-500 dark:text-gray-400">
-          Current Plan
+          Gói hiện tại
         </span>
         <span class="block text-sm font-medium text-gray-700 dark:text-gray-400">
           Professional
@@ -19,44 +19,46 @@
       </li>
       <li class="py-3">
         <span class="block space-y-1.5 text-sm font-normal text-gray-500 dark:text-gray-400">
-          Monthly Limits
+          Giới hạn hàng tháng
         </span>
         <span class="block text-sm font-medium text-gray-700 dark:text-gray-400">
-          25,000 Orders
+          25,000 đơn hàng
         </span>
       </li>
       <li class="py-3">
         <span class="block space-y-1.5 text-sm font-normal text-gray-500 dark:text-gray-400">
-          Cost
+          Chi phí
         </span>
         <span class="block text-sm font-medium text-gray-700 dark:text-gray-400">
           $199.00
-          <span class="text-xs text-gray-500 dark:text-gray-400"> /month </span>
+          <span class="text-xs text-gray-500 dark:text-gray-400"> /tháng </span>
         </span>
       </li>
       <li class="py-3">
         <span class="block space-y-1.5 text-sm font-normal text-gray-500 dark:text-gray-400">
-          Renewal Date
+          Ngày gia hạn
         </span>
         <span class="block text-sm font-medium text-gray-700 dark:text-gray-400">
-          Mar 22, 2028
+          22 Tháng 3, 2028
         </span>
       </li>
     </ul>
     <div class="rounded-b-xl border border-t-0 border-gray-200 p-5 dark:border-gray-800">
       <div class="mb-5 flex items-center justify-between">
-        <span class="text-sm font-medium text-gray-700 dark:text-gray-400"> Orders </span>
-        <span class="text-sm text-gray-700 dark:text-gray-400"> 15,299 of 25,500 orders used </span>
+        <span class="text-sm font-medium text-gray-700 dark:text-gray-400"> Đơn hàng </span>
+        <span class="text-sm text-gray-700 dark:text-gray-400">
+          15,299 trên 25,500 đơn hàng đã sử dụng
+        </span>
       </div>
-      <!-- Progress -->
+      <!-- Thanh tiến độ -->
       <div class="relative h-2 w-full rounded-sm bg-gray-200 dark:bg-gray-800">
         <div class="bg-brand-500 absolute left-0 h-full w-[55%] rounded-sm"></div>
       </div>
     </div>
   </div>
-  <!-- Benefits -->
+  <!-- Lợi ích gói -->
   <div>
-    <h3 class="mb-6 text-base font-medium text-gray-800 dark:text-white/90">Plan Benefits</h3>
+    <h3 class="mb-6 text-base font-medium text-gray-800 dark:text-white/90">Lợi ích gói</h3>
     <ul class="space-y-3.5">
       <li class="flex items-center gap-2.5">
         <svg
@@ -76,7 +78,7 @@
           />
         </svg>
         <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
-          25,500 orders per month
+          25,500 đơn hàng mỗi tháng
         </span>
       </li>
       <li class="flex items-center gap-2.5">
@@ -97,7 +99,7 @@
           />
         </svg>
         <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
-          Unlimited integrations
+          Tích hợp không giới hạn
         </span>
       </li>
       <li class="flex items-center gap-2.5">
@@ -118,7 +120,7 @@
           />
         </svg>
         <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
-          Exclusive AutoFile discount
+          Giảm giá độc quyền AutoFile
         </span>
       </li>
       <li class="flex items-center gap-2.5">
@@ -138,7 +140,9 @@
             stroke-linejoin="round"
           />
         </svg>
-        <span class="text-sm font-medium text-gray-500 dark:text-gray-400"> 10 GB Storage </span>
+        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          10 GB dung lượng lưu trữ
+        </span>
       </li>
       <li class="flex items-center gap-2.5">
         <svg
@@ -157,7 +161,7 @@
             stroke-linejoin="round"
           />
         </svg>
-        <span class="text-sm font-medium text-gray-400 line-through"> Custom Templates </span>
+        <span class="text-sm font-medium text-gray-400 line-through"> Mẫu tùy chỉnh </span>
       </li>
       <li class="flex items-center gap-2.5">
         <svg
@@ -177,22 +181,16 @@
           />
         </svg>
         <span class="text-sm font-medium text-gray-400 line-through">
-          Advanced Marketing tool
+          Công cụ Marketing nâng cao
         </span>
       </li>
     </ul>
-    <!-- <div class="mt-24 flex w-full flex-col items-center justify-between gap-3 sm:flex-row">
-        <app-button variant="outline" className="w-full h-11">
-          Cancel Subscription
-        </app-button>
-        <app-button variant="primary" className="w-full h-11">
-          Upgrade to Pro
-        </app-button>
-      </div> -->
+
+    <!-- Nút hành động -->
     <div class="mt-24 w-full">
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <app-button variant="outline" className="w-full h-11"> Cancel Subscription </app-button>
-        <app-button variant="primary" className="w-full h-11"> Upgrade to Pro </app-button>
+        <app-button variant="outline" className="w-full h-11"> Hủy gói </app-button>
+        <app-button variant="primary" className="w-full h-11"> Nâng cấp lên Pro </app-button>
       </div>
     </div>
   </div>

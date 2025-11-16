@@ -4,17 +4,17 @@
       class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
     >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Cover Image</h2>
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Ảnh Bìa</h2>
       </div>
       <div class="p-4 sm:p-6">
         <app-image-upload [imagePreview]="imagePreview" (fileSelected)="onFileSelected($event)">
         </app-image-upload>
-        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Recommended: 1200x630px</p>
+        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Khuyến nghị: 1200x630px</p>
         <div class="mt-4">
-          <app-label for="cover-image-alt">Image Alt Text</app-label>
+          <app-label for="cover-image-alt">Mô tả Ảnh</app-label>
           <app-input-field
             id="cover-image-alt"
-            placeholder="Describe the image"
+            placeholder="Mô tả nội dung của ảnh"
             [(value)]="postData.coverImageAlt"
           ></app-input-field>
         </div>
@@ -24,47 +24,27 @@
       class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
     >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Publishing Settings</h2>
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Cài Đặt Xuất Bản</h2>
       </div>
       <div class="p-4 sm:p-6">
         <div class="grid grid-cols-1 gap-5">
           <div>
-            <app-label for="status" className="required">Status</app-label>
+            <app-label for="status" className="required">Trạng Thái</app-label>
             <app-select
               id="status"
               [options]="statusOptions"
-              placeholder="Select status"
+              placeholder="Chọn trạng thái"
               [(value)]="postData.status"
             ></app-select>
           </div>
           <div>
-            <app-label for="published-at">Published Date</app-label>
+            <app-label for="published-at">Ngày Xuất Bản</app-label>
             <app-input-field
               id="published-at"
               type="date"
               [(value)]="postData.publishedAt"
             ></app-input-field>
           </div>
-          <!-- <div class="space-y-3">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                [checked]="postData.isFeatured"
-                (change)="handleCheckboxChange('isFeatured', $any($event.target).checked)"
-                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-              />
-              <span class="text-sm text-gray-700 dark:text-gray-300">Featured Post</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                [checked]="postData.isPinned"
-                (change)="handleCheckboxChange('isPinned', $any($event.target).checked)"
-                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-              />
-              <span class="text-sm text-gray-700 dark:text-gray-300">Pin to Top</span>
-            </label>
-          </div> -->
         </div>
       </div>
     </div>
@@ -75,43 +55,43 @@
       class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
     >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Basic Information</h2>
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thông Tin Cơ Bản</h2>
       </div>
       <div class="p-4 sm:p-6">
         <div class="grid grid-cols-1 gap-5">
           <div>
-            <app-label for="title" className="required">Title</app-label>
+            <app-label for="title" className="required">Tiêu Đề</app-label>
             <app-input-field
               id="title"
-              placeholder="Enter post title"
+              placeholder="Nhập tiêu đề bài viết"
               [(value)]="postData.title"
             ></app-input-field>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <app-label for="categories">Categories</app-label>
+              <app-label for="categories">Danh Mục</app-label>
               <ng-select
                 id="categories"
                 [items]="allCategories"
                 bindLabel="name"
                 bindValue="id"
                 [multiple]="true"
-                placeholder="Select categories"
+                placeholder="Chọn danh mục"
                 [(ngModel)]="postData.categories"
                 [closeOnSelect]="false"
               >
               </ng-select>
             </div>
             <div>
-              <app-label for="tags">Tags</app-label>
+              <app-label for="tags">Thẻ</app-label>
               <ng-select
                 id="tags"
                 [items]="allTags"
                 bindLabel="name"
                 bindValue="id"
                 [multiple]="true"
-                placeholder="Select tags"
+                placeholder="Chọn thẻ"
                 [(ngModel)]="postData.tags"
                 [closeOnSelect]="false"
               >
@@ -119,11 +99,11 @@
             </div>
           </div>
           <div>
-            <app-label for="summary">Summary</app-label>
+            <app-label for="summary">Tóm Tắt</app-label>
             <textarea
               id="summary"
               rows="3"
-              placeholder="Brief description of the post"
+              placeholder="Mô tả ngắn về bài viết"
               [(ngModel)]="postData.summary"
               class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
             ></textarea>
@@ -136,32 +116,32 @@
       class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
     >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">SEO Settings</h2>
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Cài Đặt SEO</h2>
       </div>
       <div class="p-4 sm:p-6">
         <div class="grid grid-cols-1 gap-5">
           <div>
-            <app-label for="seo-title">SEO Title</app-label>
+            <app-label for="seo-title">Tiêu Đề SEO</app-label>
             <app-input-field
               id="seo-title"
-              placeholder="Custom title for search engines"
+              placeholder="Tiêu đề tùy chỉnh cho công cụ tìm kiếm"
               [(value)]="postData.seoTitle"
             ></app-input-field>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Leave empty to use post title
+              Để trống để sử dụng tiêu đề bài viết
             </p>
           </div>
           <div>
-            <app-label for="seo-description">SEO Description</app-label>
+            <app-label for="seo-description">Mô Tả SEO</app-label>
             <textarea
               id="seo-description"
               rows="3"
-              placeholder="Meta description (160 characters)"
+              placeholder="Mô tả meta (160 ký tự)"
               [(value)]="postData.seoDescription"
               class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
             ></textarea>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              {{ postData.seoDescription.length || 0 }} / 160 characters
+              {{ postData.seoDescription.length || 0 }} / 160 ký tự
             </p>
           </div>
         </div>
@@ -183,7 +163,7 @@
           }"
           class="flex-shrink-0 border-b-2 px-4 py-3 text-sm font-medium focus:outline-none"
         >
-          Write
+          Viết
         </button>
 
         <button
@@ -195,7 +175,7 @@
           }"
           class="flex-shrink-0 border-b-2 px-4 py-3 text-sm font-medium focus:outline-none"
         >
-          Preview
+          Xem Trước
         </button>
       </div>
 
@@ -222,7 +202,7 @@
               class="flex items-center justify-center h-full min-h-[250px]"
             >
               <span class="text-sm text-gray-500 dark:text-gray-400">
-                Nothing to preview. Start writing in the editor.
+                Không có gì để xem trước. Bắt đầu viết trong trình soạn thảo.
               </span>
             </div>
           </div>
@@ -233,9 +213,9 @@
 
   <div class="lg:col-span-12">
     <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-      <app-button variant="outline" (btnClick)="onCancel()">Cancel</app-button>
+      <app-button variant="outline" (btnClick)="onCancel()">Hủy</app-button>
       <app-button variant="primary" (btnClick)="onSave()">
-        {{ isEditMode ? 'Update Post' : 'Create Post' }}
+        {{ isEditMode ? 'Cập Nhật Bài Viết' : 'Tạo Bài Viết' }}
       </app-button>
     </div>
   </div>

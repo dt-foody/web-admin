@@ -1,17 +1,17 @@
 <div class="space-y-3">
-  <!-- Category Information Section -->
+  <!-- Section: Thông tin Category -->
   <div
     class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
   >
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Category Information</h2>
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thông tin Category</h2>
     </div>
     <div class="p-4 sm:p-6">
       <form>
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <!-- Image Upload Column - Left Side -->
+          <!-- Cột tải ảnh - bên trái -->
           <div class="lg:col-span-3">
-            <app-label>Category Image</app-label>
+            <app-label>Ảnh Category</app-label>
             <div class="mt-2">
               <app-image-upload
                 [imagePreview]="imagePreview"
@@ -19,19 +19,19 @@
               >
               </app-image-upload>
             </div>
-            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Recommended: 400x400px</p>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Đề xuất: 400x400px</p>
           </div>
 
-          <!-- Form Fields Column - Right Side -->
+          <!-- Cột form - bên phải -->
           <div class="lg:col-span-9">
             <div class="grid grid-cols-1 gap-5">
               <div>
                 <app-label for="category-name">
-                  Category Name <span class="text-red-500">*</span>
+                  Tên Category <span class="text-red-500">*</span>
                 </app-label>
                 <app-input-field
                   id="category-name"
-                  placeholder="Enter category name"
+                  placeholder="Nhập tên category"
                   [(value)]="categoryForm.name"
                 >
                 </app-input-field>
@@ -39,12 +39,12 @@
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <app-label for="parent-category">Parent Category</app-label>
+                  <app-label for="parent-category">Category Cha</app-label>
                   <ng-select
                     [items]="parentCategories"
                     bindLabel="label"
                     bindValue="value"
-                    placeholder="Select parent category (optional)"
+                    placeholder="Chọn category cha (tùy chọn)"
                     [(ngModel)]="categoryForm.parent"
                     [searchable]="true"
                     [clearable]="true"
@@ -57,7 +57,7 @@
                   <label
                     class="mb-2 inline-block text-sm font-semibold text-gray-700 dark:text-gray-400"
                   >
-                    Status
+                    Trạng thái
                   </label>
                   <div class="flex items-center h-10">
                     <app-switch label="Active" [(value)]="categoryForm.isActive"> </app-switch>
@@ -66,11 +66,11 @@
               </div>
 
               <div>
-                <app-label for="description">Description</app-label>
+                <app-label for="description">Mô tả</app-label>
                 <app-text-area
                   id="description"
                   [rows]="4"
-                  placeholder="Enter category description (optional)"
+                  placeholder="Nhập mô tả category (tùy chọn)"
                   [(value)]="categoryForm.description"
                 >
                 </app-text-area>
@@ -82,9 +82,9 @@
     </div>
   </div>
 
-  <!-- Action Buttons -->
+  <!-- Nút thao tác -->
   <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-    <app-button size="sm" variant="outline" (btnClick)="onCancel()"> Cancel </app-button>
-    <app-button size="sm" variant="primary" (btnClick)="onSave()"> Save Category </app-button>
+    <app-button size="sm" variant="outline" (btnClick)="onCancel()"> Hủy </app-button>
+    <app-button size="sm" variant="primary" (btnClick)="onSave()"> Lưu Category </app-button>
   </div>
 </div>

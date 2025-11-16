@@ -2,53 +2,53 @@
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
   <!-- CỘT CHÍNH (8 cột) -->
   <div class="lg:col-span-8 space-y-6">
-    <!-- Promotion Info Section -->
+    <!-- Thông tin khuyến mãi -->
     <div
       class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
     >
       <div
         class="border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex items-center justify-between"
       >
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Promotion Information</h2>
-        <app-switch label="Active" [(value)]="promotionData.isActive"></app-switch>
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thông tin khuyến mãi</h2>
+        <app-switch label="Hoạt động" [(value)]="promotionData.isActive"></app-switch>
       </div>
       <div class="p-4 sm:p-6">
         <div class="grid grid-cols-1 gap-5">
-          <!-- Promotion Name -->
+          <!-- Tên khuyến mãi -->
           <div>
-            <app-label for="promotion-name" className="required">Promotion Name</app-label>
+            <app-label for="promotion-name" className="required">Tên khuyến mãi</app-label>
             <app-input-field
               id="promotion-name"
-              placeholder="Enter promotion name"
+              placeholder="Nhập tên khuyến mãi"
               [(value)]="promotionData.name"
             ></app-input-field>
           </div>
 
-          <!-- Description -->
+          <!-- Mô tả -->
           <div>
-            <app-label for="description">Description</app-label>
+            <app-label for="description">Mô tả</app-label>
             <app-text-area
               id="description"
               [rows]="3"
-              placeholder="Enter promotion description"
+              placeholder="Nhập mô tả khuyến mãi"
               [(value)]="promotionData.description"
             ></app-text-area>
           </div>
 
-          <!-- Discount Type & Value (Moved from Card 2) -->
+          <!-- Loại & giá trị giảm giá -->
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
-              <app-label for="discount-type" className="required">Discount Type</app-label>
+              <app-label for="discount-type" className="required">Loại giảm giá</app-label>
               <app-select
                 id="discount-type"
                 [options]="discountTypeOptions"
-                placeholder="Select discount type"
+                placeholder="Chọn loại giảm giá"
                 [value]="promotionData.discountType"
                 (valueChange)="handleSelectChange('discountType', $event)"
               ></app-select>
             </div>
             <div>
-              <app-label for="discount-value" className="required">Discount Value</app-label>
+              <app-label for="discount-value" className="required">Giá trị giảm</app-label>
               <app-input-field
                 id="discount-value"
                 type="number"
@@ -58,8 +58,8 @@
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 {{
                   promotionData.discountType === 'percentage'
-                    ? 'Enter percentage (0-100)'
-                    : 'Enter fixed amount'
+                    ? 'Nhập phần trăm (0-100)'
+                    : 'Nhập số tiền cố định'
                 }}
               </p>
             </div>
@@ -68,18 +68,18 @@
       </div>
     </div>
 
-    <!-- Quantity Limits Section (Remains separate in main column) -->
+    <!-- Giới hạn số lượng -->
     <div
       class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
     >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Quantity Limits</h2>
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Giới hạn số lượng</h2>
       </div>
       <div class="p-4 sm:p-6">
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <!-- Max Quantity -->
+          <!-- Số lượng tối đa -->
           <div>
-            <app-label for="max-quantity">Maximum Total Quantity</app-label>
+            <app-label for="max-quantity">Tổng số lượng tối đa</app-label>
             <app-input-field
               id="max-quantity"
               type="number"
@@ -87,13 +87,13 @@
               [(value)]="promotionData.maxQuantity"
             ></app-input-field>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Total quantity that can be sold (0 = unlimited)
+              Tổng số lượng có thể bán (0 = không giới hạn)
             </p>
           </div>
 
-          <!-- Daily Max Uses -->
+          <!-- Số lượng tối đa theo ngày -->
           <div>
-            <app-label for="daily-max-uses">Maximum Daily Quantity</app-label>
+            <app-label for="daily-max-uses">Số lượng tối đa hàng ngày</app-label>
             <app-input-field
               id="daily-max-uses"
               type="number"
@@ -101,7 +101,7 @@
               [(value)]="promotionData.dailyMaxUses"
             ></app-input-field>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Maximum quantity per day (0 = unlimited)
+              Số lượng tối đa mỗi ngày (0 = không giới hạn)
             </p>
           </div>
         </div>
@@ -111,38 +111,38 @@
 
   <!-- CỘT PHỤ (4 cột) -->
   <div class="lg:col-span-4 space-y-6">
-    <!-- Applicable Item Section -->
+    <!-- Mục áp dụng -->
     <div
       class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
     >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Applicable Item</h2>
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Áp dụng cho</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Select either a product or a combo
+          Chọn sản phẩm hoặc combo
         </p>
       </div>
       <div class="p-4 sm:p-6">
         <div class="grid grid-cols-1 gap-5">
-          <!-- Select Type -->
+          <!-- Chọn loại -->
           <div>
-            <app-label for="applicable-to" className="required">Apply To</app-label>
+            <app-label for="applicable-to" className="required">Áp dụng cho</app-label>
             <app-select
               id="applicable-to"
               [options]="applicableToOptions"
-              placeholder="Select type"
+              placeholder="Chọn loại"
               [value]="selectedApplicableTo"
               (valueChange)="handleApplicableToChange($event)"
             ></app-select>
           </div>
 
-          <!-- Product Selection -->
+          <!-- Chọn sản phẩm -->
           <div *ngIf="selectedApplicableTo === 'product'">
-            <app-label for="product" className="required">Product</app-label>
+            <app-label for="product" className="required">Sản phẩm</app-label>
             <ng-select
               [items]="products"
               bindLabel="name"
               bindValue="id"
-              placeholder="Select a product"
+              placeholder="Chọn sản phẩm"
               [(ngModel)]="promotionData.product"
               [searchable]="true"
               [clearable]="true"
@@ -151,14 +151,14 @@
             </ng-select>
           </div>
 
-          <!-- Combo Selection -->
+          <!-- Chọn combo -->
           <div *ngIf="selectedApplicableTo === 'combo'">
             <app-label for="combo" className="required">Combo</app-label>
             <ng-select
               [items]="combos"
               bindLabel="name"
               bindValue="id"
-              placeholder="Select a combo"
+              placeholder="Chọn combo"
               [(ngModel)]="promotionData.combo"
               [searchable]="true"
               [clearable]="true"
@@ -170,18 +170,18 @@
       </div>
     </div>
 
-    <!-- Validity Period Section -->
+    <!-- Thời gian hiệu lực -->
     <div
       class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
     >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Validity Period</h2>
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thời gian hiệu lực</h2>
       </div>
       <div class="p-4 sm:p-6">
         <div class="grid grid-cols-1 gap-5">
-          <!-- Start Date -->
+          <!-- Ngày bắt đầu -->
           <div>
-            <app-label for="start-date" className="required">Start Date</app-label>
+            <app-label for="start-date" className="required">Ngày bắt đầu</app-label>
             <app-input-field
               id="start-date"
               type="datetime-local"
@@ -189,9 +189,9 @@
             ></app-input-field>
           </div>
 
-          <!-- End Date -->
+          <!-- Ngày kết thúc -->
           <div>
-            <app-label for="end-date" className="required">End Date</app-label>
+            <app-label for="end-date" className="required">Ngày kết thúc</app-label>
             <app-input-field
               id="end-date"
               type="datetime-local"
@@ -203,12 +203,12 @@
     </div>
   </div>
 
-  <!-- Action Buttons (Nằm ngoài và trải dài 12 cột) -->
+  <!-- Nút hành động (trải dài 12 cột) -->
   <div class="lg:col-span-12">
     <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-      <app-button variant="outline" (btnClick)="onCancel()">Cancel</app-button>
+      <app-button variant="outline" (btnClick)="onCancel()">Hủy</app-button>
       <app-button variant="primary" (btnClick)="onSave()">
-        {{ isEditMode ? 'Update Promotion' : 'Create Promotion' }}
+        {{ isEditMode ? 'Cập nhật khuyến mãi' : 'Tạo khuyến mãi' }}
       </app-button>
     </div>
   </div>

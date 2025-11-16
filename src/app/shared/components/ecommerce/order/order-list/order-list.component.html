@@ -5,7 +5,7 @@
     class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
   >
     <div class="flex flex-wrap gap-3">
-      <app-search-input placeholder="Search orders..." (search)="onSearchChange($event)">
+      <app-search-input placeholder="Tìm đơn hàng..." (search)="onSearchChange($event)">
       </app-search-input>
 
       <select
@@ -60,7 +60,7 @@
             strokeLinejoin="round"
           />
         </svg>
-        Create
+        Tạo mới
       </a>
     </div>
   </div>
@@ -75,7 +75,7 @@
 
           <th>
             <app-sort-header
-              label="Order ID"
+              label="Mã đơn hàng"
               key="orderId"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -86,7 +86,7 @@
 
           <th>
             <app-sort-header
-              label="Customer"
+              label="Khách hàng"
               key="profile"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -98,12 +98,12 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Items
+            Sản phẩm
           </th>
 
           <th>
             <app-sort-header
-              label="Total Amount"
+              label="Tổng tiền"
               key="grandTotal"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -115,24 +115,24 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Status
+            Trạng thái
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Payment
+            Thanh toán
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Shipping
+            Vận chuyển
           </th>
 
           <th>
             <app-sort-header
-              label="Created At"
+              label="Ngày tạo"
               key="createdAt"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -144,7 +144,7 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Action
+            Hành động
           </th>
         </tr>
       </thead>
@@ -170,7 +170,7 @@
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex flex-col">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {{ order?.profile?.name || 'Guest' }}
+                  {{ order?.profile?.name || 'Khách vãng lai' }}
                 </span>
                 @if (getCustomerPhone(order.profile)) {
                   <span class="text-xs text-gray-500 dark:text-gray-400">
@@ -196,7 +196,7 @@
                   <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
                   <line x1="3" y1="6" x2="21" y2="6" />
                 </svg>
-                {{ getItemsCount(order) }} item(s)
+                {{ getItemsCount(order) }} sản phẩm
               </span>
             </td>
 
@@ -221,10 +221,10 @@
                   class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize"
                   [ngClass]="getPaymentStatusColor(order.payment.status || 'pending')"
                 >
-                  {{ order?.payment?.status || 'pending' }}
+                  {{ order?.payment?.status || 'đang chờ' }}
                 </span>
                 <span class="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                  {{ order?.payment?.method || 'cash' }}
+                  {{ order?.payment?.method || 'tiền mặt' }}
                 </span>
               </div>
             </td>
@@ -235,7 +235,7 @@
                 [ngClass]="getShippingStatusColor(order?.shipping?.status || 'n/a')"
               >
                 {{
-                  order?.shipping?.status || (order.orderType === 'Delivery' ? 'pending' : 'n/a')
+                  order?.shipping?.status || (order.orderType === 'Delivery' ? 'đang chờ' : 'n/a')
                 }}
               </span>
             </td>
@@ -252,7 +252,7 @@
                   *hasPermission="'order.read'"
                   (click)="handleView(order)"
                   class="text-green-500 hover:text-green-700 dark:hover:text-green-400 p-1 rounded"
-                  title="View"
+                  title="Xem"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -278,7 +278,7 @@
                   *hasPermission="'order.update'"
                   (click)="handleEdit(order)"
                   class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
-                  title="Edit"
+                  title="Sửa"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -299,7 +299,7 @@
                   *hasPermission="'order.delete'"
                   (click)="handleDelete(order)"
                   class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
-                  title="Delete"
+                  title="Xóa"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -332,25 +332,25 @@
 
 <ng-template #confirmDelete let-dialog>
   <div class="p-5">
-    <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Confirm Delete</h3>
+    <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Xác nhận xóa</h3>
     <p class="mb-6 text-gray-700 dark:text-gray-300">
-      Are you sure you want to delete order
+      Bạn có chắc chắn muốn xóa đơn hàng
       <strong class="text-gray-900 dark:text-white"
         >#{{ itemToDelete?.orderId || itemToDelete?.id?.substring(0, 8) }}</strong
-      >?
+      > không?
     </p>
     <div class="flex justify-end gap-3">
       <button
         (click)="dialog.close(false)"
         class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white transition"
       >
-        Cancel
+        Hủy
       </button>
       <button
         (click)="dialog.close(true)"
         class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition"
       >
-        Delete
+        Xóa
       </button>
     </div>
   </div>
