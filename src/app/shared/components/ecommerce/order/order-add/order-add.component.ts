@@ -1076,9 +1076,6 @@ export class OrderAddComponent implements OnInit {
     // appliedCoupons giống foody-user
     if (!base.appliedCoupons) base.appliedCoupons = [];
 
-    // Joi đang chửi "orderType is not allowed" → tạm thời bỏ
-    delete base.orderType;
-
     return base;
   }
 
@@ -1190,7 +1187,7 @@ export class OrderAddComponent implements OnInit {
     const obs =
       this.isEditMode && this.orderId
         ? this.orderService.update(this.orderId, payload)
-        : this.orderService.create(payload);
+        : this.orderService.createAdminOrder(payload);
 
     obs.subscribe({
       next: () => {
