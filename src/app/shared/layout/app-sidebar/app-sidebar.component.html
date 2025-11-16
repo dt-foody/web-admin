@@ -4,7 +4,7 @@
     'w-[240px]': (isExpanded$ | async) || (isMobileOpen$ | async) || (isHovered$ | async),
     'w-[80px]': !((isExpanded$ | async) || (isMobileOpen$ | async) || (isHovered$ | async)),
     'translate-x-0': isMobileOpen$ | async,
-    '-translate-x-full': !(isMobileOpen$ | async),
+    '-translate-x-full': (isMobileOpen$ | async) === false,
     'xl:translate-x-0': true,
   }"
   (mouseenter)="onSidebarMouseEnter()"
@@ -168,7 +168,7 @@
                       [ngClass]="{
                         'xl:justify-center': !((isExpanded$ | async) || (isHovered$ | async)),
                         'xl:justify-start': (isExpanded$ | async) || (isHovered$ | async),
-                        'menu-item-inactive': !isActive(nav.path)
+                        'menu-item-inactive': !isActive(nav.path),
                       }"
                     >
                       <span
@@ -180,9 +180,10 @@
                         [innerHTML]="nav.icon | safeHtml"
                       >
                       </span>
-                      <span class="menu-item-text"
+                      <span
+                        class="menu-item-text"
                         [ngClass]="{
-                          'hidden': !((isExpanded$ | async) || (isHovered$ | async))
+                          hidden: !((isExpanded$ | async) || (isHovered$ | async)),
                         }"
                       >
                         @if (

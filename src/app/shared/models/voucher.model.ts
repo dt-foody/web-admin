@@ -45,7 +45,7 @@ export interface Voucher {
 
   // --- Liên kết ---
   // Các trường này có thể là string (ID) hoặc object (nếu populate)
-  customer:  any;
+  customer: any;
   coupon: string | BasicCouponInfo;
   order?: string; // ID của đơn hàng đã sử dụng
 
@@ -81,11 +81,11 @@ export interface Voucher {
 // ===== Interface cho Form (Vd: Admin cấp phát voucher) =====
 export interface VoucherFormData {
   customer: string; // ID khách hàng
-  coupon: string;   // ID của Coupon gốc (để hệ thống tự tạo snapshot)
-  code: string;     // Mã code (có thể để trống để hệ thống tự sinh)
+  coupon: string; // ID của Coupon gốc (để hệ thống tự tạo snapshot)
+  code: string; // Mã code (có thể để trống để hệ thống tự sinh)
   expiredAt: string | Date | any; // Ngày hết hạn
   usageLimit: number;
   issueMode: IssueMode;
-  
+
   // discountSnapshot sẽ được backend tạo dựa trên couponId
 }
