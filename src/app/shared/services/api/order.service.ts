@@ -12,9 +12,15 @@ export class OrderService extends BaseService<Order> {
     super(http, 'orders');
   }
 
-  createAdminOrder(body: any) {
+  adminCreateOrder(body: any) {
     return this.http
       .post<Order>(`${this.apiUrl}/admin-order`, body)
+      .pipe(catchError(this.handleError));
+  }
+
+  adminUpdateOrder(id: string, body: any) {
+    return this.http
+      .patch<any>(`${this.apiUrl}/admin-order/${id}`, body)
       .pipe(catchError(this.handleError));
   }
 }

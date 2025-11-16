@@ -11,6 +11,7 @@
 
       <div class="p-4 sm:p-6">
         <div class="space-y-5">
+          <!-- Khách hàng -->
           <div>
             <app-label for="customer">Khách Hàng (Tùy chọn)</app-label>
             <ng-select
@@ -45,6 +46,7 @@
             </ng-select>
           </div>
 
+          <!-- Loại đơn & kênh -->
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
               <app-label for="order-type" className="required"> Loại Đơn Hàng </app-label>
@@ -76,6 +78,7 @@
             </div>
           </div>
 
+          <!-- Trạng thái + note -->
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
               <app-label for="order-status">Trạng Thái Đơn Hàng</app-label>
@@ -110,9 +113,14 @@
     >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
         <div class="flex items-center justify-between">
-          <h2 class="text-lg font-medium text-gray-800 dark:text-white">Sản Phẩm Trong Đơn</h2>
+          <h2 class="text-lg font-medium text-gray-800 dark:text-white">Sản Phẩm</h2>
 
-          <app-button variant="outline" size="sm" (btnClick)="addOrderItem()">
+          <app-button
+            variant="outline"
+            size="sm"
+            (btnClick)="addOrderItem()"
+            [disabled]="editModeType === 'metaOnly'"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -132,7 +140,7 @@
         </div>
       </div>
 
-      <div class="p-4 sm:p-6">
+      <div class="p-4 sm:p-6" [class.opacity-60]="editModeType === 'metaOnly'">
         <div class="space-y-4">
           @if (orderData.items.length === 0) {
             <div
@@ -141,7 +149,12 @@
               <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 Chưa có sản phẩm nào trong đơn
               </p>
-              <app-button variant="primary" size="sm" (btnClick)="addOrderItem()">
+              <app-button
+                variant="primary"
+                size="sm"
+                (btnClick)="addOrderItem()"
+                [disabled]="editModeType === 'metaOnly'"
+              >
                 Thêm Sản Phẩm Đầu Tiên
               </app-button>
             </div>
@@ -163,6 +176,7 @@
                         [checked]="getItemType(i) === 'product'"
                         (change)="onItemTypeChange(i, 'product')"
                         class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                        [disabled]="editModeType === 'metaOnly'"
                       />
                       <span class="ml-2 text-sm text-gray-700 dark:text-gray-300"> Sản Phẩm </span>
                     </label>
@@ -175,6 +189,7 @@
                         [checked]="getItemType(i) === 'combo'"
                         (change)="onItemTypeChange(i, 'combo')"
                         class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                        [disabled]="editModeType === 'metaOnly'"
                       />
                       <span class="ml-2 text-sm text-gray-700 dark:text-gray-300"> Combo </span>
                     </label>
@@ -231,6 +246,7 @@
                       (click)="removeOrderItem(i)"
                       class="rounded p-2 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                       title="Xóa Sản Phẩm"
+                      [disabled]="editModeType === 'metaOnly'"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -251,11 +267,388 @@
                   </div>
                 </div>
 
-                <!-- Các chi tiết sản phẩm / combo khi mở rộng -->
+                <!-- Chi tiết sản phẩm / combo -->
                 @if (isItemExpanded(i)) {
                   <div class="space-y-4 border-t border-gray-200 pt-4 dark:border-gray-700">
-                    ...
-                    <!-- Phần chi tiết sản phẩm / combo giữ nguyên, chỉ dịch các label, placeholder, tooltip -->
+                    @let type = getItemType(i);
+
+                    <!-- Nếu là PRODUCT -->
+                    @if (type === 'product') {
+                      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <div class="md:col-span-2 space-y-3">
+                          <!-- chọn product -->
+                          <div>
+                            <app-label className="required"> Chọn Sản Phẩm </app-label>
+                            <ng-select
+                              [items]="products"
+                              bindLabel="name"
+                              bindValue="id"
+                              placeholder="Chọn sản phẩm"
+                              [(ngModel)]="orderData.items[i].item"
+                              (ngModelChange)="onProductChange(i, $event)"
+                              [searchable]="true"
+                              [clearable]="true"
+                              [disabled]="editModeType === 'metaOnly'"
+                              name="itemProduct-{{ i }}"
+                            >
+                              <ng-template ng-option-tmp let-prod="item">
+                                <div class="flex flex-col">
+                                  <span class="font-medium">{{ prod.name }}</span>
+                                  @if (prod.basePrice) {
+                                    <span class="text-xs text-gray-500">
+                                      {{ prod.basePrice | number: '1.0-0' }} đ
+                                    </span>
+                                  }
+                                </div>
+                              </ng-template>
+                            </ng-select>
+                          </div>
+
+                          <!-- Options sản phẩm -->
+                          @let product = getProduct(item.item);
+                          @if (product && product.optionGroups && product.optionGroups.length > 0) {
+                            <div class="space-y-3">
+                              <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Tuỳ Chọn Sản Phẩm
+                              </div>
+
+                              @for (group of product.optionGroups; track group.name) {
+                                <div class="rounded-md bg-white p-3 shadow-sm dark:bg-gray-900/60">
+                                  <div class="mb-2 flex items-center justify-between">
+                                    <div>
+                                      <div
+                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100"
+                                      >
+                                        {{ group.name }}
+                                      </div>
+                                      <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        Bắt buộc: {{ group.minOptions }} - Tối đa:
+                                        {{ group.maxOptions }}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="space-y-2">
+                                    @for (opt of group.options; track opt.name) {
+                                      <label
+                                        class="flex cursor-pointer items-center justify-between rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900/70 dark:hover:bg-gray-900"
+                                      >
+                                        <div class="flex items-center gap-2">
+                                          <input
+                                            [type]="group.maxOptions === 1 ? 'radio' : 'checkbox'"
+                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            [name]="
+                                              'product-opt-' +
+                                              i +
+                                              '-' +
+                                              group.name.replace(' ', '-')
+                                            "
+                                            [checked]="
+                                              isProductOptionSelected(item, group.name, opt.name)
+                                            "
+                                            (change)="toggleProductOption(i, group, opt, $event)"
+                                            [disabled]="editModeType === 'metaOnly'"
+                                          />
+                                          <span
+                                            class="font-medium text-gray-800 dark:text-gray-100"
+                                          >
+                                            {{ opt.name }}
+                                          </span>
+                                        </div>
+                                        <span
+                                          class="text-xs font-medium text-gray-600 dark:text-gray-300"
+                                        >
+                                          @if (opt.type === 'percentage') {
+                                            +{{ opt.priceModifier }}%
+                                          } @else {
+                                            +{{ opt.priceModifier | number: '1.0-0' }} đ
+                                          }
+                                        </span>
+                                      </label>
+                                    }
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+
+                        <!-- Qty + Price + Note -->
+                        <div class="space-y-3">
+                          <div>
+                            <app-label className="required">Số Lượng</app-label>
+                            <app-input-field
+                              type="number"
+                              min="1"
+                              [(value)]="orderData.items[i].quantity"
+                              (valueChange)="onItemQuantityChange(i, $event)"
+                              placeholder="1"
+                              [disabled]="editModeType === 'metaOnly'"
+                            ></app-input-field>
+                          </div>
+
+                          <div>
+                            <app-label>Giá (override)</app-label>
+                            <app-input-field
+                              type="number"
+                              [(value)]="orderData.items[i].price"
+                              (valueChange)="onItemPriceOverride(i, $event)"
+                              placeholder="Tự nhập để override"
+                              [disabled]="editModeType === 'metaOnly'"
+                            ></app-input-field>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                              Để trống nếu muốn dùng giá + options mặc định.
+                            </p>
+                          </div>
+
+                          <div>
+                            <app-label>Ghi chú món</app-label>
+                            <app-input-field
+                              [(value)]="orderData.items[i].note"
+                              placeholder="Ví dụ: ít đá, bớt ngọt..."
+                            ></app-input-field>
+                          </div>
+
+                          <div
+                            class="mt-2 rounded-md bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-200"
+                          >
+                            Thành tiền:
+                            {{ (item.price || 0) * (item.quantity || 0) | number: '1.0-0' }}
+                            đ
+                          </div>
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Nếu là COMBO -->
+                    @if (type === 'combo') {
+                      <div class="space-y-4">
+                        <!-- Chọn Combo -->
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                          <div class="md:col-span-2">
+                            <app-label className="required"> Chọn Combo </app-label>
+                            <ng-select
+                              [items]="combos"
+                              bindLabel="name"
+                              bindValue="id"
+                              placeholder="Chọn combo"
+                              [(ngModel)]="orderData.items[i].item"
+                              (ngModelChange)="onComboChange(i, $event)"
+                              [searchable]="true"
+                              [clearable]="true"
+                              [disabled]="editModeType === 'metaOnly'"
+                              name="itemCombo-{{ i }}"
+                            >
+                              <ng-template ng-option-tmp let-combo="item">
+                                <div class="flex flex-col">
+                                  <span class="font-medium">
+                                    {{ combo.name }}
+                                  </span>
+                                  @if (combo.pricingMode === PricingMode.FIXED) {
+                                    <span class="text-xs text-gray-500">
+                                      Giá combo:
+                                      {{ combo.comboPrice | number: '1.0-0' }}
+                                      đ
+                                    </span>
+                                  } @else if (combo.pricingMode === PricingMode.SLOT_PRICE) {
+                                    <span class="text-xs text-gray-500">
+                                      Tính theo giá từng slot
+                                    </span>
+                                  } @else if (combo.pricingMode === PricingMode.DISCOUNT) {
+                                    <span class="text-xs text-gray-500">
+                                      Giảm giá:
+                                      {{ combo.discountValue }}
+                                      {{ combo.discountType === 'PERCENT' ? '%' : 'đ' }}
+                                    </span>
+                                  }
+                                </div>
+                              </ng-template>
+                            </ng-select>
+                          </div>
+
+                          <div class="space-y-3">
+                            <div>
+                              <app-label className="required"> Số Lượng </app-label>
+                              <app-input-field
+                                type="number"
+                                min="1"
+                                [(value)]="orderData.items[i].quantity"
+                                (valueChange)="onItemQuantityChange(i, $event)"
+                                placeholder="1"
+                                [disabled]="editModeType === 'metaOnly'"
+                              ></app-input-field>
+                            </div>
+
+                            <div>
+                              <app-label>Ghi chú combo</app-label>
+                              <app-input-field
+                                [(value)]="orderData.items[i].note"
+                                placeholder="Ví dụ: ít đá, bớt ngọt..."
+                              ></app-input-field>
+                            </div>
+
+                            <div
+                              class="mt-2 rounded-md bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-200"
+                            >
+                              Thành tiền:
+                              {{ (item.price || 0) * (item.quantity || 0) | number: '1.0-0' }}
+                              đ
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Slot trong combo -->
+                        @let combo = getCombo(item.item);
+
+                        @if (combo) {
+                          <div class="space-y-4">
+                            @for (slot of combo.items; track slot.slotName) {
+                              <div class="rounded-md bg-white p-3 shadow-sm dark:bg-gray-900/60">
+                                <div class="mb-2 flex items-center justify-between">
+                                  <div>
+                                    <div
+                                      class="text-sm font-semibold text-gray-800 dark:text-gray-100"
+                                    >
+                                      Slot: {{ slot.slotName }}
+                                    </div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                      Chọn:
+                                      {{ slot.minSelection }} - {{ slot.maxSelection }}
+                                      sản phẩm
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <!-- Chọn product cho slot -->
+                                <div class="mb-3">
+                                  @let selectedId = getComboSlotSelection(item, slot.slotName);
+                                  <ng-select
+                                    [items]="slot.selectableProducts"
+                                    [searchable]="true"
+                                    [clearable]="false"
+                                    [disabled]="editModeType === 'metaOnly'"
+                                    [bindLabel]="'product.name'"
+                                    [bindValue]="'product.id'"
+                                    [ngModel]="selectedId"
+                                    (ngModelChange)="onComboProductChange(i, slot, $event)"
+                                    name="comboSlot-{{ i }}-{{ slot.slotName }}"
+                                  >
+                                    <ng-template ng-option-tmp let-sp="item">
+                                      <div class="flex flex-col">
+                                        <span class="font-medium">
+                                          {{ sp.product?.name }}
+                                        </span>
+                                        <span class="text-xs text-gray-500">
+                                          Base:
+                                          {{ sp.snapshotPrice | number: '1.0-0' }}
+                                          đ
+                                          @if (sp.additionalPrice) {
+                                            • Thêm:
+                                            {{ sp.additionalPrice | number: '1.0-0' }}
+                                            đ
+                                          }
+                                          @if (sp.slotPrice) {
+                                            • Slot:
+                                            {{ sp.slotPrice | number: '1.0-0' }}
+                                            đ
+                                          }
+                                        </span>
+                                      </div>
+                                    </ng-template>
+                                  </ng-select>
+                                </div>
+
+                                <!-- Options cho product trong combo -->
+                                @let selection = getComboSelectionForSlot(item, slot.slotName);
+                                @let selProd = getComboSelectionProduct(combo, selection);
+
+                                @if (
+                                  selection &&
+                                  selProd &&
+                                  selProd.optionGroups &&
+                                  selProd.optionGroups.length > 0
+                                ) {
+                                  <div class="space-y-3">
+                                    @for (group of selProd.optionGroups; track group.name) {
+                                      <div class="rounded-md bg-gray-50 p-3 dark:bg-gray-900/80">
+                                        <div
+                                          class="mb-2 text-sm font-semibold text-gray-800 dark:text-gray-100"
+                                        >
+                                          {{ group.name }}
+                                          <span
+                                            class="ml-1 text-xs font-normal text-gray-500 dark:text-gray-400"
+                                          >
+                                            (Bắt buộc: {{ group.minOptions }} - Tối đa:
+                                            {{ group.maxOptions }})
+                                          </span>
+                                        </div>
+
+                                        <div class="space-y-2">
+                                          @for (opt of group.options; track opt.name) {
+                                            <label
+                                              class="flex cursor-pointer items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                                            >
+                                              <div class="flex items-center gap-2">
+                                                <input
+                                                  [type]="
+                                                    group.maxOptions === 1 ? 'radio' : 'checkbox'
+                                                  "
+                                                  class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                  [name]="
+                                                    'combo-opt-' +
+                                                    i +
+                                                    '-' +
+                                                    slot.slotName +
+                                                    '-' +
+                                                    group.name.replace(' ', '-')
+                                                  "
+                                                  [checked]="
+                                                    isComboOptionSelected(
+                                                      selection,
+                                                      group.name,
+                                                      opt.name
+                                                    )
+                                                  "
+                                                  (change)="
+                                                    toggleComboOption(
+                                                      i,
+                                                      selection,
+                                                      group,
+                                                      opt,
+                                                      $event
+                                                    )
+                                                  "
+                                                  [disabled]="editModeType === 'metaOnly'"
+                                                />
+                                                <span
+                                                  class="font-medium text-gray-800 dark:text-gray-100"
+                                                >
+                                                  {{ opt.name }}
+                                                </span>
+                                              </div>
+                                              <span
+                                                class="text-xs font-medium text-gray-600 dark:text-gray-300"
+                                              >
+                                                @if (opt.type === 'percentage') {
+                                                  +{{ opt.priceModifier }}%
+                                                } @else {
+                                                  +{{ opt.priceModifier | number: '1.0-0' }}
+                                                  đ
+                                                }
+                                              </span>
+                                            </label>
+                                          }
+                                        </div>
+                                      </div>
+                                    }
+                                  </div>
+                                }
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
                   </div>
                 }
               </div>
@@ -274,7 +667,7 @@
         class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
       >
         <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-          <h2 class="text-lg font-medium text-gray-800 dark:text-white">Tóm Tắt Giá</h2>
+          <h2 class="text-lg font-medium text-gray-800 dark:text-white">Tóm Tắt</h2>
         </div>
 
         <div class="p-4 sm:p-6">
@@ -282,9 +675,7 @@
             <div
               class="flex items-center justify-between rounded-lg bg-gray-50 p-4 dark:bg-gray-900/50"
             >
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Tổng Tiền
-              </span>
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300"> Tổng Tiền </span>
               <span class="text-lg font-semibold text-gray-800 dark:text-white">
                 {{ orderData.totalAmount | number: '1.0-0' }} đ
               </span>
@@ -302,6 +693,7 @@
                   [searchable]="false"
                   [clearable]="false"
                   name="discountType"
+                  [disabled]="editModeType === 'metaOnly'"
                 >
                 </ng-select>
               </div>
@@ -314,6 +706,7 @@
                   placeholder="0"
                   [(value)]="orderData.discountValue"
                   (valueChange)="calculateTotals()"
+                  [disabled]="editModeType === 'metaOnly'"
                 ></app-input-field>
               </div>
             </div>
@@ -326,7 +719,7 @@
                 placeholder="0"
                 [(value)]="orderData.shippingFee"
                 (valueChange)="calculateTotals()"
-                [disabled]="orderData.orderType !== 'Delivery'"
+                [disabled]="orderData.orderType !== 'Delivery' || editModeType === 'metaOnly'"
               ></app-input-field>
             </div>
 
@@ -355,7 +748,7 @@
         <div class="p-4 sm:p-6">
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
-              <app-label for="payment-method">Phương Thức Thanh Toán</app-label>
+              <app-label for="payment-method">Phương Thức</app-label>
               <ng-select
                 [items]="paymentMethods"
                 bindLabel="label"
@@ -369,7 +762,7 @@
             </div>
 
             <div>
-              <app-label for="payment-status">Trạng Thái Thanh Toán</app-label>
+              <app-label for="payment-status">Trạng Thái</app-label>
               <ng-select
                 [items]="paymentStatuses"
                 bindLabel="label"
@@ -394,41 +787,120 @@
             <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thông Tin Giao Hàng</h2>
           </div>
 
-          <div class="p-4 sm:p-6">
-            ...
-            <!-- Các trường nhập thông tin giao hàng (Tên người nhận, số điện thoại, địa chỉ, phường, quận, thành phố) -->
+          <div class="p-4 sm:p-6 space-y-4">
+            <!-- Chọn địa chỉ trong customer -->
+            <div>
+              <app-label>Địa chỉ đã lưu</app-label>
+              <ng-select
+                [items]="shippingAddressOptions"
+                bindLabel="label"
+                bindValue="id"
+                [(ngModel)]="selectedShippingAddressId"
+                (ngModelChange)="onShippingAddressChange($event)"
+                [searchable]="false"
+                [clearable]="false"
+                name="shippingAddressSelect"
+              >
+              </ng-select>
+            </div>
+
+            <!-- Form địa chỉ -->
+            <div class="grid grid-cols-1 gap-4">
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <app-label className="required"> Tên Người Nhận </app-label>
+                  <app-input-field
+                    [(value)]="orderData.shipping!.address.recipientName"
+                    placeholder="Nguyễn Văn A"
+                  ></app-input-field>
+                </div>
+                <div>
+                  <app-label className="required"> Số Điện Thoại </app-label>
+                  <app-input-field
+                    [(value)]="orderData.shipping!.address.recipientPhone"
+                    placeholder="09xxxxxxxx"
+                  ></app-input-field>
+                </div>
+              </div>
+
+              <div>
+                <app-label className="required"> Địa Chỉ (Đường / Số nhà) </app-label>
+                <app-input-field
+                  [(value)]="orderData.shipping!.address.street"
+                  placeholder="Số nhà, tên đường..."
+                ></app-input-field>
+              </div>
+
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div>
+                  <app-label>Phường/Xã</app-label>
+                  <app-input-field
+                    [(value)]="orderData.shipping!.address.ward"
+                    placeholder="Phường/Xã"
+                  ></app-input-field>
+                </div>
+
+                <div>
+                  <app-label>Quận/Huyện</app-label>
+                  <app-input-field
+                    [(value)]="orderData.shipping!.address.district"
+                    placeholder="Quận/Huyện"
+                  ></app-input-field>
+                </div>
+
+                <div>
+                  <app-label className="required"> Thành Phố </app-label>
+                  <app-input-field
+                    [(value)]="orderData.shipping!.address.city"
+                    placeholder="Thành phố"
+                  ></app-input-field>
+                </div>
+              </div>
+
+              <div>
+                <app-label>Trạng Thái Giao Hàng</app-label>
+                <ng-select
+                  [items]="shippingStatuses"
+                  bindLabel="label"
+                  bindValue="value"
+                  [(ngModel)]="orderData.shipping!.status"
+                  [searchable]="false"
+                  [clearable]="false"
+                  name="shippingStatus"
+                >
+                </ng-select>
+              </div>
+            </div>
           </div>
         </div>
       }
 
       <!-- Hành động -->
-      <div class="flex flex-col gap-4 lg:flex-col">
-        <div class="flex gap-4">
-          <app-button
-            variant="outline"
-            (btnClick)="onSaveDraft()"
-            class="w-full flex-1"
-            className="w-full"
-          >
+      <div class="flex gap-4">
+        <!-- <div class="flex gap-4">
+          <app-button variant="outline" (btnClick)="onSaveDraft()" class="w-full flex-1" className="w-full">
             Lưu Nháp
           </app-button>
-          <app-button
-            variant="primary"
-            (btnClick)="onSubmit()"
-            class="w-full flex-1"
-            className="w-full"
-          >
+          <app-button variant="primary" (btnClick)="onSubmit()" class="w-full flex-1" className="w-full">
             {{ isEditMode ? 'Cập Nhật Đơn Hàng' : 'Tạo Đơn Hàng' }}
           </app-button>
-        </div>
+        </div> -->
 
         <button
           type="button"
-          class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 flex-1"
           (click)="router.navigateByUrl('/order')"
         >
           Hủy
         </button>
+        <app-button
+          variant="primary"
+          (btnClick)="onSubmit()"
+          class="w-full flex-2"
+          className="w-full"
+        >
+          {{ isEditMode ? 'Cập Nhật Đơn Hàng' : 'Tạo Đơn Hàng' }}
+        </app-button>
       </div>
     </div>
   </div>

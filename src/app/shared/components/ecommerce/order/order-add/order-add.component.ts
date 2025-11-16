@@ -106,6 +106,11 @@ const DEFAULT_FORM: OrderFormData = {
 export class OrderAddComponent implements OnInit {
   orderId: string | null = null;
   isEditMode = false;
+  // create: thêm mới
+  // full: edit được items/giá
+  // metaOnly: chỉ sửa status, payment, shipping, note, profile
+  editModeType: 'create' | 'full' | 'metaOnly' = 'create';
+
   orderData = createFormData(DEFAULT_FORM);
 
   // Data
@@ -199,9 +204,23 @@ export class OrderAddComponent implements OnInit {
       if (id) {
         this.isEditMode = true;
         this.orderId = id;
+        this.editModeType = 'full'; // tạm default, lát set lại theo status
         this.loadOrder(id);
+      } else {
+        this.isEditMode = false;
+        this.editModeType = 'create';
       }
     });
+  }
+
+  // Cho phép sửa items/giá khi:
+  // - status: pending | confirmed
+  // - payment.status !== 'paid'
+  private canEditItems(order: Order): boolean {
+    const editableStatuses: OrderStatus[] = ['pending', 'confirmed'];
+    const paymentStatus = order.payment?.status;
+
+    return editableStatuses.includes(order.status) && paymentStatus !== 'paid';
   }
 
   // ===== LOAD DATA =====
@@ -242,6 +261,9 @@ export class OrderAddComponent implements OnInit {
           discountType: 'fixed',
           discountValue: data.discountAmount || 0,
         };
+
+        // Mode edit: full hay metaOnly
+        this.editModeType = this.canEditItems(data) ? 'full' : 'metaOnly';
 
         // profile
         if (data.profile && data.profileType === 'Customer') {
@@ -351,6 +373,8 @@ export class OrderAddComponent implements OnInit {
       this.ensureShippingExists();
 
       if (defaultAddress) {
+        delete defaultAddress.isDefault;
+        delete defaultAddress.location;
         this.orderData.shipping!.address = {
           ...DEFAULT_SHIPPING_ADDRESS,
           ...defaultAddress,
@@ -380,7 +404,7 @@ export class OrderAddComponent implements OnInit {
 
     this.shippingAddressOptions.push({
       id: 'new',
-      label: '--- Enter New Address ---',
+      label: '--- Địa chỉ mới ---',
     });
   }
 
@@ -587,11 +611,11 @@ export class OrderAddComponent implements OnInit {
       priceModifier: option.priceModifier,
     };
 
-    const isSelected = item.options.some(
+    const isSelected = (item.options || []).some(
       (o) => o.groupName === group.name && o.optionName === option.name,
     );
 
-    let newOptions = [...item.options];
+    let newOptions = [...(item.options || [])];
 
     if (group.maxOptions === 1) {
       // radio: chỉ giữ 1 option trong group
@@ -622,7 +646,9 @@ export class OrderAddComponent implements OnInit {
   }
 
   isProductOptionSelected(item: OrderItem, groupName: string, optionName: string): boolean {
-    return item.options.some((o) => o.groupName === groupName && o.optionName === optionName);
+    return (item.options || []).some(
+      (o) => o.groupName === groupName && o.optionName === optionName,
+    );
   }
 
   // ===== COMBO LOGIC (DÙNG DATA POPULATED TỪ API) =====
@@ -788,9 +814,9 @@ export class OrderAddComponent implements OnInit {
   // ===== PRICE CALCULATION =====
   private calculateOptionsPrice(
     product: Product | undefined,
-    selectedOptions: OrderItemOption[],
+    selectedOptions: OrderItemOption[] | undefined,
   ): number {
-    if (!product || !product.optionGroups || !selectedOptions.length) return 0;
+    if (!product || !product.optionGroups || !selectedOptions || !selectedOptions.length) return 0;
 
     let price = 0;
 
@@ -1041,12 +1067,12 @@ export class OrderAddComponent implements OnInit {
   }
 
   private buildApiPayload(): any {
-    // Tính lại totals cho chắc
+    // Tính lại totals
     this.calculateTotals();
 
     const base: any = deepSanitize(this.orderData, DEFAULT_FORM);
 
-    // Map items -> đúng schema backend (giống foody-user)
+    // Map items -> schema backend (giống foody-user)
     base.items = this.orderData.items.map((it) => this.mapOrderItemForApi(it));
 
     base.totalAmount = this.orderData.totalAmount;
@@ -1081,81 +1107,85 @@ export class OrderAddComponent implements OnInit {
 
   // ===== VALIDATION & SUBMIT =====
   validateForm(): boolean {
-    if (!this.orderData.items.length) {
-      this.toastr.error('Please add at least one item', 'Validation Error');
-      return false;
-    }
-
-    for (let i = 0; i < this.orderData.items.length; i++) {
-      const item = this.orderData.items[i];
-
-      if (!item.item) {
-        this.toastr.error(`Item ${i + 1}: Please select a product or combo`, 'Validation Error');
+    // Nếu metaOnly: bỏ qua validate items (items được tạo từ trước, coi là hợp lệ),
+    // chỉ check shipping nếu Delivery.
+    if (this.editModeType !== 'metaOnly') {
+      if (!this.orderData.items.length) {
+        this.toastr.error('Please add at least one item', 'Validation Error');
         return false;
       }
 
-      if (item.quantity <= 0) {
-        this.toastr.error(`Item ${i + 1}: Quantity must be > 0`, 'Validation Error');
-        return false;
-      }
+      for (let i = 0; i < this.orderData.items.length; i++) {
+        const item = this.orderData.items[i];
 
-      // Product options validation
-      if (item.itemType === 'Product') {
-        const product = this.getProductById(item.item as string);
-        if (!product || !product.optionGroups) continue;
+        if (!item.item) {
+          this.toastr.error(`Item ${i + 1}: Please select a product or combo`, 'Validation Error');
+          return false;
+        }
 
-        for (const group of product.optionGroups) {
-          const count = (item.options || []).filter((o) => o.groupName === group.name).length;
-          if (count < group.minOptions) {
-            this.toastr.error(
-              `Item ${i + 1} (${product.name}): "${group.name}" requires at least ${group.minOptions} selection(s)`,
-              'Validation Error',
-              { timeOut: 5000 },
-            );
-            return false;
+        if (item.quantity <= 0) {
+          this.toastr.error(`Item ${i + 1}: Quantity must be > 0`, 'Validation Error');
+          return false;
+        }
+
+        // Product options validation
+        if (item.itemType === 'Product') {
+          const product = this.getProductById(item.item as string);
+          if (!product || !product.optionGroups) continue;
+
+          for (const group of product.optionGroups) {
+            const count = (item.options || []).filter((o) => o.groupName === group.name).length;
+            if (count < group.minOptions) {
+              this.toastr.error(
+                `Item ${i + 1} (${product.name}): "${group.name}" requires at least ${group.minOptions} selection(s)`,
+                'Validation Error',
+                { timeOut: 5000 },
+              );
+              return false;
+            }
           }
         }
-      }
 
-      // Combo validation
-      if (item.itemType === 'Combo') {
-        const combo = this.getCombo(item.item as string);
-        if (!combo) continue;
+        // Combo validation
+        if (item.itemType === 'Combo') {
+          const combo = this.getCombo(item.item as string);
+          if (!combo) continue;
 
-        for (const slot of combo.items) {
-          const selectionCount = (item.comboSelections || []).filter(
-            (s) => s.slotName === slot.slotName,
-          ).length;
+          for (const slot of combo.items) {
+            const selectionCount = (item.comboSelections || []).filter(
+              (s) => s.slotName === slot.slotName,
+            ).length;
 
-          if (selectionCount < slot.minSelection) {
-            this.toastr.error(
-              `Item ${i + 1} (${combo.name}): Slot "${slot.slotName}" requires at least ${slot.minSelection} product(s)`,
-              'Validation Error',
-              { timeOut: 5000 },
+            if (selectionCount < slot.minSelection) {
+              this.toastr.error(
+                `Item ${i + 1} (${combo.name}): Slot "${slot.slotName}" requires at least ${slot.minSelection} product(s)`,
+                'Validation Error',
+                { timeOut: 5000 },
+              );
+              return false;
+            }
+
+            const selectionsInSlot = (item.comboSelections || []).filter(
+              (s) => s.slotName === slot.slotName,
             );
-            return false;
-          }
 
-          const selectionsInSlot = (item.comboSelections || []).filter(
-            (s) => s.slotName === slot.slotName,
-          );
+            for (const sel of selectionsInSlot) {
+              const selProdId =
+                typeof sel.product === 'string' ? sel.product : (sel.product as any)?.id;
+              const product = this.getProductById(selProdId);
 
-          for (const sel of selectionsInSlot) {
-            const selProdId =
-              typeof sel.product === 'string' ? sel.product : (sel.product as any)?.id;
-            const product = this.getProductById(selProdId);
+              if (!product || !product.optionGroups) continue;
 
-            if (!product || !product.optionGroups) continue;
-
-            for (const group of product.optionGroups) {
-              const count = sel.options.filter((o) => o.groupName === group.name).length;
-              if (count < group.minOptions) {
-                this.toastr.error(
-                  `Item ${i + 1} (${product.name} in combo): "${group.name}" requires at least ${group.minOptions} selection(s)`,
-                  'Validation Error',
-                  { timeOut: 5000 },
-                );
-                return false;
+              for (const group of product.optionGroups) {
+                const count = sel.options.filter((o) => o.groupName === group.name).length;
+                if (count < group.minOptions) {
+                  this.toastr.error(
+                    `Item ${i + 1} (${product.name} in combo): "${group.name}" requires at least ${group.minOptions} selection(s)`,
+                    'Validation Error',
+                    { timeOut: 5000 },
+                  );
+                  return false;
+                }
               }
             }
           }
@@ -1163,6 +1193,7 @@ export class OrderAddComponent implements OnInit {
       }
     }
 
+    // Shipping luôn validate (cả add, full-edit, meta-only)
     if (this.orderData.orderType === 'Delivery') {
       const addr = this.orderData.shipping?.address;
       if (!addr?.recipientName || !addr.recipientPhone || !addr.street || !addr.city) {
@@ -1182,12 +1213,29 @@ export class OrderAddComponent implements OnInit {
   onSubmit(): void {
     if (!this.validateForm()) return;
 
-    const payload = this.buildApiPayload();
+    const fullPayload = this.buildApiPayload();
+    let payload: any = fullPayload;
 
-    const obs =
-      this.isEditMode && this.orderId
-        ? this.orderService.update(this.orderId, payload)
-        : this.orderService.createAdminOrder(payload);
+    if (this.isEditMode && this.editModeType === 'metaOnly') {
+      // Chỉ update meta, không đụng vào items/tiền
+      payload = {
+        status: fullPayload.status,
+        note: fullPayload.note,
+        payment: fullPayload.payment,
+        shipping: fullPayload.shipping,
+        profile: fullPayload.profile,
+        profileType: fullPayload.profile ? 'Customer' : null,
+      };
+
+      // Nếu backend chưa có endpoint PATCH riêng, FE gửi payload này cho update(),
+      // backend merge vào entity cũ, không động tới items / totalAmount / grandTotal...
+    }
+
+    const obs = !this.isEditMode
+      ? this.orderService.adminCreateOrder(fullPayload) // tạo mới luôn gửi full payload (đã map schema chuẩn)
+      : this.editModeType === 'metaOnly'
+        ? this.orderService.adminUpdateOrder(this.orderId!, payload)
+        : this.orderService.adminUpdateOrder(this.orderId!, payload);
 
     obs.subscribe({
       next: () => {
