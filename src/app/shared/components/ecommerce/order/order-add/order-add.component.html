@@ -1,7 +1,7 @@
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-  <!-- LEFT: Customer + Items -->
+  <!-- LEFT: CUSTOMER + ITEMS -->
   <div class="space-y-6 lg:col-span-2">
-    <!-- Customer -->
+    <!-- Customer info -->
     <div
       class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
     >
@@ -19,7 +19,7 @@
               bindValue="id"
               placeholder="Select customer (or leave blank for guest)"
               [(ngModel)]="orderData.profile"
-              (change)="onCustomerChange(orderData.profile || '')"
+              (ngModelChange)="onCustomerChange($event || '')"
               [searchable]="true"
               [clearable]="true"
               name="customer"
@@ -47,6 +47,37 @@
 
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
+              <app-label for="order-type" className="required"> Order Type </app-label>
+              <ng-select
+                [items]="orderTypeOptions"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="orderData.orderType"
+                (ngModelChange)="onOrderTypeChange($event)"
+                [searchable]="false"
+                [clearable]="false"
+                name="orderType"
+              >
+              </ng-select>
+            </div>
+
+            <div>
+              <app-label for="order-channel" className="required"> Order Channel </app-label>
+              <ng-select
+                [items]="channelOptions"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="orderData.channel"
+                [searchable]="false"
+                [clearable]="false"
+                name="orderChannel"
+              >
+              </ng-select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div>
               <app-label for="order-status">Order Status</app-label>
               <ng-select
                 [items]="orderStatuses"
@@ -56,7 +87,8 @@
                 [searchable]="false"
                 [clearable]="false"
                 name="orderStatuses"
-              ></ng-select>
+              >
+              </ng-select>
             </div>
 
             <div>
@@ -72,7 +104,7 @@
       </div>
     </div>
 
-    <!-- Order Items -->
+    <!-- Order items -->
     <div
       class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
     >
@@ -120,7 +152,7 @@
               class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/50"
             >
               <div class="space-y-4">
-                <!-- Header row -->
+                <!-- Row header -->
                 <div class="flex items-center justify-between">
                   <div class="flex flex-wrap items-center gap-3">
                     <label class="inline-flex items-center">
@@ -157,7 +189,6 @@
                   </div>
 
                   <div class="flex items-center gap-2">
-                    <!-- Expand/collapse -->
                     <button
                       type="button"
                       (click)="toggleItemExpansion(i)"
@@ -196,7 +227,6 @@
                       }
                     </button>
 
-                    <!-- Remove -->
                     <button
                       (click)="removeOrderItem(i)"
                       class="rounded p-2 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
@@ -221,10 +251,9 @@
                   </div>
                 </div>
 
-                <!-- Body -->
                 @if (isItemExpanded(i)) {
                   <div class="space-y-4 border-t border-gray-200 pt-4 dark:border-gray-700">
-                    <!-- PRODUCT ITEM -->
+                    <!-- PRODUCT MODE -->
                     @if (getItemType(i) === 'product') {
                       @if (getProduct(item.item); as product) {
                         <div class="space-y-4">
@@ -243,9 +272,10 @@
                                 bindValue="id"
                                 placeholder="Select product"
                                 [(ngModel)]="item.item"
-                                (change)="onProductChange(i, item.item)"
+                                (ngModelChange)="onProductChange(i, $event)"
                                 [name]="'item-product-' + i"
-                              ></ng-select>
+                              >
+                              </ng-select>
                             </div>
 
                             <div class="md:col-span-2">
@@ -349,7 +379,7 @@
                           }
                         </div>
                       } @else {
-                        <!-- Product chưa chọn -->
+                        <!-- Fallback nếu product chưa load -->
                         <app-label [for]="'item-product-' + i" class="text-xs" className="required">
                           Product
                         </app-label>
@@ -359,13 +389,14 @@
                           bindValue="id"
                           placeholder="Select product"
                           [(ngModel)]="item.item"
-                          (change)="onProductChange(i, item.item)"
+                          (ngModelChange)="onProductChange(i, $event)"
                           [name]="'item-product-' + i"
-                        ></ng-select>
+                        >
+                        </ng-select>
                       }
                     }
 
-                    <!-- COMBO ITEM -->
+                    <!-- COMBO MODE -->
                     @if (getItemType(i) === 'combo') {
                       @if (getCombo(item.item); as combo) {
                         <div class="space-y-4">
@@ -384,9 +415,10 @@
                                 bindValue="id"
                                 placeholder="Select combo"
                                 [(ngModel)]="item.item"
-                                (change)="onComboChange(i, item.item || '')"
+                                (ngModelChange)="onComboChange(i, $event)"
                                 [name]="'item-combo-' + i"
-                              ></ng-select>
+                              >
+                              </ng-select>
                             </div>
 
                             <div class="md:col-span-2">
@@ -458,7 +490,7 @@
                                     bindValue="product.id"
                                     placeholder="Select product for {{ slot.slotName }}"
                                     [ngModel]="getComboSlotSelection(item, slot.slotName)"
-                                    (change)="onComboProductChange(i, slot, $event)"
+                                    (ngModelChange)="onComboProductChange(i, slot, $event)"
                                     [name]="'combo-' + i + '-slot-' + s_idx"
                                   >
                                     <ng-template ng-option-tmp let-sp="item">
@@ -589,7 +621,7 @@
                           }
                         </div>
                       } @else {
-                        <!-- Combo chưa chọn -->
+                        <!-- Fallback nếu combo chưa load -->
                         <app-label [for]="'item-combo-' + i" class="text-xs" className="required">
                           Combo
                         </app-label>
@@ -599,9 +631,10 @@
                           bindValue="id"
                           placeholder="Select combo"
                           [(ngModel)]="item.item"
-                          (change)="onComboChange(i, item.item || '')"
+                          (ngModelChange)="onComboChange(i, $event)"
                           [name]="'item-combo-' + i"
-                        ></ng-select>
+                        >
+                        </ng-select>
                       }
                     }
 
@@ -627,48 +660,9 @@
     </div>
   </div>
 
-  <!-- RIGHT: Details / Payment / Shipping -->
+  <!-- RIGHT: SUMMARY + PAYMENT + SHIPPING -->
   <div class="space-y-6 lg:col-span-1">
     <div class="sticky top-6 space-y-6">
-      <!-- Order details -->
-      <div
-        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-      >
-        <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-          <h2 class="text-lg font-medium text-gray-800 dark:text-white">Order Details</h2>
-        </div>
-        <div class="p-4 sm:p-6">
-          <div class="grid grid-cols-1 gap-5">
-            <div>
-              <app-label for="order-type" className="required"> Order Type </app-label>
-              <ng-select
-                [items]="orderTypeOptions"
-                bindLabel="label"
-                bindValue="value"
-                [(ngModel)]="orderData.orderType"
-                (change)="onOrderTypeChange(orderData.orderType)"
-                [searchable]="false"
-                [clearable]="false"
-                name="orderType"
-              ></ng-select>
-            </div>
-
-            <div>
-              <app-label for="order-channel" className="required"> Order Channel </app-label>
-              <ng-select
-                [items]="channelOptions"
-                bindLabel="label"
-                bindValue="value"
-                [(ngModel)]="orderData.channel"
-                [searchable]="false"
-                [clearable]="false"
-                name="orderChannel"
-              ></ng-select>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Pricing summary -->
       <div
         class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
@@ -698,11 +692,12 @@
                   bindLabel="label"
                   bindValue="value"
                   [(ngModel)]="orderData.discountType"
-                  (change)="calculateTotals()"
+                  (ngModelChange)="calculateTotals()"
                   [searchable]="false"
                   [clearable]="false"
                   name="discountType"
-                ></ng-select>
+                >
+                </ng-select>
               </div>
 
               <div>
@@ -763,7 +758,8 @@
                 [searchable]="false"
                 [clearable]="false"
                 name="paymentMethod"
-              ></ng-select>
+              >
+              </ng-select>
             </div>
 
             <div>
@@ -776,7 +772,8 @@
                 [searchable]="false"
                 [clearable]="false"
                 name="paymentStatus"
-              ></ng-select>
+              >
+              </ng-select>
             </div>
           </div>
         </div>
@@ -804,7 +801,8 @@
                     [searchable]="false"
                     [clearable]="false"
                     name="shippingStatus"
-                  ></ng-select>
+                  >
+                  </ng-select>
                 </div>
 
                 @if (shippingAddressOptions.length > 0) {
@@ -815,11 +813,12 @@
                       bindLabel="label"
                       bindValue="id"
                       [(ngModel)]="selectedShippingAddressId"
-                      (change)="onShippingAddressChange($event)"
+                      (ngModelChange)="onShippingAddressChange($event)"
                       [searchable]="false"
                       [clearable]="false"
                       name="savedAddress"
-                    ></ng-select>
+                    >
+                    </ng-select>
                   </div>
                 }
 
@@ -891,14 +890,25 @@
       }
 
       <!-- Actions -->
-      <div class="flex flex-col gap-3 lg:flex-col">
-        <app-button variant="primary" (btnClick)="onSubmit()" class="w-full">
-          {{ isEditMode ? 'Update Order' : 'Create Order' }}
-        </app-button>
-
-        <app-button variant="outline" (btnClick)="onSaveDraft()" class="w-full">
-          Save as Draft
-        </app-button>
+      <div class="flex flex-col gap-4 lg:flex-col">
+        <div class="flex gap-4">
+          <app-button
+            variant="outline"
+            (btnClick)="onSaveDraft()"
+            class="w-full flex-1"
+            className="w-full"
+          >
+            Save as Draft
+          </app-button>
+          <app-button
+            variant="primary"
+            (btnClick)="onSubmit()"
+            class="w-full flex-1"
+            className="w-full"
+          >
+            {{ isEditMode ? 'Update Order' : 'Create Order' }}
+          </app-button>
+        </div>
 
         <button
           type="button"

@@ -11,17 +11,17 @@ import { InputFieldComponent } from '../../../form/input/input-field.component';
 import { ButtonComponent } from '../../../ui/button/button.component';
 
 import {
+  Order,
   OrderItem,
+  OrderItemOption,
+  OrderItemComboSelection,
   OrderPayment,
   OrderShipping,
-  Order,
+  OrderShippingAddress,
   OrderStatus,
   PaymentMethod,
   PaymentStatus,
   ShippingStatus,
-  OrderShippingAddress,
-  OrderItemOption,
-  OrderItemComboSelection,
 } from '../../../../models/order.model';
 
 import { Product, ProductOptionGroup, ProductOption } from '../../../../models/product.model';
@@ -37,22 +37,21 @@ import { CustomerService } from '../../../../services/api/customer.service';
 
 import { createFormData, deepSanitize } from '../../../../utils/form-data.utils';
 
-// ---- Form interface ----
-
+// ===== Form model =====
 interface OrderFormData {
   profile: string | null;
   profileType: 'Customer' | 'Employee' | null;
-
   orderType: 'TakeAway' | 'DineIn' | 'Delivery';
   channel: 'AdminPanel' | 'POS' | 'WebApp' | 'MobileApp' | 'Grab';
 
   items: OrderItem[];
-
   totalAmount: number;
   shippingFee: number;
   grandTotal: number;
+
   payment: OrderPayment;
   shipping?: OrderShipping | null;
+
   status: OrderStatus;
   note: string;
 
@@ -60,11 +59,6 @@ interface OrderFormData {
   discountType: 'fixed' | 'percentage';
   discountValue: number;
 }
-
-// ---- Runtime-extended selection type ----
-type ExtendedComboSelection = OrderItemComboSelection & {
-  productSnapshot?: Product;
-};
 
 const DEFAULT_SHIPPING_ADDRESS: OrderShippingAddress = {
   recipientName: '',
@@ -78,24 +72,18 @@ const DEFAULT_SHIPPING_ADDRESS: OrderShippingAddress = {
 const DEFAULT_FORM: OrderFormData = {
   profile: null,
   profileType: null,
-
   orderType: 'TakeAway',
   channel: 'AdminPanel',
-
   items: [],
   totalAmount: 0,
-
   discountType: 'fixed',
   discountValue: 0,
-
   shippingFee: 0,
   grandTotal: 0,
-
   payment: {
     method: 'cash' as PaymentMethod,
     status: 'pending' as PaymentStatus,
   },
-
   shipping: null,
   status: 'pending' as OrderStatus,
   note: '',
@@ -125,16 +113,18 @@ export class OrderAddComponent implements OnInit {
   products: Product[] = [];
   combos: Combo[] = [];
 
-  // UI maps
+  // map for Product / Combo radio
   itemTypes: Map<number, 'product' | 'combo'> = new Map();
+
+  // expand / collapse each item
   itemExpandedState: Map<number, boolean> = new Map();
 
-  // Customer / shipping
+  // shipping address
   selectedCustomer: Customer | null = null;
-  selectedShippingAddressId = 'new';
+  selectedShippingAddressId: string = 'new';
   shippingAddressOptions: { id: string; label: string }[] = [];
 
-  // Options
+  // options
   orderTypeOptions = [
     { value: 'TakeAway', label: 'Take Away' },
     { value: 'DineIn', label: 'Dine In (At Store)' },
@@ -183,7 +173,7 @@ export class OrderAddComponent implements OnInit {
     { value: 'percentage', label: 'Percentage (%)' },
   ];
 
-  // Enum for template
+  // enum for template
   PricingMode = ComboPricingMode;
 
   constructor(
@@ -196,10 +186,10 @@ export class OrderAddComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
   ) {}
 
-  // ----------------- Init -----------------
-
+  // ===== LIFECYCLE =====
   ngOnInit(): void {
     this.orderData.items = [];
+
     this.loadCustomers();
     this.loadProducts();
     this.loadCombos();
@@ -214,35 +204,61 @@ export class OrderAddComponent implements OnInit {
     });
   }
 
-  // ----------------- Load data -----------------
+  // ===== LOAD DATA =====
+  private normalizeOrderItem(raw: OrderItem): OrderItem {
+    const item: OrderItem = {
+      ...raw,
+      options: raw.options ? [...raw.options] : [],
+      comboSelections: raw.comboSelections
+        ? raw.comboSelections.map((sel) => ({
+            ...sel,
+            product: typeof sel.product === 'string' ? sel.product : (sel.product as any)?.id,
+            options: sel.options ? [...sel.options] : [],
+          }))
+        : [],
+    } as any;
+
+    if (raw.item && typeof raw.item === 'object') {
+      (item as any).item = (raw.item as any).id;
+    }
+
+    if (!item.itemType) {
+      item.itemType = 'Product';
+    }
+
+    return item;
+  }
 
   loadOrder(id: string): void {
     this.orderService.getById(id).subscribe({
       next: (data: Order) => {
-        // Merge với default để tránh thiếu field
+        const normalizedItems =
+          (data.items || []).map((it: any) => this.normalizeOrderItem(it as OrderItem)) ?? [];
+
         this.orderData = {
           ...DEFAULT_FORM,
           ...(data as any),
+          items: normalizedItems,
+          discountType: 'fixed',
+          discountValue: data.discountAmount || 0,
         };
 
-        // Discount UI
-        this.orderData.discountType = 'fixed';
-        this.orderData.discountValue = (data as any).discountAmount || 0;
-
-        // Customer
+        // profile
         if (data.profile && data.profileType === 'Customer') {
           const customerId = (data.profile as any).id || (data.profile as any);
           this.orderData.profile = customerId;
           this.loadFullCustomer(customerId);
+          this.orderData.profileType = 'Customer';
+        } else {
+          this.orderData.profileType = null;
         }
 
-        // Map UI type + expanded state
+        // rebuild maps
         this.itemTypes.clear();
         this.itemExpandedState.clear();
         this.orderData.items.forEach((item, index) => {
-          const type: 'product' | 'combo' = item.itemType === 'Combo' ? 'combo' : 'product';
-          this.itemTypes.set(index, type);
-          this.itemExpandedState.set(index, false);
+          this.itemTypes.set(index, item.itemType === 'Combo' ? 'combo' : 'product');
+          this.itemExpandedState.set(index, false); // default collapsed on load
         });
 
         this.calculateTotals();
@@ -252,19 +268,18 @@ export class OrderAddComponent implements OnInit {
   }
 
   loadFullCustomer(customerId: string): void {
-    const customer = this.customers.find((c) => c.id === customerId);
-    if (customer) {
-      this.selectedCustomer = customer;
-      this.buildShippingAddressOptions();
-      this.selectedShippingAddressId = 'new';
-      return;
-    }
-
-    this.customerService.getById(customerId).subscribe((cust) => {
+    const cached = this.customers.find((c) => c.id === customerId);
+    const handle = (cust: Customer) => {
       this.selectedCustomer = cust;
       this.buildShippingAddressOptions();
       this.selectedShippingAddressId = 'new';
-    });
+    };
+
+    if (cached) {
+      handle(cached);
+    } else {
+      this.customerService.getById(customerId).subscribe((cust) => handle(cust));
+    }
   }
 
   loadCustomers(): void {
@@ -296,8 +311,22 @@ export class OrderAddComponent implements OnInit {
       });
   }
 
-  // ----------------- Customer / shipping -----------------
+  // ===== COMMON HELPERS =====
+  private getProductById(id: string | null | undefined): Product | undefined {
+    if (!id) return undefined;
+    return this.products.find((p) => p.id === id);
+  }
 
+  getProduct(id: string | null | undefined): Product | undefined {
+    return this.getProductById(id);
+  }
+
+  getCombo(id: string | null | undefined): Combo | undefined {
+    if (!id) return undefined;
+    return this.combos.find((c) => c.id === id);
+  }
+
+  // ===== CUSTOMER / SHIPPING =====
   onCustomerChange(customerId: string): void {
     if (!customerId) {
       this.orderData.profile = null;
@@ -316,8 +345,8 @@ export class OrderAddComponent implements OnInit {
     this.buildShippingAddressOptions();
 
     if (this.orderData.orderType === 'Delivery') {
-      const defaultAddress = this.selectedCustomer?.addresses?.find((a) => a.isDefault) || null;
-      const defaultIndex = this.selectedCustomer?.addresses?.findIndex((a) => a.isDefault) ?? -1;
+      const defaultAddress = this.selectedCustomer?.addresses?.find((a) => a.isDefault);
+      const defaultIdx = this.selectedCustomer?.addresses?.findIndex((a) => a.isDefault) ?? -1;
 
       this.ensureShippingExists();
 
@@ -329,7 +358,7 @@ export class OrderAddComponent implements OnInit {
           recipientPhone:
             defaultAddress.recipientPhone || this.selectedCustomer?.phones?.[0]?.value || '',
         };
-        this.selectedShippingAddressId = defaultIndex.toString();
+        this.selectedShippingAddressId = defaultIdx.toString();
         this.toastr.info('Default shipping address auto-filled.');
       } else {
         this.orderData.shipping!.address = { ...DEFAULT_SHIPPING_ADDRESS };
@@ -361,7 +390,6 @@ export class OrderAddComponent implements OnInit {
 
     if (selectionId === 'new') {
       this.orderData.shipping!.address = { ...DEFAULT_SHIPPING_ADDRESS };
-
       if (this.selectedCustomer) {
         this.orderData.shipping!.address.recipientName = this.selectedCustomer.name;
         this.orderData.shipping!.address.recipientPhone =
@@ -385,13 +413,14 @@ export class OrderAddComponent implements OnInit {
 
     if (type === 'Delivery') {
       this.ensureShippingExists();
-      this.onCustomerChange(this.orderData.profile || '');
-      return;
+      if (this.orderData.profile) {
+        this.onCustomerChange(this.orderData.profile);
+      }
+    } else {
+      this.orderData.shipping = null;
+      this.orderData.shippingFee = 0;
+      this.calculateTotals();
     }
-
-    this.orderData.shipping = null;
-    this.orderData.shippingFee = 0;
-    this.calculateTotals();
   }
 
   ensureShippingExists(): void {
@@ -403,8 +432,7 @@ export class OrderAddComponent implements OnInit {
     }
   }
 
-  // ----------------- Order items (common) -----------------
-
+  // ===== ORDER ITEMS (COMMON) =====
   addOrderItem(): void {
     const newItem: OrderItem = {
       item: '',
@@ -422,25 +450,25 @@ export class OrderAddComponent implements OnInit {
     const idx = this.orderData.items.length - 1;
 
     this.itemTypes.set(idx, 'product');
-    this.itemExpandedState.set(idx, true);
+    this.itemExpandedState.set(idx, true); // new row expanded
   }
 
   removeOrderItem(index: number): void {
     this.orderData.items.splice(index, 1);
 
-    // Rebuild itemTypes
+    // re-build maps for itemTypes
     const newTypeMap = new Map<number, 'product' | 'combo'>();
-    this.orderData.items.forEach((_, i) => {
-      const prevType = this.itemTypes.get(i >= index ? i + 1 : i);
-      newTypeMap.set(i, prevType || 'product');
+    this.itemTypes.forEach((value, key) => {
+      if (key < index) newTypeMap.set(key, value);
+      else if (key > index) newTypeMap.set(key - 1, value);
     });
     this.itemTypes = newTypeMap;
 
-    // Rebuild expanded state
+    // re-build maps for expand state
     const newExpandedMap = new Map<number, boolean>();
-    this.orderData.items.forEach((_, i) => {
-      const prev = this.itemExpandedState.get(i >= index ? i + 1 : i);
-      newExpandedMap.set(i, prev ?? true);
+    this.itemExpandedState.forEach((value, key) => {
+      if (key < index) newExpandedMap.set(key, value);
+      else if (key > index) newExpandedMap.set(key - 1, value);
     });
     this.itemExpandedState = newExpandedMap;
 
@@ -477,46 +505,30 @@ export class OrderAddComponent implements OnInit {
   }
 
   onItemQuantityChange(index: number, quantity: string | number): void {
-    const qty = typeof quantity === 'string' ? parseInt(quantity, 10) || 1 : quantity;
-    this.orderData.items[index].quantity = qty;
+    const q = typeof quantity === 'string' ? parseInt(quantity || '1', 10) || 1 : quantity;
+    this.orderData.items[index].quantity = q;
     this.calculateTotals();
   }
 
   onItemPriceOverride(index: number, price: string | number): void {
-    const val = typeof price === 'string' ? parseFloat(price || '0') || 0 : price;
+    const p = typeof price === 'string' ? parseFloat(price || '0') || 0 : price;
     const item = this.orderData.items[index];
 
-    item.price = val;
-    item.basePrice = val;
+    item.price = p;
+    item.basePrice = p;
     item.options = [];
     item.comboSelections = [];
 
     this.calculateTotals();
   }
 
-  // ----------------- Helpers -----------------
-
-  getProduct(productId: string): Product | undefined {
-    return this.products.find((p) => p.id === productId);
-  }
-
-  getCombo(comboId: string): Combo | undefined {
-    return this.combos.find((c) => c.id === comboId);
-  }
-
-  private getProductIdFromSelection(selection: OrderItemComboSelection): string | null {
-    if (!selection.product) return null;
-    if (typeof selection.product === 'string') return selection.product;
-    return (selection.product as Product).id || null;
-  }
-
-  // ----------------- Product logic -----------------
-
+  // ===== PRODUCT LOGIC =====
   onProductChange(index: number, productId: string): void {
-    const product = this.getProduct(productId);
+    const product = this.getProductById(productId);
     if (!product) return;
 
     const item = this.orderData.items[index];
+
     item.itemType = 'Product';
     item.item = productId;
     item.name = product.name;
@@ -528,37 +540,35 @@ export class OrderAddComponent implements OnInit {
   }
 
   getPreselectedOptions(groups: ProductOptionGroup[] | undefined): OrderItemOption[] {
-    if (!groups || groups.length === 0) return [];
+    if (!groups || !groups.length) return [];
 
-    const result: OrderItemOption[] = [];
+    const res: OrderItemOption[] = [];
 
     groups.forEach((group) => {
-      if (group.minOptions <= 0) return;
-
       const sorted = [...group.options].sort((a, b) => a.priority - b.priority);
 
-      if (group.maxOptions === 1 && sorted.length > 0) {
-        // Chọn 1 option ưu tiên cao nhất
-        const opt = sorted[0];
-        result.push({
-          groupName: group.name,
-          optionName: opt.name,
-          priceModifier: opt.priceModifier,
-        });
-      } else {
-        // Chọn minOptions option đầu
-        const selected = sorted.slice(0, Math.min(group.minOptions, sorted.length));
-        selected.forEach((opt) => {
-          result.push({
+      if (group.minOptions > 0) {
+        if (group.maxOptions === 1 && sorted.length > 0) {
+          const opt = sorted[0];
+          res.push({
             groupName: group.name,
             optionName: opt.name,
             priceModifier: opt.priceModifier,
           });
-        });
+        } else {
+          const toSelect = sorted.slice(0, Math.min(group.minOptions, sorted.length));
+          toSelect.forEach((opt) => {
+            res.push({
+              groupName: group.name,
+              optionName: opt.name,
+              priceModifier: opt.priceModifier,
+            });
+          });
+        }
       }
     });
 
-    return result;
+    return res;
   }
 
   toggleProductOption(
@@ -567,10 +577,11 @@ export class OrderAddComponent implements OnInit {
     option: ProductOption,
     event: Event,
   ): void {
+    const input = event.target as HTMLInputElement;
+    const isChecked = input.checked;
     const item = this.orderData.items[itemIndex];
-    const isChecked = (event.target as HTMLInputElement).checked;
 
-    const newOpt: OrderItemOption = {
+    const newOption: OrderItemOption = {
       groupName: group.name,
       optionName: option.name,
       priceModifier: option.priceModifier,
@@ -583,21 +594,20 @@ export class OrderAddComponent implements OnInit {
     let newOptions = [...item.options];
 
     if (group.maxOptions === 1) {
-      // Radio
+      // radio: chỉ giữ 1 option trong group
       newOptions = newOptions.filter((o) => o.groupName !== group.name);
       if (isChecked || !isSelected) {
-        newOptions.push(newOpt);
+        newOptions.push(newOption);
       }
     } else {
-      // Checkbox
+      // checkbox
       if (isChecked && !isSelected) {
         const currentCount = newOptions.filter((o) => o.groupName === group.name).length;
-
         if (currentCount < group.maxOptions) {
-          newOptions.push(newOpt);
+          newOptions.push(newOption);
         } else {
           this.toastr.warning(`Chỉ được chọn tối đa ${group.maxOptions} cho ${group.name}`);
-          (event.target as HTMLInputElement).checked = false;
+          input.checked = false;
           return;
         }
       } else if (!isChecked && isSelected) {
@@ -615,144 +625,108 @@ export class OrderAddComponent implements OnInit {
     return item.options.some((o) => o.groupName === groupName && o.optionName === optionName);
   }
 
-  // ----------------- Combo logic (tối ưu dùng data embed) -----------------
-
+  // ===== COMBO LOGIC (DÙNG DATA POPULATED TỪ API) =====
   onComboChange(index: number, comboId: string): void {
     const combo = this.getCombo(comboId);
-    const item = this.orderData.items[index];
+    if (!combo) return;
 
-    if (!combo) {
-      item.item = '';
-      item.name = '';
-      item.basePrice = 0;
-      item.price = 0;
-      item.comboSelections = [];
-      return;
-    }
+    const item = this.orderData.items[index];
 
     item.itemType = 'Combo';
     item.item = combo.id;
     item.name = combo.name;
     item.options = [];
-    item.comboSelections = this.getPreselectedComboSelections(combo);
+    item.comboSelections = [];
 
-    this.updateItemPrice(index);
-  }
-
-  getPreselectedComboSelections(combo: Combo): OrderItemComboSelection[] {
-    const selections: ExtendedComboSelection[] = [];
-
+    // Preselect tối thiểu minSelection mỗi slot
     combo.items.forEach((slot) => {
       if (slot.minSelection <= 0) return;
 
-      const list = [...slot.selectableProducts];
+      const candidates = slot.selectableProducts.slice(0, slot.minSelection);
 
-      // Ưu tiên sản phẩm rẻ nhất theo mode
-      const priceKey =
-        combo.pricingMode === ComboPricingMode.SLOT_PRICE ? 'slotPrice' : 'snapshotPrice';
+      candidates.forEach((sp) => {
+        const prod: any = sp.product;
 
-      list.sort((a: any, b: any) => {
-        const aPrice = (a[priceKey] || 0) + (a.additionalPrice || 0);
-        const bPrice = (b[priceKey] || 0) + (b.additionalPrice || 0);
-        return aPrice - bPrice;
-      });
-
-      const pick = list.slice(0, Math.min(slot.minSelection, list.length));
-
-      pick.forEach((sp: any) => {
-        const product = sp.product as Product;
-        if (!product || !product.id) return;
-
-        selections.push({
+        item.comboSelections!.push({
           slotName: slot.slotName,
-          product: product.id,
-          productName: product.name,
-          productSnapshot: product,
-          options: this.getPreselectedOptions(product.optionGroups),
+          product: prod.id,
+          productName: prod.name,
+          options: this.getPreselectedOptions(prod.optionGroups),
         });
       });
     });
 
-    return selections;
+    this.updateItemPrice(index);
   }
 
   getComboSlotSelection(item: OrderItem, slotName: string): string | null {
     const sel = item.comboSelections?.find((s) => s.slotName === slotName);
-    if (!sel) return null;
+    if (!sel || !sel.product) return null;
 
-    if (typeof sel.product === 'string') return sel.product as string;
-    return (sel.product as Product).id || null;
+    if (typeof sel.product === 'string') return sel.product;
+    return (sel.product as any).id ?? null;
   }
 
-  getComboSelectionForSlot(item: OrderItem, slotName: string): ExtendedComboSelection | undefined {
-    return item.comboSelections?.find((s) => s.slotName === slotName) as
-      | ExtendedComboSelection
-      | undefined;
+  getComboSelectionForSlot(item: OrderItem, slotName: string): OrderItemComboSelection | undefined {
+    return item.comboSelections?.find((s) => s.slotName === slotName);
   }
 
-  getComboSelectionProduct(combo: Combo, selection: OrderItemComboSelection): Product | undefined {
-    const sel = selection as ExtendedComboSelection;
-
-    if (sel.productSnapshot) return sel.productSnapshot;
-
-    const productId = this.getProductIdFromSelection(selection);
-    if (!productId) return undefined;
+  getComboSelectionProduct(
+    combo: Combo | undefined,
+    selection: OrderItemComboSelection | undefined,
+  ): Product | undefined {
+    if (!combo || !selection) return undefined;
 
     const slot = combo.items.find((s) => s.slotName === selection.slotName);
     if (!slot) return undefined;
 
-    const sp = (slot.selectableProducts as any[]).find((p) => {
-      const prod = p.product as any;
-      return typeof prod === 'string' ? prod === productId : prod.id === productId;
+    const selectedId =
+      typeof selection.product === 'string' ? selection.product : (selection.product as any)?.id;
+
+    const sp = slot.selectableProducts.find((sp) => {
+      const prod: any = sp.product;
+      if (!prod) return false;
+      return typeof prod === 'string' ? prod === selectedId : prod.id === selectedId;
     });
 
-    const product = sp?.product as Product | undefined;
-    if (product && product.id) {
-      sel.productSnapshot = product;
-    }
-    return product;
+    if (!sp) return this.getProductById(selectedId);
+    const prodObj: any = sp.product;
+    return typeof prodObj === 'object' ? (prodObj as Product) : this.getProductById(selectedId);
   }
 
-  onComboProductChange(itemIndex: number, slot: ComboItem, selected: any): void {
-    const item = this.orderData.items[itemIndex];
-    const combo = this.getCombo(item.item as string);
-    if (!combo) return;
-
-    // selected có thể là id (string) hoặc object tùy cấu hình ng-select
-    let productId: string | null = null;
-
-    if (typeof selected === 'string') {
-      productId = selected;
-    } else if (selected && selected.product && selected.product.id) {
-      productId = selected.product.id;
-    } else if (selected && selected.value) {
-      productId = selected.value;
-    }
-
+  onComboProductChange(index: number, slot: ComboItem, productId: string): void {
+    const item = this.orderData.items[index];
     if (!productId) return;
 
-    const selectable = (slot.selectableProducts as any[]).find((sp) => {
-      const prod = sp.product as any;
-      return typeof prod === 'string' ? prod === productId : prod.id === productId;
+    // tìm selectableProduct trong chính combo slot
+    const selectable = slot.selectableProducts.find((sp: any) => {
+      const pid = typeof sp.product === 'string' ? sp.product : sp.product.id;
+      return pid === productId;
     });
 
-    if (!selectable || !selectable.product) return;
+    if (!selectable) return;
 
-    const product = selectable.product as Product;
+    // Lấy product object chuẩn
+    let prodObj: Product | undefined;
+    if (typeof selectable.product === 'string') {
+      prodObj = this.getProduct(selectable.product);
+    } else {
+      prodObj = selectable.product as Product;
+    }
+    if (!prodObj) return;
 
-    const newSelection: ExtendedComboSelection = {
+    const newSelection: OrderItemComboSelection = {
       slotName: slot.slotName,
-      product: product.id,
-      productName: product.name,
-      productSnapshot: product,
-      options: this.getPreselectedOptions(product.optionGroups),
+      product: prodObj.id,
+      productName: prodObj.name,
+      options: this.getPreselectedOptions(prodObj.optionGroups),
     };
 
-    // Replace selection của slot này
-    const others = item.comboSelections.filter((s) => s.slotName !== slot.slotName);
+    // Giữ duy nhất selection cho slot này (vì maxSelection = 1)
+    const others = (item.comboSelections || []).filter((s) => s.slotName !== slot.slotName);
     item.comboSelections = [...others, newSelection];
 
-    this.updateItemPrice(itemIndex);
+    this.updateItemPrice(index);
   }
 
   toggleComboOption(
@@ -762,7 +736,8 @@ export class OrderAddComponent implements OnInit {
     option: ProductOption,
     event: Event,
   ): void {
-    const isChecked = (event.target as HTMLInputElement).checked;
+    const input = event.target as HTMLInputElement;
+    const isChecked = input.checked;
 
     const newOpt: OrderItemOption = {
       groupName: group.name,
@@ -770,34 +745,35 @@ export class OrderAddComponent implements OnInit {
       priceModifier: option.priceModifier,
     };
 
-    const extSel = selection as ExtendedComboSelection;
-    let opts = [...(extSel.options || [])];
-    const isSelected = opts.some((o) => o.groupName === group.name && o.optionName === option.name);
+    const isSelected = selection.options.some(
+      (o) => o.groupName === group.name && o.optionName === option.name,
+    );
+
+    let newOptions = [...selection.options];
 
     if (group.maxOptions === 1) {
-      // Radio
-      opts = opts.filter((o) => o.groupName !== group.name);
+      newOptions = newOptions.filter((o) => o.groupName !== group.name);
       if (isChecked || !isSelected) {
-        opts.push(newOpt);
+        newOptions.push(newOpt);
       }
     } else {
-      // Checkbox
       if (isChecked && !isSelected) {
-        const currentCount = opts.filter((o) => o.groupName === group.name).length;
-
+        const currentCount = newOptions.filter((o) => o.groupName === group.name).length;
         if (currentCount < group.maxOptions) {
-          opts.push(newOpt);
+          newOptions.push(newOpt);
         } else {
           this.toastr.warning(`Chỉ được chọn tối đa ${group.maxOptions} cho ${group.name}`);
-          (event.target as HTMLInputElement).checked = false;
+          input.checked = false;
           return;
         }
       } else if (!isChecked && isSelected) {
-        opts = opts.filter((o) => !(o.groupName === group.name && o.optionName === option.name));
+        newOptions = newOptions.filter(
+          (o) => !(o.groupName === group.name && o.optionName === option.name),
+        );
       }
     }
 
-    extSel.options = opts;
+    selection.options = newOptions;
     this.updateItemPrice(itemIndex);
   }
 
@@ -806,37 +782,31 @@ export class OrderAddComponent implements OnInit {
     groupName: string,
     optionName: string,
   ): boolean {
-    return (selection.options || []).some(
-      (o) => o.groupName === groupName && o.optionName === optionName,
-    );
+    return selection.options.some((o) => o.groupName === groupName && o.optionName === optionName);
   }
 
-  // ----------------- Pricing -----------------
-
+  // ===== PRICE CALCULATION =====
   private calculateOptionsPrice(
     product: Product | undefined,
     selectedOptions: OrderItemOption[],
   ): number {
-    if (!product || !product.optionGroups || !selectedOptions.length) {
-      return 0;
-    }
+    if (!product || !product.optionGroups || !selectedOptions.length) return 0;
 
     let price = 0;
 
-    const typeMap = new Map<string, 'fixed_amount' | 'percentage'>();
-
+    const optionTypeMap = new Map<string, 'fixed_amount' | 'percentage'>();
     product.optionGroups.forEach((group) => {
       group.options.forEach((opt) => {
-        typeMap.set(`${group.name}::${opt.name}`, opt.type);
+        optionTypeMap.set(`${group.name}::${opt.name}`, opt.type);
       });
     });
 
-    selectedOptions.forEach((sel) => {
-      const type = typeMap.get(`${sel.groupName}::${sel.optionName}`);
+    selectedOptions.forEach((selOpt) => {
+      const type = optionTypeMap.get(`${selOpt.groupName}::${selOpt.optionName}`);
       if (type === 'percentage') {
-        price += Math.round((product.basePrice || 0) * (sel.priceModifier / 100));
+        price += Math.round((product.basePrice || 0) * (selOpt.priceModifier / 100));
       } else {
-        price += sel.priceModifier;
+        price += selOpt.priceModifier;
       }
     });
 
@@ -848,7 +818,7 @@ export class OrderAddComponent implements OnInit {
     let newPrice = 0;
 
     if (item.itemType === 'Product') {
-      const product = this.getProduct(item.item as string);
+      const product = this.getProductById(item.item as string);
       newPrice =
         (product?.basePrice || 0) + this.calculateOptionsPrice(product, item.options || []);
     } else if (item.itemType === 'Combo') {
@@ -856,58 +826,78 @@ export class OrderAddComponent implements OnInit {
       if (combo) {
         const selections = item.comboSelections || [];
 
-        // 1. Base theo pricingMode
+        // 1. base combo price
         if (combo.pricingMode === ComboPricingMode.FIXED) {
           newPrice = combo.comboPrice || 0;
-        } else {
-          let baseTotal = 0;
-          let additionalTotal = 0;
-
-          selections.forEach((sel) => {
+        } else if (combo.pricingMode === ComboPricingMode.SLOT_PRICE) {
+          newPrice = selections.reduce((sum, sel) => {
             const slot = combo.items.find((s) => s.slotName === sel.slotName);
-            if (!slot) return;
+            if (!slot) return sum;
 
-            const productId = this.getProductIdFromSelection(sel);
-            if (!productId) return;
+            const selProdId =
+              typeof sel.product === 'string' ? sel.product : (sel.product as any)?.id;
 
-            const sp = (slot.selectableProducts as any[]).find((p) => {
-              const prod = p.product as any;
-              return typeof prod === 'string' ? prod === productId : prod.id === productId;
+            const sp = slot.selectableProducts.find((p) => {
+              const prod: any = p.product;
+              if (!prod) return false;
+              return typeof prod === 'string' ? prod === selProdId : prod.id === selProdId;
             });
 
-            if (!sp) return;
+            return sum + (sp?.slotPrice || 0);
+          }, 0);
+        } else if (combo.pricingMode === ComboPricingMode.DISCOUNT) {
+          const baseTotal = selections.reduce((sum, sel) => {
+            const slot = combo.items.find((s) => s.slotName === sel.slotName);
+            if (!slot) return sum;
 
-            if (combo.pricingMode === ComboPricingMode.SLOT_PRICE) {
-              baseTotal += sp.slotPrice || 0;
-            } else if (combo.pricingMode === ComboPricingMode.DISCOUNT) {
-              baseTotal += sp.snapshotPrice || 0;
-            }
-            additionalTotal += sp.additionalPrice || 0;
-          });
+            const selProdId =
+              typeof sel.product === 'string' ? sel.product : (sel.product as any)?.id;
 
-          if (combo.pricingMode === ComboPricingMode.SLOT_PRICE) {
-            newPrice = baseTotal + additionalTotal;
-          } else if (combo.pricingMode === ComboPricingMode.DISCOUNT) {
-            let discounted = baseTotal;
+            const sp = slot.selectableProducts.find((p) => {
+              const prod: any = p.product;
+              if (!prod) return false;
+              return typeof prod === 'string' ? prod === selProdId : prod.id === selProdId;
+            });
 
-            if (combo.discountType === DiscountType.PERCENT) {
-              discounted = baseTotal * (1 - (combo.discountValue || 0) / 100);
-            } else if (combo.discountType === DiscountType.AMOUNT) {
-              discounted = Math.max(0, baseTotal - (combo.discountValue || 0));
-            }
+            return sum + (sp?.snapshotPrice || 0);
+          }, 0);
 
-            newPrice = discounted + additionalTotal;
+          if (combo.discountType === DiscountType.PERCENT) {
+            newPrice = baseTotal * (1 - (combo.discountValue || 0) / 100);
+          } else if (combo.discountType === DiscountType.AMOUNT) {
+            newPrice = Math.max(0, baseTotal - (combo.discountValue || 0));
+          } else {
+            newPrice = baseTotal;
           }
         }
 
-        // 2. Cộng giá options trên từng selection
-        const optionsTotal = selections.reduce((sum, sel) => {
-          const product = this.getComboSelectionProduct(combo, sel);
-          if (!product) return sum;
-          return sum + this.calculateOptionsPrice(product, sel.options || []);
-        }, 0);
+        // 2. additionalPrice
+        const totalAdditional = selections.reduce((sum, sel) => {
+          const slot = combo.items.find((s) => s.slotName === sel.slotName);
+          if (!slot) return sum;
 
-        newPrice += optionsTotal;
+          const selProdId =
+            typeof sel.product === 'string' ? sel.product : (sel.product as any)?.id;
+
+          const sp = slot.selectableProducts.find((p) => {
+            const prod: any = p.product;
+            if (!prod) return false;
+            return typeof prod === 'string' ? prod === selProdId : prod.id === selProdId;
+          });
+
+          return sum + (sp?.additionalPrice || 0);
+        }, 0);
+        newPrice += totalAdditional;
+
+        // 3. options price
+        const totalOptionsPrice = selections.reduce((sum, sel) => {
+          const selProdId =
+            typeof sel.product === 'string' ? sel.product : (sel.product as any)?.id;
+
+          const product = this.getProductById(selProdId);
+          return sum + this.calculateOptionsPrice(product, sel.options);
+        }, 0);
+        newPrice += totalOptionsPrice;
       }
     }
 
@@ -918,7 +908,7 @@ export class OrderAddComponent implements OnInit {
   calculateTotals(): void {
     this.orderData.totalAmount = this.orderData.items.reduce((sum, item) => {
       const price = typeof item.price === 'string' ? parseFloat(item.price) || 0 : item.price || 0;
-      return sum + price * (item.quantity || 1);
+      return sum + price * (item.quantity || 0);
     }, 0);
 
     const discountValue =
@@ -941,8 +931,158 @@ export class OrderAddComponent implements OnInit {
     this.orderData.grandTotal = this.orderData.totalAmount - discount + shipping;
   }
 
-  // ----------------- Validation -----------------
+  // ===== HELPER: MAP OPTIONS / COMBO SELECTIONS -> API FORMAT =====
+  private mapOptionsForApi(
+    options: OrderItemOption[] | undefined | null,
+  ): Record<string, { name: string; priceModifier: number }[]> {
+    if (!options || !options.length) return {};
 
+    const result: Record<string, { name: string; priceModifier: number }[]> = {};
+
+    for (const opt of options) {
+      if (!result[opt.groupName]) {
+        result[opt.groupName] = [];
+      }
+      result[opt.groupName].push({
+        name: opt.optionName,
+        priceModifier: opt.priceModifier,
+      });
+    }
+
+    return result;
+  }
+
+  private findProductForComboSelection(
+    comboId: string | undefined,
+    slotName: string,
+    productId: string,
+  ): Product | undefined {
+    if (!comboId) return this.getProductById(productId);
+
+    const combo = this.getCombo(comboId);
+    if (!combo) return this.getProductById(productId);
+
+    const slot = combo.items.find((s) => s.slotName === slotName);
+    if (!slot) return this.getProductById(productId);
+
+    const sp = slot.selectableProducts.find((p: any) => {
+      const prod: any = p.product;
+      const pid = typeof prod === 'string' ? prod : prod?.id;
+      return pid === productId;
+    });
+
+    if (!sp) return this.getProductById(productId);
+
+    const prodObj: any = sp.product;
+    if (typeof prodObj === 'object') return prodObj as Product;
+
+    return this.getProductById(prodObj);
+  }
+
+  private mapComboSelectionForApi(orderItem: OrderItem, sel: OrderItemComboSelection) {
+    const comboId = orderItem.item as string;
+    const selProdId = typeof sel.product === 'string' ? sel.product : (sel.product as any)?.id;
+
+    const prod = this.findProductForComboSelection(comboId, sel.slotName, selProdId);
+
+    return {
+      slotName: sel.slotName,
+      product: {
+        id: prod?.id || selProdId,
+        name: prod?.name || sel.productName || '',
+        basePrice: prod?.basePrice ?? 0,
+      },
+      options: this.mapOptionsForApi(sel.options),
+    };
+  }
+
+  private mapOrderItemForApi(item: OrderItem): any {
+    const quantity = item.quantity || 0;
+    const unitPrice =
+      typeof item.price === 'string' ? parseFloat(item.price) || 0 : item.price || 0;
+    const totalPrice = unitPrice * quantity;
+
+    if (item.itemType === 'Combo') {
+      const combo = this.getCombo(item.item as string);
+
+      return {
+        itemType: 'Combo',
+        item: {
+          id: combo?.id || (item.item as any),
+          name: combo?.name || item.name || '',
+          comboPrice: combo?.comboPrice ?? 0,
+        },
+        totalPrice,
+        options: null,
+        comboSelections: (item.comboSelections || []).map((sel) =>
+          this.mapComboSelectionForApi(item, sel),
+        ),
+        quantity,
+        note: item.note || '',
+      };
+    }
+
+    // Product
+    const product = this.getProductById(item.item as string);
+
+    return {
+      itemType: 'Product',
+      item: {
+        id: product?.id || (item.item as any),
+        name: product?.name || item.name || '',
+        basePrice: product?.basePrice ?? item.basePrice ?? 0,
+      },
+      totalPrice,
+      options: this.mapOptionsForApi(item.options),
+      comboSelections: null,
+      quantity,
+      note: item.note || '',
+    };
+  }
+
+  private buildApiPayload(): any {
+    // Tính lại totals cho chắc
+    this.calculateTotals();
+
+    const base: any = deepSanitize(this.orderData, DEFAULT_FORM);
+
+    // Map items -> đúng schema backend (giống foody-user)
+    base.items = this.orderData.items.map((it) => this.mapOrderItemForApi(it));
+
+    base.totalAmount = this.orderData.totalAmount;
+    base.grandTotal = this.orderData.grandTotal;
+
+    // Discount
+    const discountValue =
+      typeof this.orderData.discountValue === 'string'
+        ? parseFloat(this.orderData.discountValue) || 0
+        : this.orderData.discountValue || 0;
+
+    let discount = 0;
+    if (this.orderData.discountType === 'percentage') {
+      discount = (this.orderData.totalAmount * discountValue) / 100;
+    } else {
+      discount = discountValue;
+    }
+    base.discountAmount = discount;
+
+    delete base.discountType;
+    delete base.discountValue;
+
+    // Profile type
+    if (base.profile) base.profileType = 'Customer';
+    else base.profileType = null;
+
+    // appliedCoupons giống foody-user
+    if (!base.appliedCoupons) base.appliedCoupons = [];
+
+    // Joi đang chửi "orderType is not allowed" → tạm thời bỏ
+    delete base.orderType;
+
+    return base;
+  }
+
+  // ===== VALIDATION & SUBMIT =====
   validateForm(): boolean {
     if (!this.orderData.items.length) {
       this.toastr.error('Please add at least one item', 'Validation Error');
@@ -962,14 +1102,13 @@ export class OrderAddComponent implements OnInit {
         return false;
       }
 
-      // Product validation
+      // Product options validation
       if (item.itemType === 'Product') {
-        const product = this.getProduct(item.item as string);
+        const product = this.getProductById(item.item as string);
         if (!product || !product.optionGroups) continue;
 
         for (const group of product.optionGroups) {
-          const count = item.options.filter((o) => o.groupName === group.name).length;
-
+          const count = (item.options || []).filter((o) => o.groupName === group.name).length;
           if (count < group.minOptions) {
             this.toastr.error(
               `Item ${i + 1} (${product.name}): "${group.name}" requires at least ${group.minOptions} selection(s)`,
@@ -987,9 +1126,11 @@ export class OrderAddComponent implements OnInit {
         if (!combo) continue;
 
         for (const slot of combo.items) {
-          const slotSelections = item.comboSelections.filter((s) => s.slotName === slot.slotName);
+          const selectionCount = (item.comboSelections || []).filter(
+            (s) => s.slotName === slot.slotName,
+          ).length;
 
-          if (slotSelections.length < slot.minSelection) {
+          if (selectionCount < slot.minSelection) {
             this.toastr.error(
               `Item ${i + 1} (${combo.name}): Slot "${slot.slotName}" requires at least ${slot.minSelection} product(s)`,
               'Validation Error',
@@ -998,14 +1139,19 @@ export class OrderAddComponent implements OnInit {
             return false;
           }
 
-          // Validate options per product trong combo
-          for (const sel of slotSelections) {
-            const product = this.getComboSelectionProduct(combo, sel);
+          const selectionsInSlot = (item.comboSelections || []).filter(
+            (s) => s.slotName === slot.slotName,
+          );
+
+          for (const sel of selectionsInSlot) {
+            const selProdId =
+              typeof sel.product === 'string' ? sel.product : (sel.product as any)?.id;
+            const product = this.getProductById(selProdId);
+
             if (!product || !product.optionGroups) continue;
 
             for (const group of product.optionGroups) {
               const count = sel.options.filter((o) => o.groupName === group.name).length;
-
               if (count < group.minOptions) {
                 this.toastr.error(
                   `Item ${i + 1} (${product.name} in combo): "${group.name}" requires at least ${group.minOptions} selection(s)`,
@@ -1022,7 +1168,7 @@ export class OrderAddComponent implements OnInit {
 
     if (this.orderData.orderType === 'Delivery') {
       const addr = this.orderData.shipping?.address;
-      if (!addr?.recipientName || !addr?.recipientPhone || !addr?.street || !addr?.city) {
+      if (!addr?.recipientName || !addr.recipientPhone || !addr.street || !addr.city) {
         this.toastr.error('Please fill in all required shipping fields', 'Validation Error');
         return false;
       }
@@ -1030,8 +1176,6 @@ export class OrderAddComponent implements OnInit {
 
     return true;
   }
-
-  // ----------------- Submit -----------------
 
   onSaveDraft(): void {
     this.orderData.status = 'pending';
@@ -1041,23 +1185,7 @@ export class OrderAddComponent implements OnInit {
   onSubmit(): void {
     if (!this.validateForm()) return;
 
-    this.calculateTotals();
-
-    const payload: any = deepSanitize(this.orderData, DEFAULT_FORM);
-
-    // Chuẩn hóa discount gửi lên BE
-    let discount = 0;
-    if (payload.discountType === 'percentage') {
-      discount = (payload.totalAmount * payload.discountValue) / 100;
-    } else {
-      discount = payload.discountValue;
-    }
-    payload.discountAmount = discount;
-    delete payload.discountType;
-    delete payload.discountValue;
-
-    if (payload.profile) payload.profileType = 'Customer';
-    else payload.profileType = null;
+    const payload = this.buildApiPayload();
 
     const obs =
       this.isEditMode && this.orderId
