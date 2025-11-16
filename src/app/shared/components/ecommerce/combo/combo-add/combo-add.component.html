@@ -429,16 +429,31 @@
                     className="required"
                     >Product</app-label
                   >
-                  <app-select
+
+                  <ng-select
                     [id]="'product-' + itemIndex + '-' + productIndex"
-                    [options]="getProductOptions()"
+                    [items]="availableProducts"
+                    bindLabel="name"
+                    bindValue="id"
                     placeholder="Select product"
-                    [value]="product.product"
-                    (valueChange)="
+                    [(ngModel)]="product.product"
+                    (ngModelChange)="
                       handleProductFieldChange(itemIndex, productIndex, 'product', $event)
                     "
+                    [searchable]="true"
+                    [clearable]="true"
                   >
-                  </app-select>
+                    <ng-template ng-option-tmp let-prod="item">
+                      <div class="flex flex-col">
+                        <span class="font-medium">{{ prod.name }}</span>
+                        @if (prod.basePrice) {
+                          <span class="text-xs text-gray-500">
+                            {{ prod.basePrice | number: '1.0-0' }} đ
+                          </span>
+                        }
+                      </div>
+                    </ng-template>
+                  </ng-select>
                   <div
                     *ngIf="product.product"
                     class="mt-1.5 text-xs text-gray-500 dark:text-gray-400"

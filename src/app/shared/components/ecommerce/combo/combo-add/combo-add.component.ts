@@ -25,6 +25,8 @@ import { environment } from '../../../../../../environments/environment';
 import { ImageUploadComponent } from '../../../_core/image-upload/image-upload.component';
 import { SwitchComponent } from '../../../form/input/switch.component';
 import { DialogService } from '@ngneat/dialog';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { FormsModule } from '@angular/forms';
 
 /**
  * MỚI: Hàm helper để tạo chuỗi YYYY-MM-DDTHH:mm
@@ -58,6 +60,7 @@ const DEFAULT_COMBO: ComboFormData = {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     LabelComponent,
     InputFieldComponent,
     SelectComponent,
@@ -65,6 +68,7 @@ const DEFAULT_COMBO: ComboFormData = {
     ButtonComponent,
     ImageUploadComponent,
     SwitchComponent,
+    NgSelectModule,
   ],
 })
 export class ComboAddComponent implements OnInit {
