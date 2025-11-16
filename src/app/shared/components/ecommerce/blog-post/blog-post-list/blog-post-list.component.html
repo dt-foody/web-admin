@@ -13,7 +13,7 @@
     <div class="flex gap-3">
       <a
         routerLink="/blog-post/add"
-        *hasPermission="'blogPost.create'"
+        *appHasPermission="'blogPost.create'"
         class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
       >
         <svg
@@ -330,7 +330,7 @@
                   </svg>
                 </button>
               </div>
-            </td> -->            
+            </td> -->
 
             <!-- Published Date -->
             <td class="px-5 py-4 whitespace-nowrap">
@@ -355,7 +355,7 @@
               <div class="flex gap-2">
                 <!-- Edit -->
                 <button
-                  *hasPermission="'blogPost.update'"
+                  *appHasPermission="'blogPost.update'"
                   (click)="handleEdit(post)"
                   class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
                   title="Chỉnh sửa"
@@ -364,7 +364,7 @@
                 </button>
                 <!-- Delete -->
                 <button
-                  *hasPermission="'blogPost.delete'"
+                  *appHasPermission="'blogPost.delete'"
                   (click)="handleDelete(post)"
                   class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
                   title="Xóa"

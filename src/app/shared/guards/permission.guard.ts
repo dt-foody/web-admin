@@ -16,9 +16,9 @@ export class PermissionGuard implements CanActivate {
 
     const userPermissions = this.auth.getPermissions();
 
-    const hasPermission = requiredPermissions.some((p: string) => userPermissions.includes(p));
+    const appHasPermission = requiredPermissions.some((p: string) => userPermissions.includes(p));
 
-    if (!hasPermission) {
+    if (!appHasPermission) {
       this.router.navigate(['/forbidden']);
       return false;
     }

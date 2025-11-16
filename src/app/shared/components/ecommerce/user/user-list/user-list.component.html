@@ -46,7 +46,7 @@
       <!-- Add User Button -->
       <app-button
         routerLink="/user/add"
-        *hasPermission="'user.create'"
+        *appHasPermission="'user.create'"
         variant="primary"
         [startIcon]="iconAdd"
       >
@@ -268,7 +268,7 @@
               <div class="flex gap-2">
                 <!-- Edit Icon -->
                 <button
-                  *hasPermission="'user.update'"
+                  *appHasPermission="'user.update'"
                   (click)="handleEdit(user)"
                   class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
                   title="Edit user"
@@ -290,7 +290,7 @@
                 </button>
                 <!-- Delete Icon -->
                 <button
-                  *hasPermission="'user.delete'"
+                  *appHasPermission="'user.delete'"
                   (click)="handleDelete(user)"
                   class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
                   title="Delete user"

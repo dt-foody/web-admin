@@ -13,7 +13,7 @@
     <div class="flex gap-3">
       <a
         routerLink="/price-promotion/add"
-        *hasPermission="'pricePromotion.create'"
+        *appHasPermission="'pricePromotion.create'"
         class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
       >
         <svg
@@ -395,7 +395,7 @@
               <div class="flex gap-2">
                 <!-- Edit Icon -->
                 <button
-                  *hasPermission="'pricePromotion.update'"
+                  *appHasPermission="'pricePromotion.update'"
                   (click)="handleEdit(promotion)"
                   class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
                 >
@@ -416,7 +416,7 @@
                 </button>
                 <!-- Delete Icon -->
                 <button
-                  *hasPermission="'pricePromotion.delete'"
+                  *appHasPermission="'pricePromotion.delete'"
                   (click)="handleDelete(promotion)"
                   class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
                 >

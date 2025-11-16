@@ -8,7 +8,7 @@
     </app-search-input>
     <a
       routerLink="/blog-category/add"
-      *hasPermission="'blogCategory.create'"
+      *appHasPermission="'blogCategory.create'"
       class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
     >
       <svg
@@ -151,7 +151,7 @@
             <td class="px-5 py-4">
               <div class="flex gap-2">
                 <button
-                  *hasPermission="'blogCategory.update'"
+                  *appHasPermission="'blogCategory.update'"
                   (click)="handleEdit(category)"
                   class="text-blue-500 p-1"
                 >
@@ -171,7 +171,7 @@
                   </svg>
                 </button>
                 <button
-                  *hasPermission="'blogCategory.delete'"
+                  *appHasPermission="'blogCategory.delete'"
                   (click)="handleDelete(category)"
                   class="text-red-500 p-1"
                 >

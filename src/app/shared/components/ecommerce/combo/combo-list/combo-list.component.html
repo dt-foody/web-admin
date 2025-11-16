@@ -11,7 +11,7 @@
     <div class="flex gap-3">
       <a
         routerLink="/combo/add"
-        *hasPermission="'combo.create'"
+        *appHasPermission="'combo.create'"
         class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
       >
         <svg
@@ -266,7 +266,7 @@
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex gap-2">
                 <button
-                  *hasPermission="'combo.update'"
+                  *appHasPermission="'combo.update'"
                   (click)="handleEdit(combo)"
                   class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
                 >
@@ -286,7 +286,7 @@
                   </svg>
                 </button>
                 <button
-                  *hasPermission="'combo.delete'"
+                  *appHasPermission="'combo.delete'"
                   (click)="handleDelete(combo)"
                   class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
                 >
@@ -323,7 +323,8 @@
   <div class="p-5">
     <h3 class="text-lg font-semibold mb-4">Xác nhận xóa</h3>
     <p class="mb-6">
-      Bạn có chắc muốn xóa <strong>{{ itemToDelete?.name }}</strong>?
+      Bạn có chắc muốn xóa <strong>{{ itemToDelete?.name }}</strong
+      >?
     </p>
     <div class="flex justify-end gap-3">
       <button (click)="dialog.close(false)" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700">

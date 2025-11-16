@@ -12,18 +12,26 @@ import { SidebarService } from '../../services/sidebar.service';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { SafeHtmlPipe } from '../../pipe/safe-html.pipe';
 import { combineLatest, Subscription } from 'rxjs';
+import { HasPermissionDirective } from '../../directives/has-permission.directive';
 
 type NavItem = {
   name: string;
   icon: string;
   path?: string;
   new?: boolean;
-  subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
+  permission?: string | string[];
+  subItems?: {
+    name: string;
+    path: string;
+    pro?: boolean;
+    new?: boolean;
+    permission?: string | string[];
+  }[];
 };
 
 @Component({
   selector: 'app-sidebar',
-  imports: [CommonModule, RouterModule, SafeHtmlPipe],
+  imports: [CommonModule, RouterModule, SafeHtmlPipe, HasPermissionDirective],
   templateUrl: './app-sidebar.component.html',
 })
 export class AppSidebarComponent implements OnInit, OnDestroy {
@@ -40,12 +48,19 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
         </svg>
         `,
       name: 'Sản phẩm',
+      permission: [
+        'category.read',
+        'product.read',
+        'combo.read',
+        'coupon.read',
+        'pricePromotion.read',
+      ],
       subItems: [
-        { name: 'Danh mục', path: '/category' },
-        { name: 'Sản phẩm', path: '/product' },
-        { name: 'Combo', path: '/combo' },
-        { name: 'Mã giảm giá', path: '/coupon' },
-        { name: 'Khuyến mãi', path: '/price-promotion' },
+        { name: 'Danh mục', path: '/category', permission: 'category.read' },
+        { name: 'Sản phẩm', path: '/product', permission: 'product.read' },
+        { name: 'Combo', path: '/combo', permission: 'combo.read' },
+        { name: 'Mã giảm giá', path: '/coupon', permission: 'coupon.read' },
+        { name: 'Khuyến mãi', path: '/price-promotion', permission: 'pricePromotion.read' },
       ],
     },
     {
@@ -53,20 +68,22 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
             </svg>`,
       name: 'Bán hàng',
+      permission: ['customer.read', 'order.read', 'pos.read', 'invoice.read'],
       subItems: [
-        { name: 'Khách hàng', path: '/customer' },
-        { name: 'Đơn hàng', path: '/order' },
-        { name: 'POS', path: '/pos' },
-        { name: 'Hóa đơn', path: '/invoice' },
+        { name: 'Khách hàng', path: '/customer', permission: 'customer.read' },
+        { name: 'Đơn hàng', path: '/order', permission: 'order.read' },
+        { name: 'POS', path: '/pos', permission: 'pos.read' }, // Sẽ bị ẩn vì user không có quyền này
+        { name: 'Hóa đơn', path: '/invoice', permission: 'invoice.read' }, // Sẽ bị ẩn
       ],
     },
     {
       icon: `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H18.5001C19.7427 20.75 20.7501 19.7426 20.7501 18.5V5.5C20.7501 4.25736 19.7427 3.25 18.5001 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H18.5001C18.9143 4.75 19.2501 5.08579 19.2501 5.5V18.5C19.2501 18.9142 18.9143 19.25 18.5001 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V5.5ZM6.25005 9.7143C6.25005 9.30008 6.58583 8.9643 7.00005 8.9643L17 8.96429C17.4143 8.96429 17.75 9.30008 17.75 9.71429C17.75 10.1285 17.4143 10.4643 17 10.4643L7.00005 10.4643C6.58583 10.4643 6.25005 10.1285 6.25005 9.7143ZM6.25005 14.2857C6.25005 13.8715 6.58583 13.5357 7.00005 13.5357H17C17.4143 13.5357 17.75 13.8715 17.75 14.2857C17.75 14.6999 17.4143 15.0357 17 15.0357H7.00005C6.58583 15.0357 6.25005 14.6999 6.25005 14.2857Z" fill="currentColor"></path></svg>`,
       name: 'Bài viết',
+      permission: ['blogPost.read', 'blogCategory.read', 'blogTag.read'],
       subItems: [
-        { name: 'Bài viết', path: '/blog-post' },
-        { name: 'Danh mục', path: '/blog-category' },
-        { name: 'Thẻ', path: '/blog-tag' },
+        { name: 'Bài viết', path: '/blog-post', permission: 'blogPost.read' },
+        { name: 'Danh mục', path: '/blog-category', permission: 'blogCategory.read' },
+        { name: 'Thẻ', path: '/blog-tag', permission: 'blogTag.read' },
       ],
     },
     {
@@ -75,9 +92,10 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
             </svg>
             `,
       name: 'Tài khoản',
+      permission: ['user.read', 'role.read'],
       subItems: [
-        { name: 'Người dùng', path: '/user' },
-        { name: 'Phân quyền', path: '/role' }, // hoặc 'Vai trò' nếu muốn formal hơn
+        { name: 'Người dùng', path: '/user', permission: 'user.read' },
+        { name: 'Phân quyền', path: '/role', permission: 'role.read' },
       ],
     },
   ];

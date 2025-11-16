@@ -36,11 +36,10 @@
   <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
     <nav class="mb-6">
       <div class="flex flex-col gap-4">
-        <!-- Menu Section -->
         <div>
           <ul class="flex flex-col gap-1">
             @for (nav of navItems; track $index; let i = $index) {
-              <li>
+              <li *appHasPermission="nav.permission">
                 @if (nav.subItems) {
                   <button
                     (click)="toggleSubmenu('main', i)"
@@ -117,7 +116,7 @@
                   >
                     <ul class="mt-2 space-y-1 ml-9">
                       @for (subItem of nav.subItems; track $index) {
-                        <li>
+                        <li *appHasPermission="subItem.permission">
                           <a
                             [routerLink]="subItem.path"
                             routerLinkActive=""
@@ -199,7 +198,6 @@
             }
           </ul>
         </div>
-        <!-- end main menu -->
       </div>
     </nav>
   </div>

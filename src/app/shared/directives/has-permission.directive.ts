@@ -2,7 +2,7 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 import { AuthService } from '../services/api/auth.service';
 
 @Directive({
-  selector: '[hasPermission]',
+  selector: '[appHasPermission]',
   standalone: true,
 })
 export class HasPermissionDirective {
@@ -15,7 +15,18 @@ export class HasPermissionDirective {
   ) {}
 
   @Input()
-  set hasPermission(perms: string | string[]) {
+  set appHasPermission(perms: string | string[] | undefined | null) {
+    // Nếu không yêu cầu quyền (null, undefined, rỗng), thì hiển thị
+    if (
+      !perms ||
+      (Array.isArray(perms) && perms.length === 0) ||
+      (typeof perms === 'string' && !perms.trim())
+    ) {
+      this.vcr.clear();
+      this.vcr.createEmbeddedView(this.tpl);
+      return;
+    }
+
     this.requiredPermissions = Array.isArray(perms) ? perms : [perms];
     this.updateView();
   }
