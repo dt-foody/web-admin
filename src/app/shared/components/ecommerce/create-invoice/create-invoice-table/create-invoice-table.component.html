@@ -1,5 +1,5 @@
 <div class="space-y-6">
-  <!-- Products Table -->
+  <!-- Bảng Sản Phẩm -->
   <div class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800">
     <div class="custom-scrollbar overflow-x-auto">
       <table class="min-w-full text-left text-sm text-gray-700 dark:border-gray-800">
@@ -8,37 +8,37 @@
             <th
               class="px-5 py-4 text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              S. No.
+              STT
             </th>
             <th
               class="px-5 py-4 text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400"
             >
-              Products
+              Sản Phẩm
             </th>
             <th
               class="px-5 py-4 text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              Quantity
+              Số Lượng
             </th>
             <th
               class="px-5 py-4 text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              Unit Cost
+              Đơn Giá
             </th>
             <th
               class="px-5 py-4 text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              Discount
+              Giảm Giá
             </th>
             <th
               class="px-5 py-4 text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              Total
+              Tổng
             </th>
             <th
               class="px-5 py-4 text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              <span class="sr-only">Actions</span>
+              <span class="sr-only">Hành Động</span>
             </th>
           </tr>
         </thead>
@@ -89,33 +89,33 @@
         </tbody>
       </table>
       @if (products.length === 0) {
-        <div class="px-5 py-4 text-center text-gray-400">No products added.</div>
+        <div class="px-5 py-4 text-center text-gray-400">Chưa có sản phẩm nào được thêm.</div>
       }
     </div>
   </div>
 
-  <!-- Add Product Form -->
+  <!-- Form Thêm Sản Phẩm -->
   <div
     class="mt-5 rounded-xl border border-gray-100 bg-gray-50 p-4 sm:p-6 dark:border-gray-800 dark:bg-gray-900"
   >
     <form (ngSubmit)="handleSubmit($event)">
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-12">
         <div class="w-full lg:col-span-3">
-          <app-label>Product Name</app-label>
-          <app-input-field name="name" [(value)]="form.name" placeholder="Enter product name" />
+          <app-label>Tên Sản Phẩm</app-label>
+          <app-input-field name="name" [(value)]="form.name" placeholder="Nhập tên sản phẩm" />
         </div>
         <div class="w-full lg:col-span-3">
-          <app-label>Price</app-label>
+          <app-label>Giá</app-label>
           <app-input-field
             type="number"
             name="price"
             [(value)]="form.price"
             min="0"
-            placeholder="Enter product price"
+            placeholder="Nhập giá sản phẩm"
           />
         </div>
         <div class="w-full lg:col-span-2">
-          <app-label>Quantity</app-label>
+          <app-label>Số Lượng</app-label>
           <div
             class="flex h-11 divide-x divide-gray-300 overflow-hidden rounded-lg border border-gray-300 dark:divide-gray-800 dark:border-gray-700"
           >
@@ -173,7 +173,7 @@
           </div>
         </div>
         <div class="w-full lg:col-span-2">
-          <app-label>Discount</app-label>
+          <app-label>Giảm Giá</app-label>
 
           <div class="relative">
             <select
@@ -208,7 +208,7 @@
           <button
             class="inline-flex items-center justify-center gap-2 rounded-lg transition w-full h-11 px-5 py-3.5 text-sm bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:bg-brand-300"
           >
-            Save Product
+            Lưu Sản Phẩm
           </button>
         </div>
       </div>
@@ -240,33 +240,32 @@
       </svg>
 
       <p class="text-sm text-gray-500 dark:text-gray-400">
-        After filling in the product details, press Enter/Return or click 'Save Product' to add it
-        to the list.
+        Sau khi điền thông tin sản phẩm, nhấn Enter/Return hoặc click 'Lưu Sản Phẩm' để thêm vào danh sách.
       </p>
     </div>
   </div>
 
-  <!-- Total Summary -->
+  <!-- Tổng Kết Đơn Hàng -->
   <div class="flex flex-wrap justify-between sm:justify-end">
     <div class="w-full space-y-1 text-right sm:w-[220px]">
       <p class="mb-4 text-left text-sm font-medium text-gray-800 dark:text-white/90">
-        Order summary
+        Tóm Tắt Đơn Hàng
       </p>
       <ul class="space-y-2">
         <li class="flex justify-between gap-5">
-          <span class="text-sm text-gray-500 dark:text-gray-400"> Sub Total </span>
+          <span class="text-sm text-gray-500 dark:text-gray-400">Tạm Tính</span>
           <span class="text-sm font-medium text-gray-700 dark:text-gray-400">
             ${{ subtotal.toFixed(2) }}
           </span>
         </li>
         <li class="flex items-center justify-between">
-          <span class="text-sm text-gray-500 dark:text-gray-400"> Vat (10%): </span>
+          <span class="text-sm text-gray-500 dark:text-gray-400">Thuế (10%):</span>
           <span class="text-sm font-medium text-gray-700 dark:text-gray-400">
             ${{ vat.toFixed(2) }}
           </span>
         </li>
         <li class="flex items-center justify-between">
-          <span class="font-medium text-gray-700 dark:text-gray-400"> Total </span>
+          <span class="font-medium text-gray-700 dark:text-gray-400">Tổng Cộng</span>
           <span class="text-lg font-semibold text-gray-800 dark:text-white/90">
             ${{ total.toFixed(2) }}
           </span>

@@ -1,5 +1,5 @@
 <div *ngIf="isLoading" class="flex h-96 items-center justify-center">
-  <span class="text-gray-500 dark:text-gray-400">Loading post...</span>
+  <span class="text-gray-500 dark:text-gray-400">Đang tải bài viết...</span>
 </div>
 
 <div *ngIf="!isLoading && post" class="mx-auto max-w-4xl py-6 px-4 sm:px-6 lg:px-8">
@@ -19,7 +19,7 @@
       </h1>
 
       <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-        <span *ngIf="post.createdBy?.name"> By {{ post.createdBy.name }} </span>
+        <span *ngIf="post.createdBy?.name"> Người đăng: {{ post.createdBy.name }} </span>
         <span *ngIf="post.createdBy?.name && post.publishedAt">&bull;</span>
         <span *ngIf="post.publishedAt">
           {{ post.publishedAt | date: 'longDate' }}
@@ -44,7 +44,7 @@
       *ngIf="post.tags?.length > 0"
       class="mt-12 border-t border-gray-200 pt-6 dark:border-gray-700"
     >
-      <h3 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Tags:</h3>
+      <h3 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Thẻ:</h3>
       <div class="flex flex-wrap gap-2">
         <span
           *ngFor="let tag of post.tags"

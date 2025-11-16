@@ -3,9 +3,9 @@
 >
   <div class="flex justify-between">
     <div>
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Customers Demographic</h3>
+      <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Nhân khẩu học khách hàng</h3>
       <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-        Number of customer based on country
+        Số lượng khách hàng theo quốc gia
       </p>
     </div>
     <div class="relative inline-block">
@@ -32,13 +32,13 @@
           (itemClick)="closeDropdown()"
           className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
         >
-          View More
+          Xem thêm
         </app-dropdown-item>
         <app-dropdown-item
           (itemClick)="closeDropdown()"
           className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
         >
-          Delete
+          Xóa
         </app-dropdown-item>
       </app-dropdown>
     </div>
@@ -67,7 +67,7 @@
               {{ country.name }}
             </p>
             <span class="block text-gray-500 text-theme-xs dark:text-gray-400">
-              {{ country.customers }}
+              {{ country.customers }} khách hàng
             </span>
           </div>
         </div>

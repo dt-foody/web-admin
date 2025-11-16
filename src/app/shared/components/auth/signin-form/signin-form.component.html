@@ -4,10 +4,10 @@
       <h1
         class="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md"
       >
-        Sign In
+        Đăng nhập
       </h1>
       <p class="text-sm text-gray-500 dark:text-gray-400">
-        Enter your email and password to sign in!
+        Vui lòng nhập email và mật khẩu để đăng nhập!
       </p>
     </div>
 
@@ -26,11 +26,11 @@
       </div>
 
       <div>
-        <app-label>Password <span class="text-error-500">*</span></app-label>
+        <app-label>Mật khẩu <span class="text-error-500">*</span></app-label>
         <div class="relative">
           <app-input-field
             [type]="showPassword ? 'text' : 'password'"
-            placeholder="Enter your password"
+            placeholder="Nhập mật khẩu"
             [(value)]="password"
             name="password"
             class="form-input"
@@ -77,13 +77,13 @@
 
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <app-checkbox [(checked)]="isChecked" label="Keep me logged in" />
+          <app-checkbox [(checked)]="isChecked" label="Duy trì đăng nhập" />
         </div>
         <a
           routerLink="/reset-password"
           class="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
         >
-          Forgot password?
+          Quên mật khẩu?
         </a>
       </div>
 
@@ -92,15 +92,15 @@
         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg py-2 px-4 transition active:scale-95"
         size="sm"
       >
-        Sign in
+        Đăng nhập
       </button>
     </form>
 
     <div class="mt-5">
       <p class="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-        Don't have an account?
+        Không có tài khoản?
         <a routerLink="/signup" class="text-brand-500 hover:text-brand-600 dark:text-brand-400">
-          Sign Up
+          Đăng ký
         </a>
       </p>
     </div>

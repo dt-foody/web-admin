@@ -5,7 +5,7 @@
     class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
   >
     <div class="flex gap-3 sm:justify-between">
-      <app-search-input placeholder="Search combos..." (search)="onSearchChange($event)">
+      <app-search-input placeholder="Tìm kiếm combo..." (search)="onSearchChange($event)">
       </app-search-input>
     </div>
     <div class="flex gap-3">
@@ -29,7 +29,7 @@
             strokeLinejoin="round"
           />
         </svg>
-        Create
+        Tạo mới
       </a>
     </div>
   </div>
@@ -44,7 +44,7 @@
 
           <th>
             <app-sort-header
-              label="Combo Name"
+              label="Tên Combo"
               key="name"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -55,7 +55,7 @@
 
           <th>
             <app-sort-header
-              label="Price"
+              label="Giá"
               key="pricingMode"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -66,18 +66,18 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Items
+            Món trong combo
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Duration
+            Thời gian
           </th>
 
           <th>
             <app-sort-header
-              label="Priority"
+              label="Ưu tiên"
               key="priority"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -89,12 +89,12 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Status
+            Trạng thái
           </th>
 
           <th>
             <app-sort-header
-              label="Created At"
+              label="Ngày tạo"
               key="createdAt"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -106,7 +106,7 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Action
+            Hành động
           </th>
         </tr>
       </thead>
@@ -191,10 +191,10 @@
                     <rect x="14" y="14" width="7" height="7" />
                     <rect x="3" y="14" width="7" height="7" />
                   </svg>
-                  {{ getItemsCount(combo) }} slot(s)
+                  {{ getItemsCount(combo) }} nhóm
                 </span>
                 <span class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ getTotalProducts(combo) }} product(s)
+                  {{ getTotalProducts(combo) }} sản phẩm
                 </span>
               </div>
             </td>
@@ -204,7 +204,7 @@
                 <span class="text-xs text-gray-600 dark:text-gray-400">
                   {{ formatDate(combo.startDate) }}
                 </span>
-                <span class="text-xs text-gray-400 dark:text-gray-500">to</span>
+                <span class="text-xs text-gray-400 dark:text-gray-500">đến</span>
                 <span class="text-xs text-gray-600 dark:text-gray-400">
                   {{ formatDate(combo.endDate) }}
                 </span>
@@ -229,7 +229,7 @@
                     'bg-gray-200 dark:bg-gray-700': !combo.isActive,
                   }"
                 >
-                  <span class="sr-only">Toggle status</span>
+                  <span class="sr-only">Chuyển trạng thái</span>
                   <span
                     class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
                     [ngClass]="{
@@ -321,17 +321,16 @@
 
 <ng-template #confirmDelete let-dialog>
   <div class="p-5">
-    <h3 class="text-lg font-semibold mb-4">Confirm Delete</h3>
+    <h3 class="text-lg font-semibold mb-4">Xác nhận xóa</h3>
     <p class="mb-6">
-      Are you sure you want to delete <strong>{{ itemToDelete?.name }}</strong
-      >?
+      Bạn có chắc muốn xóa <strong>{{ itemToDelete?.name }}</strong>?
     </p>
     <div class="flex justify-end gap-3">
       <button (click)="dialog.close(false)" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700">
-        Cancel
+        Hủy
       </button>
       <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 text-white">
-        Delete
+        Xóa
       </button>
     </div>
   </div>

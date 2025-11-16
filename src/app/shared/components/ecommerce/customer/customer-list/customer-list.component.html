@@ -5,9 +5,9 @@
   <div
     class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
   >
-    <!-- Search and Filter -->
+    <!-- Tìm kiếm và Bộ lọc -->
     <div class="flex gap-3 sm:justify-between">
-      <app-search-input placeholder="Search customers..." (search)="onSearchChange($event)">
+      <app-search-input placeholder="Tìm khách hàng..." (search)="onSearchChange($event)">
       </app-search-input>
     </div>
     <div class="flex gap-3">
@@ -31,12 +31,12 @@
             strokeLinejoin="round"
           />
         </svg>
-        Create
+        Tạo mới
       </a>
     </div>
   </div>
 
-  <!-- Table -->
+  <!-- Bảng dữ liệu -->
   <div class="overflow-x-auto custom-scrollbar">
     <table class="w-full">
       <thead>
@@ -47,7 +47,7 @@
 
           <th>
             <app-sort-header
-              label="Customer Info"
+              label="Thông tin khách hàng"
               key="name"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -69,7 +69,7 @@
 
           <th>
             <app-sort-header
-              label="Phone"
+              label="Số điện thoại"
               key="phone"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -81,24 +81,24 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Gender
+            Giới tính
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Addresses
+            Địa chỉ
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Status
+            Trạng thái
           </th>
 
           <th>
             <app-sort-header
-              label="Created At"
+              label="Ngày tạo"
               key="createdAt"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -110,7 +110,7 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Action
+            Hành động
           </th>
         </tr>
       </thead>
@@ -125,7 +125,7 @@
               />
             </td>
 
-            <!-- Customer Info -->
+            <!-- Thông tin khách hàng -->
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex items-center gap-3">
                 <div
@@ -158,16 +158,16 @@
                   </span>
                   @if (customer.emails.length > 1) {
                     <span class="text-xs text-gray-500 dark:text-gray-400">
-                      + {{ customer.emails.length - 1 }} more
+                      + {{ customer.emails.length - 1 }} email khác
                     </span>
                   }
                 </div>
               } @else {
-                <span class="text-xs text-gray-400 dark:text-gray-500">No email</span>
+                <span class="text-xs text-gray-400 dark:text-gray-500">Không có email</span>
               }
             </td>
 
-            <!-- Phone -->
+            <!-- Số điện thoại -->
             <td class="px-5 py-4 whitespace-nowrap">
               @if (customer.phones && customer.phones.length > 0) {
                 <div class="flex flex-col">
@@ -176,16 +176,16 @@
                   </span>
                   @if (customer.phones.length > 1) {
                     <span class="text-xs text-gray-500 dark:text-gray-400">
-                      + {{ customer.phones.length - 1 }} more
+                      + {{ customer.phones.length - 1 }} số khác
                     </span>
                   }
                 </div>
               } @else {
-                <span class="text-xs text-gray-400 dark:text-gray-500">No phone</span>
+                <span class="text-xs text-gray-400 dark:text-gray-500">Không có số điện thoại</span>
               }
             </td>
 
-            <!-- Gender -->
+            <!-- Giới tính -->
             <td class="px-5 py-4 whitespace-nowrap">
               <span
                 class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
@@ -195,7 +195,7 @@
               </span>
             </td>
 
-            <!-- Addresses -->
+            <!-- Địa chỉ -->
             <td class="px-5 py-4">
               @if (getAddressCount(customer) > 0) {
                 <div class="flex flex-col gap-1">
@@ -216,18 +216,15 @@
                       <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                       <circle cx="12" cy="10" r="3" />
                     </svg>
-                    {{ getAddressCount(customer) }} address(es)
+                    {{ getAddressCount(customer) }} địa chỉ
                   </span>
-                  <!-- <span class="text-xs text-gray-500 dark:text-gray-500 max-w-[240px] truncate" [title]="getDefaultAddress(customer)">
-                  {{ getDefaultAddress(customer) }}
-                </span> -->
                 </div>
               } @else {
-                <span class="text-xs text-gray-400 dark:text-gray-500">No address</span>
+                <span class="text-xs text-gray-400 dark:text-gray-500">Không có địa chỉ</span>
               }
             </td>
 
-            <!-- Status -->
+            <!-- Trạng thái -->
             <td class="px-5 py-4 whitespace-nowrap">
               <button
                 (click)="handleToggleActive(customer)"
@@ -237,7 +234,7 @@
                   'bg-gray-200 dark:bg-gray-700': !customer.isActive,
                 }"
               >
-                <span class="sr-only">Toggle status</span>
+                <span class="sr-only">Chuyển trạng thái</span>
                 <span
                   class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
                   [ngClass]="{
@@ -249,21 +246,21 @@
               </button>
             </td>
 
-            <!-- Created At -->
+            <!-- Ngày tạo -->
             <td class="px-5 py-4 whitespace-nowrap">
               <p class="text-sm text-gray-600 dark:text-gray-400">
                 {{ customer.createdAt | date: 'HH:ss dd/MM/yyyy' }}
               </p>
             </td>
 
-            <!-- Actions -->
+            <!-- Hành động -->
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex gap-2">
-                <!-- View Icon -->
+                <!-- Xem chi tiết -->
                 <button
                   (click)="handleViewDetail(customer)"
                   class="text-green-500 hover:text-green-700 dark:hover:text-green-400 p-1 rounded"
-                  title="View details"
+                  title="Xem chi tiết"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -285,12 +282,12 @@
                     />
                   </svg>
                 </button>
-                <!-- Edit Icon -->
+                <!-- Chỉnh sửa -->
                 <button
                   *hasPermission="'customer.update'"
                   (click)="handleEdit(customer)"
                   class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
-                  title="Edit"
+                  title="Chỉnh sửa"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -307,12 +304,12 @@
                     />
                   </svg>
                 </button>
-                <!-- Delete Icon -->
+                <!-- Xóa -->
                 <button
                   *hasPermission="'customer.delete'"
                   (click)="handleDelete(customer)"
                   class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
-                  title="Delete"
+                  title="Xóa"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -333,7 +330,7 @@
     </table>
   </div>
 
-  <!-- Pagination -->
+  <!-- Phân trang -->
   <app-pagination
     [page]="query.page"
     [totalPages]="totalPages"
@@ -344,26 +341,25 @@
   </app-pagination>
 </div>
 
-<!-- Confirm Delete Modal -->
+<!-- Modal xác nhận xóa -->
 <ng-template #confirmDelete let-dialog>
   <div class="p-5">
-    <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Confirm Delete</h3>
+    <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Xác nhận xóa</h3>
     <p class="mb-6 text-gray-600 dark:text-gray-300">
-      Are you sure you want to delete customer <strong>{{ itemToDelete?.name }}</strong
-      >?
+      Bạn có chắc muốn xóa khách hàng <strong>{{ itemToDelete?.name }}</strong> không?
     </p>
     <div class="flex justify-end gap-3">
       <button
         (click)="dialog.close(false)"
         class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
       >
-        Cancel
+        Hủy
       </button>
       <button
         (click)="dialog.close(true)"
         class="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
       >
-        Delete
+        Xóa
       </button>
     </div>
   </div>

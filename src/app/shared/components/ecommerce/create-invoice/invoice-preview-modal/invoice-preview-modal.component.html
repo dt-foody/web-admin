@@ -15,8 +15,9 @@
       stroke-linejoin="round"
     />
   </svg>
-  Preview Invoice
+  Xem Trước Hóa Đơn
 </app-button>
+
 <!-- modal -->
 <app-modal
   [isOpen]="isOpen"
@@ -24,12 +25,12 @@
   className="relative w-full max-w-[720px] rounded-3xl bg-white dark:bg-gray-900"
 >
   <div class="flex items-center justify-between px-6 py-4">
-    <h3 class="text-lg text-gray-700 dark:text-gray-500">Invoice: #34834</h3>
+    <h3 class="text-lg text-gray-700 dark:text-gray-500">Hóa đơn: #34834</h3>
   </div>
   <div class="max-h-[598px] overflow-y-auto p-4 sm:p-6">
     <div class="mb-9 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <span class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400"> From </span>
+        <span class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400"> Từ </span>
 
         <h5 class="mb-2 text-base font-semibold text-gray-800 dark:text-white/90">Pimjo LLC</h5>
 
@@ -39,16 +40,16 @@
         </p>
 
         <span class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-          Issued On:
+          Ngày Phát Hành:
         </span>
 
-        <span class="block text-sm text-gray-500 dark:text-gray-400"> 11 March, 2027 </span>
+        <span class="block text-sm text-gray-500 dark:text-gray-400"> 11 Tháng 3, 2027 </span>
       </div>
 
       <div class="h-px w-full bg-gray-200 sm:h-[158px] sm:w-px dark:bg-gray-800"></div>
 
       <div class="sm:text-right">
-        <span class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400"> To </span>
+        <span class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400"> Đến </span>
 
         <h5 class="mb-2 text-base font-semibold text-gray-800 dark:text-white/90">Albert Ward</h5>
 
@@ -58,14 +59,14 @@
         </p>
 
         <span class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-          Due On:
+          Hạn Thanh Toán:
         </span>
 
-        <span class="block text-sm text-gray-500 dark:text-gray-400"> 16 March, 2027 </span>
+        <span class="block text-sm text-gray-500 dark:text-gray-400"> 16 Tháng 3, 2027 </span>
       </div>
     </div>
 
-    <!-- Invoice Table Start -->
+    <!-- Bảng Hóa Đơn Bắt Đầu -->
     <div class="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-800">
       <table class="min-w-full text-left text-gray-700 dark:text-gray-400">
         <thead class="bg-gray-50 dark:bg-gray-900">
@@ -73,32 +74,32 @@
             <th
               class="px-5 py-3 text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              S.No.#
+              STT
             </th>
             <th
               class="px-5 py-3 text-xs font-medium whitespace-nowrap text-gray-500 dark:text-gray-400"
             >
-              Products
+              Sản Phẩm
             </th>
             <th
               class="px-5 py-3 text-center text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              Quantity
+              Số Lượng
             </th>
             <th
               class="px-5 py-3 text-center text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              Unit Cost
+              Đơn Giá
             </th>
             <th
               class="px-5 py-3 text-center text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              Discount
+              Giảm Giá
             </th>
             <th
               class="px-5 py-3 text-right text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-400"
             >
-              Total
+              Tổng
             </th>
           </tr>
         </thead>
@@ -146,25 +147,25 @@
         </tbody>
       </table>
     </div>
-    <!-- Invoice Table End -->
+    <!-- Bảng Hóa Đơn Kết Thúc -->
 
     <div class="my-6 flex justify-end pb-6 text-right">
       <div class="w-[220px]">
         <p class="mb-4 text-left text-sm font-medium text-gray-800 dark:text-white/90">
-          Order summary
+          Tóm Tắt Đơn Hàng
         </p>
         <ul class="space-y-2">
           <li class="flex justify-between gap-5">
-            <span class="text-sm text-gray-500 dark:text-gray-400"> Sub Total </span>
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-400"> $3,850 </span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">Tạm Tính</span>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-400">$3,850</span>
           </li>
           <li class="flex items-center justify-between">
-            <span class="text-sm text-gray-500 dark:text-gray-400"> Vat (10%): </span>
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-400"> $385 </span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">Thuế (10%):</span>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-400">$385</span>
           </li>
           <li class="flex items-center justify-between">
-            <span class="font-medium text-gray-700 dark:text-gray-400"> Total </span>
-            <span class="text-lg font-semibold text-gray-800 dark:text-white/90"> $4,235 </span>
+            <span class="font-medium text-gray-700 dark:text-gray-400">Tổng Cộng</span>
+            <span class="text-lg font-semibold text-gray-800 dark:text-white/90">$4,235</span>
           </li>
         </ul>
       </div>

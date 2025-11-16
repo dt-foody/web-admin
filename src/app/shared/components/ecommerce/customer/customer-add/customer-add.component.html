@@ -3,22 +3,22 @@
     class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
   >
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Customer Information</h2>
+      <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thông Tin Khách Hàng</h2>
     </div>
     <div class="p-4 sm:p-6">
       <div class="grid grid-cols-1 gap-5">
         <div>
-          <app-label for="full-name" className="required">Full Name</app-label>
+          <app-label for="full-name" className="required">Họ và Tên</app-label>
           <app-input-field
             id="full-name"
-            placeholder="Enter full name"
+            placeholder="Nhập họ và tên"
             [(value)]="customerData.name"
           ></app-input-field>
         </div>
 
         <div>
           <div class="mb-2 flex items-center justify-between">
-            <app-label>Emails</app-label>
+            <app-label>Email</app-label>
             <app-button variant="outline" size="xs" (btnClick)="addEmail()" type="button">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +34,7 @@
               >
                 <path d="M12 5v14M5 12h14" />
               </svg>
-              Add
+              Thêm
             </app-button>
           </div>
           <div class="space-y-3">
@@ -64,7 +64,7 @@
                 (click)="removeEmail(i)"
                 type="button"
                 class="flex-shrink-0 rounded p-1.5 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-                title="Remove email"
+                title="Xóa email"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +88,7 @@
 
         <div>
           <div class="mb-2 flex items-center justify-between">
-            <app-label>Phone Numbers</app-label>
+            <app-label>Số Điện Thoại</app-label>
             <app-button variant="outline" size="xs" (btnClick)="addPhone()" type="button">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +104,7 @@
               >
                 <path d="M12 5v14M5 12h14" />
               </svg>
-              Add
+              Thêm
             </app-button>
           </div>
           <div class="space-y-3">
@@ -134,7 +134,7 @@
                 (click)="removePhone(i)"
                 type="button"
                 class="flex-shrink-0 rounded p-1.5 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-                title="Remove phone number"
+                title="Xóa số điện thoại"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -158,13 +158,13 @@
 
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div>
-            <app-label for="gender">Gender</app-label>
+            <app-label for="gender">Giới Tính</app-label>
             <ng-select
               id="gender"
               [items]="genderOptions"
               bindLabel="label"
               bindValue="value"
-              placeholder="Select gender"
+              placeholder="Chọn giới tính"
               [(ngModel)]="customerData.gender"
               [searchable]="false"
               [clearable]="true"
@@ -173,7 +173,7 @@
             </ng-select>
           </div>
           <div>
-            <app-label for="birth-date">Birth Date</app-label>
+            <app-label for="birth-date">Ngày Sinh</app-label>
             <app-input-field
               id="birth-date"
               type="date"
@@ -190,7 +190,7 @@
   >
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Delivery Addresses</h2>
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Địa Chỉ Giao Hàng</h2>
         <app-button variant="outline" size="sm" (btnClick)="addAddress()">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -206,7 +206,7 @@
           >
             <path d="M12 5v14M5 12h14" />
           </svg>
-          Add Address
+          Thêm Địa Chỉ
         </app-button>
       </div>
     </div>
@@ -231,12 +231,12 @@
             <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
-          <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">No addresses yet</p>
+          <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Chưa có địa chỉ</p>
           <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">
-            Add delivery addresses for this customer
+            Thêm địa chỉ giao hàng cho khách hàng này
           </p>
           <app-button variant="primary" size="sm" (btnClick)="addAddress()"
-            >Add First Address</app-button
+            >Thêm Địa Chỉ Đầu Tiên</app-button
           >
         </div>
 
@@ -272,18 +272,18 @@
               <div>
                 <div class="flex items-center gap-2">
                   <h3 class="font-medium text-gray-800 dark:text-white">
-                    {{ address.label || 'Address ' + (addressIndex + 1) }}
+                    {{ address.label || 'Địa Chỉ ' + (addressIndex + 1) }}
                   </h3>
                   <span
                     *ngIf="address.isDefault"
                     class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                   >
-                    Default
+                    Mặc Định
                   </span>
                 </div>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ address.recipientName || 'No recipient' }} •
-                  {{ address.recipientPhone || 'No phone' }}
+                  {{ address.recipientName || 'Chưa có người nhận' }} •
+                  {{ address.recipientPhone || 'Chưa có số điện thoại' }}
                 </p>
               </div>
             </div>
@@ -293,7 +293,7 @@
                 (click)="setDefaultAddress(addressIndex)"
                 type="button"
                 class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                title="Set as default"
+                title="Đặt làm mặc định"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -316,7 +316,7 @@
                 (click)="moveAddressUp(addressIndex)"
                 type="button"
                 class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                title="Move up"
+                title="Di chuyển lên"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -337,7 +337,7 @@
                 (click)="moveAddressDown(addressIndex)"
                 type="button"
                 class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                title="Move down"
+                title="Di chuyển xuống"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -357,7 +357,7 @@
                 (click)="removeAddress(addressIndex)"
                 type="button"
                 class="rounded p-1.5 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-                title="Remove address"
+                title="Xóa địa chỉ"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -380,10 +380,10 @@
 
           <div *ngIf="isAddressExpanded(addressIndex)" class="p-4 space-y-4">
             <div>
-              <app-label [for]="'address-label-' + addressIndex">Label (Optional)</app-label>
+              <app-label [for]="'address-label-' + addressIndex">Nhãn (Tùy Chọn)</app-label>
               <app-input-field
                 [id]="'address-label-' + addressIndex"
-                placeholder="e.g., Home, Office, Parent's House"
+                placeholder="ví dụ: Nhà, Văn Phòng, Nhà Bố Mẹ"
                 [(value)]="address.label"
               ></app-input-field>
             </div>
@@ -391,22 +391,22 @@
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <app-label [for]="'recipient-name-' + addressIndex" className="required"
-                  >Recipient Name</app-label
+                  >Tên Người Nhận</app-label
                 >
                 <app-input-field
                   [id]="'recipient-name-' + addressIndex"
-                  placeholder="Full name of recipient"
+                  placeholder="Họ và tên người nhận"
                   [(value)]="address.recipientName"
                 ></app-input-field>
               </div>
               <div>
                 <app-label [for]="'recipient-phone-' + addressIndex" className="required"
-                  >Recipient Phone</app-label
+                  >Số Điện Thoại Người Nhận</app-label
                 >
                 <app-input-field
                   [id]="'recipient-phone-' + addressIndex"
                   type="tel"
-                  placeholder="Phone number"
+                  placeholder="Số điện thoại"
                   [(value)]="address.recipientPhone"
                 ></app-input-field>
               </div>
@@ -414,41 +414,37 @@
 
             <div>
               <app-label [for]="'street-' + addressIndex" className="required"
-                >Street Address</app-label
+                >Địa Chỉ Đường</app-label
               >
               <app-input-field
                 [id]="'street-' + addressIndex"
-                placeholder="House number and street name"
+                placeholder="Số nhà và tên đường"
                 [(value)]="address.street"
               ></app-input-field>
             </div>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <app-label [for]="'ward-' + addressIndex" className="required">Ward</app-label>
+                <app-label [for]="'ward-' + addressIndex" className="required">Phường/Xã</app-label>
                 <app-input-field
                   [id]="'ward-' + addressIndex"
-                  placeholder="Ward/Commune"
+                  placeholder="Phường/Xã"
                   [(value)]="address.ward"
                 ></app-input-field>
               </div>
               <div>
-                <app-label [for]="'district-' + addressIndex" className="required"
-                  >District</app-label
-                >
+                <app-label [for]="'district-' + addressIndex" className="required">Quận/Huyện</app-label>
                 <app-input-field
                   [id]="'district-' + addressIndex"
-                  placeholder="District"
+                  placeholder="Quận/Huyện"
                   [(value)]="address.district"
                 ></app-input-field>
               </div>
               <div>
-                <app-label [for]="'city-' + addressIndex" className="required"
-                  >City/Province</app-label
-                >
+                <app-label [for]="'city-' + addressIndex" className="required">Tỉnh/Thành Phố</app-label>
                 <app-input-field
                   [id]="'city-' + addressIndex"
-                  placeholder="City/Province"
+                  placeholder="Tỉnh/Thành Phố"
                   [(value)]="address.city"
                 ></app-input-field>
               </div>
@@ -460,9 +456,9 @@
   </div>
 
   <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-    <app-button variant="outline" (btnClick)="onCancel()">Cancel</app-button>
+    <app-button variant="outline" (btnClick)="onCancel()">Hủy</app-button>
     <app-button variant="primary" (btnClick)="onSave()">
-      {{ isEditMode ? 'Update Customer' : 'Create Customer' }}
+      {{ isEditMode ? 'Cập Nhật Khách Hàng' : 'Tạo Khách Hàng' }}
     </app-button>
   </div>
 </div>

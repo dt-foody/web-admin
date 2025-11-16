@@ -2,8 +2,8 @@
   <div class="px-6">
     <div class="flex flex-col justify-between gap-5 py-4 sm:flex-row sm:items-center">
       <div>
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Invoices</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Access all your previous invoices.</p>
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Hóa đơn</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Truy cập tất cả các hóa đơn trước đây của bạn.</p>
       </div>
       <div>
         <button
@@ -26,7 +26,7 @@
               stroke-linejoin="round"
             ></path>
           </svg>
-          Download All
+          Tải tất cả
         </button>
       </div>
     </div>
@@ -39,22 +39,22 @@
             <th
               class="px-6 py-3 text-left text-sm font-normal text-gray-500 first:pl-0 dark:text-gray-400"
             >
-              Name
+              Tên
             </th>
             <th class="px-6 py-3 text-left text-sm font-normal text-gray-500 dark:text-gray-400">
-              Date
+              Ngày
             </th>
             <th class="px-6 py-3 text-left text-sm font-normal text-gray-500 dark:text-gray-400">
-              Price
+              Giá
             </th>
             <th class="px-6 py-3 text-left text-sm font-normal text-gray-500 dark:text-gray-400">
-              Plan
+              Gói
             </th>
             <th class="px-6 py-3 text-left text-sm font-normal text-gray-500 dark:text-gray-400">
-              Status
+              Trạng thái
             </th>
             <th class="px-6 py-3 text-right text-sm font-normal text-gray-500 dark:text-gray-400">
-              Action
+              Hành động
             </th>
           </tr>
         </thead>
@@ -191,9 +191,9 @@
     <div class="rounded-b-xl border-t border-gray-200 px-6 py-4 dark:border-gray-800">
       <div class="flex justify-center">
         <div class="block pb-4 text-sm text-gray-700 sm:hidden dark:text-gray-400">
-          Showing <span>{{ startItem }}</span> to <span>{{ endItem }}</span> of
+          Hiển thị <span>{{ startItem }}</span> đến <span>{{ endItem }}</span> trong tổng số
           <span>{{ totalInvoices }}</span>
-          invoices
+          hóa đơn
         </div>
       </div>
       <div
@@ -216,10 +216,10 @@
               d="M2.58203 9.99868C2.58174 10.1909 2.6549 10.3833 2.80152 10.53L7.79818 15.5301C8.09097 15.8231 8.56584 15.8233 8.85883 15.5305C9.15183 15.2377 9.152 14.7629 8.85921 14.4699L5.13911 10.7472L16.6665 10.7472C17.0807 10.7472 17.4165 10.4114 17.4165 9.99715C17.4165 9.58294 17.0807 9.24715 16.6665 9.24715L5.14456 9.24715L8.85919 5.53016C9.15199 5.23717 9.15184 4.7623 8.85885 4.4695C8.56587 4.1767 8.09099 4.17685 7.79819 4.46984L2.84069 9.43049C2.68224 9.568 2.58203 9.77087 2.58203 9.99715C2.58203 9.99766 2.58203 9.99817 2.58203 9.99868Z"
             />
           </svg>
-          <span class="hidden sm:inline">Previous</span>
+          <span class="hidden sm:inline">Trước</span>
         </button>
         <span class="block text-sm font-medium text-gray-700 sm:hidden dark:text-gray-400">
-          Page {{ currentPage }} of {{ totalPages }}
+          Trang {{ currentPage }} of {{ totalPages }}
         </span>
         <ul class="hidden items-center gap-0.5 sm:flex">
           @for (page of visiblePages(); track page) {

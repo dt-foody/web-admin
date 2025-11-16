@@ -19,7 +19,7 @@
         stroke-linejoin="round"
       ></path>
     </svg>
-    Back to dashboard
+    Quay về trang chủ
   </a>
 </div>
 
@@ -29,10 +29,10 @@
       <h1
         class="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md"
       >
-        Sign Up
+        Đăng ký
       </h1>
       <p class="text-sm text-gray-500 dark:text-gray-400">
-        Enter your email and password to sign up!
+        Nhập email và mật khẩu để đăng ký!
       </p>
     </div>
 
@@ -84,24 +84,24 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <!-- First Name -->
           <div class="sm:col-span-1">
-            <app-label> First Name<span class="text-error-500">*</span> </app-label>
+            <app-label> Tên<span class="text-error-500">*</span> </app-label>
             <app-input-field
               type="text"
               [value]="fname"
               id="fname"
               name="fname"
-              placeholder="Enter your first name"
+              placeholder="Nhập tên của bạn"
             />
           </div>
           <!-- Last Name -->
           <div class="sm:col-span-1">
-            <app-label> Last Name<span class="text-error-500">*</span> </app-label>
+            <app-label> Họ<span class="text-error-500">*</span> </app-label>
             <app-input-field
               type="text"
               [value]="lname"
               id="lname"
               name="lname"
-              placeholder="Enter your last name"
+              placeholder="Nhập họ của bạn"
             />
           </div>
         </div>
@@ -113,16 +113,16 @@
             [value]="email"
             id="email"
             name="email"
-            placeholder="Enter your email"
+            placeholder="Nhập email của bạn"
           />
         </div>
         <!-- Password -->
         <div>
-          <app-label>Password <span class="text-error-500">*</span></app-label>
+          <app-label>Mật khẩu <span class="text-error-500">*</span></app-label>
           <div class="relative">
             <app-input-field
               [type]="showPassword ? 'text' : 'password'"
-              placeholder="Enter your password"
+              placeholder="Nhập mật khẩu"
               [value]="password"
               name="password"
               class="form-input"
@@ -170,18 +170,18 @@
         <div class="flex items-center gap-3">
           <app-checkbox className="w-5 h-5" [(checked)]="isChecked" />
           <p class="inline-block font-normal text-gray-500 dark:text-gray-400">
-            By creating an account means you agree to the
-            <span class="text-gray-800 dark:text-white/90"> Terms and Conditions, </span>
-            and our
-            <span class="text-gray-800 dark:text-white"> Privacy Policy </span>
+            Bằng việc tạo tài khoản, bạn đồng ý với
+            <span class="text-gray-800 dark:text-white/90"> Điều khoản & Điều kiện, </span>
+            và
+            <span class="text-gray-800 dark:text-white"> Chính sách Bảo mật </span>
           </p>
-        </div>
+        </div>        
         <!-- Button -->
         <div>
           <button
             class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
           >
-            Sign Up
+            Đăng ký
           </button>
         </div>
       </div>
@@ -189,9 +189,9 @@
 
     <div class="mt-5">
       <p class="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-        Do you have an account?
+        Bạn đã có tài khoản?
         <a routerLink="/signin" class="text-brand-500 hover:text-brand-600 dark:text-brand-400">
-          Sign In
+          Đăng nhập
         </a>
       </p>
     </div>

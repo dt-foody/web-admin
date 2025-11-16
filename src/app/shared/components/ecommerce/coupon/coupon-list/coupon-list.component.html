@@ -5,7 +5,7 @@
     class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
   >
     <div class="flex flex-wrap items-center gap-3">
-      <app-search-input placeholder="Search coupons..." (search)="onSearchChange($event)">
+      <app-search-input placeholder="Tìm kiếm coupon..." (search)="onSearchChange($event)">
       </app-search-input>
 
       <select
@@ -45,7 +45,7 @@
         *hasPermission="'coupon.create'"
         class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
       >
-        Create
+        Tạo Mới
       </a>
     </div>
   </div>
@@ -60,7 +60,7 @@
 
           <th>
             <app-sort-header
-              label="Coupon Code"
+              label="Mã Coupon"
               key="code"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -71,7 +71,7 @@
 
           <th>
             <app-sort-header
-              label="Name"
+              label="Tên"
               key="name"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -83,48 +83,48 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Type
+            Loại
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Visibility
+            Hiển Thị
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Discount
+            Giảm Giá
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Min Order
+            Đơn Hàng Tối Thiểu
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Usage
+            Sử Dụng
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Validity Period
+            Thời Hạn
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Status
+            Trạng Thái
           </th>
 
           <th>
             <app-sort-header
-              label="Created At"
+              label="Ngày Tạo"
               key="createdAt"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -136,7 +136,7 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Action
+            Hành Động
           </th>
         </tr>
       </thead>
@@ -201,7 +201,7 @@
                       !coupon.public,
                   }"
                 >
-                  {{ coupon.public ? 'Public' : 'Private' }}
+                  {{ coupon.public ? 'Công Khai' : 'Riêng Tư' }}
                 </span>
               </div>
             </td>
@@ -228,7 +228,7 @@
                   coupon.maxDiscountAmount > 0
                 ) {
                   <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    (Max: {{ getFormattedPrice(coupon.maxDiscountAmount) }})
+                    (Tối đa: {{ getFormattedPrice(coupon.maxDiscountAmount) }})
                   </span>
                 }
               </div>
@@ -239,21 +239,20 @@
                 {{
                   coupon.minOrderAmount > 0
                     ? getFormattedPrice(coupon.minOrderAmount)
-                    : 'No minimum'
+                    : 'Không yêu cầu tối thiểu'
                 }}
               </p>
             </td>
-
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex flex-col gap-1">
                 <div class="flex items-center gap-1.5">
-                  <span class="text-xs text-gray-500 dark:text-gray-400 w-10">Total:</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400 w-10">Tổng:</span>
                   <span class="text-xs font-medium text-gray-700 dark:text-gray-300">
                     {{ coupon.usedCount || 0 }}/{{ getMaxUsesDisplay(coupon) }}
                   </span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <span class="text-xs text-gray-500 dark:text-gray-400">Per User: </span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">Mỗi Người Dùng: </span>
                   <span class="text-xs font-medium text-gray-700 dark:text-gray-300">
                     {{ getMaxUsesPerUserDisplay(coupon) }}
                   </span>
@@ -287,7 +286,7 @@
                     'bg-gray-200 dark:bg-gray-700': coupon.status !== 'ACTIVE',
                   }"
                 >
-                  <span class="sr-only">Toggle status</span>
+                  <span class="sr-only">Chuyển trạng thái</span>
                   <span
                     class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
                     [ngClass]="{
@@ -302,25 +301,25 @@
                   <span
                     class="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400"
                   >
-                    Draft
+                    Bản Nháp
                   </span>
                 } @else if (coupon.status === 'PAUSED') {
                   <span
                     class="inline-flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400"
                   >
-                    Paused
+                    Tạm Dừng
                   </span>
                 } @else if (isExpired(coupon)) {
                   <span
                     class="inline-flex items-center gap-1 text-xs text-red-600 dark:text-red-400"
                   >
-                    Expired
+                    Hết Hạn
                   </span>
                 } @else if (isFullyUsed(coupon)) {
                   <span
                     class="inline-flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400"
                   >
-                    Used up
+                    Đã Sử Dụng
                   </span>
                 }
               </div>
@@ -378,8 +377,8 @@
         } @empty {
           <tr>
             <td colspan="12" class="py-10 text-center text-gray-500 dark:text-gray-400">
-              <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">No Coupons Found</h3>
-              <p class="mt-1 text-sm">Try adjusting your search or filters.</p>
+              <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Không tìm thấy coupon</h3>
+              <p class="mt-1 text-sm">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
             </td>
           </tr>
         }
@@ -399,18 +398,18 @@
 
 <ng-template #confirmDelete let-dialog>
   <div class="p-5">
-    <h3 class="text-lg font-semibold mb-4">Confirm Delete</h3>
+    <h3 class="text-lg font-semibold mb-4">Xác Nhận Xóa</h3>
     <p class="mb-6">
-      Are you sure you want to delete coupon
+      Bạn có chắc chắn muốn xóa coupon
       <strong>{{ itemToDelete?.code || itemToDelete?.name }}</strong
       >?
     </p>
     <div class="flex justify-end gap-3">
       <button (click)="dialog.close(false)" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700">
-        Cancel
+        Hủy
       </button>
       <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 text-white">
-        Delete
+        Xóa
       </button>
     </div>
   </div>
