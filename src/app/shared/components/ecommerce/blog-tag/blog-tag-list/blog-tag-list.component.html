@@ -6,10 +6,7 @@
     class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
   >
     <div class="flex gap-3">
-      <app-search-input
-        placeholder="Tìm kiếm theo tên, slug..."
-        (search)="onSearchChange($event)"
-      >
+      <app-search-input placeholder="Tìm kiếm theo tên..." (search)="onSearchChange($event)">
       </app-search-input>
     </div>
     <div class="flex gap-3">
@@ -56,9 +53,6 @@
             >
             </app-sort-header>
           </th>
-          <th class="px-5 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-            Xem trước màu
-          </th>
           <th>
             <app-sort-header
               label="Số bài viết"
@@ -101,23 +95,16 @@
             <!-- Tên và slug tag -->
             <td class="px-5 py-4">
               <div class="flex flex-col">
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
-                  tag.name
-                }}</span>
-                <span class="text-xs font-mono text-gray-500 dark:text-gray-400">{{
-                  tag.slug
-                }}</span>
+                <div>
+                  <span
+                    class="rounded-md px-3 py-1 text-xs"
+                    [style.backgroundColor]="tag.backgroundColor"
+                    [style.color]="tag.textColor"
+                  >
+                    {{ tag.name }}
+                  </span>
+                </div>
               </div>
-            </td>
-            <!-- Preview màu tag -->
-            <td class="px-5 py-4">
-              <span
-                class="rounded-md px-3 py-1 text-xs"
-                [style.backgroundColor]="tag.backgroundColor"
-                [style.color]="tag.textColor"
-              >
-                {{ tag.name }}
-              </span>
             </td>
             <!-- Số bài viết -->
             <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">

@@ -223,9 +223,6 @@
                 >
                   {{ order?.payment?.status || 'đang chờ' }}
                 </span>
-                <span class="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                  {{ order?.payment?.method || 'tiền mặt' }}
-                </span>
               </div>
             </td>
 
@@ -337,7 +334,8 @@
       Bạn có chắc chắn muốn xóa đơn hàng
       <strong class="text-gray-900 dark:text-white"
         >#{{ itemToDelete?.orderId || itemToDelete?.id?.substring(0, 8) }}</strong
-      > không?
+      >
+      không?
     </p>
     <div class="flex justify-end gap-3">
       <button
