@@ -170,7 +170,7 @@
                 placeholder="0"
                 [(value)]="couponData.minOrderAmount"
               ></app-input-field>
-              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">0 = không yêu cầu tối thiểu.</p>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">0 = không yêu cầu.</p>
             </div>
           </div>
         </div>
@@ -190,7 +190,8 @@
             <app-switch [(value)]="couponData.public"></app-switch>
           </div>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Bật nếu muốn hiển thị công khai. Tắt nếu là 'Riêng tư' và phải phát hành dưới dạng voucher.
+            Bật nếu muốn hiển thị công khai. Tắt nếu là 'Riêng tư' và phải phát hành dưới dạng
+            voucher.
           </p>
 
           <div class="flex items-center justify-between">
@@ -238,7 +239,9 @@
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">0 = không giới hạn</p>
             </div>
             <div>
-              <app-label for="max-uses-user" className="required">Số Lần Sử Dụng Tối Đa / Người Dùng</app-label>
+              <app-label for="max-uses-user" className="required"
+                >Số Lần Sử Dụng Tối Đa / Người Dùng</app-label
+              >
               <app-input-field
                 id="max-uses-user"
                 type="number"
@@ -257,11 +260,10 @@
         class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
       >
         <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-          <h2 class="text-lg font-medium text-gray-800 dark:text-white">
-            Điều Kiện Áp Dụng
-          </h2>
+          <h2 class="text-lg font-medium text-gray-800 dark:text-white">Điều Kiện Áp Dụng</h2>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Xác định quy tắc khi nào coupon này được áp dụng (ví dụ: sản phẩm cụ thể, nhóm người dùng).
+            Xác định quy tắc khi nào coupon này được áp dụng (ví dụ: sản phẩm cụ thể, nhóm người
+            dùng).
           </p>
         </div>
         <div class="p-4 sm:p-6">
@@ -445,7 +447,9 @@
                   <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
                     Chưa Có Voucher Nào Được Phát Hành
                   </h3>
-                  <p class="mt-1 text-sm">Sử dụng biểu mẫu phía trên để phát hành voucher cho coupon này.</p>
+                  <p class="mt-1 text-sm">
+                    Sử dụng biểu mẫu phía trên để phát hành voucher cho coupon này.
+                  </p>
                 </ng-template>
               </td>
             </tr>
