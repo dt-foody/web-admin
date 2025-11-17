@@ -190,6 +190,22 @@
   body {
     @apply relative font-normal font-sans z-1 bg-gray-50;
   }
+
+  *::-webkit-scrollbar {
+    @apply size-1.5;
+  }
+
+  *::-webkit-scrollbar-track {
+    @apply rounded-full;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    @apply bg-gray-200 rounded-full dark:bg-gray-700;
+  }
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background-color: #344054;
 }
 
 @utility menu-item {
