@@ -89,8 +89,25 @@ export class PosCartComponent implements OnInit {
 
   // SỬA: Đổi tên tham số 'id' -> 'itemId'
   onQuantityChange(itemId: string, event: Event) {
-    const newQuantity = (event.target as HTMLInputElement).valueAsNumber;
-    this.posState.updateQuantity(itemId, newQuantity || 0);
+    let newQuantity = (event.target as HTMLInputElement).valueAsNumber;
+    // SỬA: Đảm bảo số lượng tối thiểu là 1
+    if (newQuantity < 1 || isNaN(newQuantity)) {
+      newQuantity = 1;
+      (event.target as HTMLInputElement).value = '1'; // Cập nhật lại UI nếu cần
+    }
+    this.posState.updateQuantity(itemId, newQuantity);
+  }
+
+  // SỬA: Thêm hàm giảm số lượng
+  onDecreaseQuantity(itemId: string, currentQuantity: number) {
+    if (currentQuantity > 1) {
+      this.posState.updateQuantity(itemId, currentQuantity - 1);
+    }
+  }
+
+  // SỬA: Thêm hàm tăng số lượng
+  onIncreaseQuantity(itemId: string, currentQuantity: number) {
+    this.posState.updateQuantity(itemId, currentQuantity + 1);
   }
 
   // SỬA: Đổi tên tham số 'id' -> 'itemId'
