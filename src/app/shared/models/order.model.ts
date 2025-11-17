@@ -53,6 +53,7 @@ export interface OrderItem {
   options: OrderItemOption[]; // Dùng khi itemType == 'Product'
   comboSelections: OrderItemComboSelection[]; // Dùng khi itemType == 'Combo'
   note?: string;
+  image?: string;
 }
 
 export interface OrderPayment {

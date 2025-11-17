@@ -120,11 +120,12 @@ export class PosStateService {
           itemType: 'Product',
           name: product.name,
           quantity: 1,
-          basePrice: (product as any).basePrice || (product as any).price || 0,
+          basePrice: (product as any)?.basePrice || (product as any)?.price || 0,
           price: price,
           options: [],
           comboSelections: [],
           note: '',
+          image: product?.image || '',
         };
         newItems = [...state.items, newItem];
       }
@@ -134,11 +135,12 @@ export class PosStateService {
         itemType: 'Product',
         name: product.name,
         quantity: 1,
-        basePrice: (product as any).basePrice || (product as any).price || 0,
+        basePrice: (product as any)?.basePrice || (product as any)?.price || 0,
         price: price,
         options: options,
         comboSelections: [],
         note: note,
+        image: product?.image || '',
       };
       newItems = [...state.items, newItem];
     }
