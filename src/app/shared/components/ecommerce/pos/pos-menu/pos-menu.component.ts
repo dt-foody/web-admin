@@ -1,109 +1,127 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Category } from '../../../../models/category.model';
-import { Product } from '../../../../models/product.model';
-import { CategoryService } from '../../../../services/api/category.service';
-import { PosStateService } from '../../../../services/api/pos.service';
-import { ProductService } from '../../../../services/api/product.service';
-import { InputFieldComponent } from '../../../form/input/input-field.component';
 import { DialogService } from '@ngneat/dialog';
+import { ToastrService } from 'ngx-toastr';
+
+import { Product } from '../../../../models/product.model';
+import { Combo } from '../../../../models/combo.model';
+import { Category } from '../../../../models/category.model';
+import { PosStateService, ProductWithOptionsResult } from '../../../../services/api/pos.service';
+
+// (Đây là modal bạn đã cung cấp)
 import { ProductOptionsModalComponent } from '../product-options-modal/product-options-modal.component';
-import { ButtonComponent } from '../../../ui/button/button.component';
-import { environment } from '../../../../../../environments/environment';
+
 @Component({
   selector: 'app-pos-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputFieldComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './pos-menu.component.html',
-  styles: `
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 0.75rem;
-    }
-  `,
 })
-export class PosMenuComponent implements OnInit {
+export class PosMenuComponent implements OnChanges {
+  // --- NHẬN INPUT TỪ CHA ---
+  @Input() products: Product[] = [];
+  @Input() combos: Combo[] = [];
+  @Input() categories: Category[] = [];
+
+  // --- Service ---
   private posState = inject(PosStateService);
-  private productService = inject(ProductService);
-  private categoryService = inject(CategoryService); // Thêm service Category
-  private dialogService = inject(DialogService); // Inject DialogService
+  private dialogService = inject(DialogService);
+  private toastr = inject(ToastrService);
 
-  allProducts: Product[] = [];
-  filteredProducts: Product[] = [];
-  categories: Category[] = [];
-  selectedCategoryId: string | 'all' = 'all';
-  searchQuery = '';
-  selectedCategory = '';
+  // --- State nội bộ ---
+  public filteredProducts: Product[] = [];
+  public selectedTab: 'products' | 'combos' = 'products';
+  public selectedCategoryId: string | 'all' = 'all';
+  public searchTerm: string = '';
 
-  ngOnInit() {
-    this.loadCategories();
-    this.loadProducts();
+  constructor() {
+    // Không inject ProductService hay ComboService ở đây nữa
   }
 
-  loadCategories() {
-    this.categoryService.getAll({ limit: 100 }).subscribe((res: any) => {
-      this.categories = res.data || res.results || [];
-    });
+  ngOnChanges(changes: SimpleChanges): void {
+    // Khi @Input() products thay đổi (lần đầu tiên hoặc sau này)
+    if (changes['products']) {
+      this.applyFilters();
+    }
   }
 
-  loadProducts() {
-    this.productService.getAll({ limit: 1000 }).subscribe((res: any) => {
-      this.allProducts = res.results || [];
-      this.allProducts.forEach((el) => {
-        el.image = el.image ? `${environment.urlBaseImage}${el.image}` : '';
-      });
+  /**
+   * Lọc danh sách sản phẩm dựa trên state (tab, category, search)
+   */
+  private applyFilters(): void {
+    let tempProducts = [...this.products];
 
-      this.filterProducts();
-    });
-  }
-
-  onSelectCategory(categoryId: string | 'all') {
-    this.selectedCategoryId = categoryId;
-    this.filterProducts();
-  }
-
-  filterProducts() {
-    let products = this.allProducts;
-
-    // Lọc theo Category
+    // 1. Lọc theo Category
     if (this.selectedCategoryId !== 'all') {
-      products = products.filter(
-        (p) =>
-          (p.category as any)?.id === this.selectedCategoryId ||
-          p.category === this.selectedCategoryId,
-      );
+      tempProducts = tempProducts.filter((p) => p.category === this.selectedCategoryId);
     }
 
-    // Lọc theo Search Query
-    if (this.searchQuery) {
-      const query = this.searchQuery.toLowerCase();
-      products = products.filter((p) => p.name.toLowerCase().includes(query));
+    // 2. Lọc theo Search Term
+    if (this.searchTerm) {
+      const lowerTerm = this.searchTerm.toLowerCase();
+      tempProducts = tempProducts.filter((p) => p.name.toLowerCase().includes(lowerTerm));
     }
 
-    this.filteredProducts = products;
+    this.filteredProducts = tempProducts;
   }
 
-  onProductClick(product: Product) {
-    if (product.optionGroups && product.optionGroups.length > 0) {
-      // 1. Mở modal và LƯU LẠI THAM CHIẾU (dialogRef)
+  // --- Event Handlers từ Template ---
+
+  onSelectTab(tab: 'products' | 'combos'): void {
+    this.selectedTab = tab;
+    // (applyFilters() sẽ được gọi nếu bạn lọc cả combo)
+  }
+
+  onSelectCategory(categoryId: string | 'all'): void {
+    this.selectedCategoryId = categoryId;
+    this.applyFilters();
+  }
+
+  onSearch(event: Event): void {
+    this.searchTerm = (event.target as HTMLInputElement).value;
+    this.applyFilters();
+  }
+
+  /**
+   * Xử lý khi click 1 sản phẩm
+   * - Nếu có options -> Mở modal
+   * - Nếu không -> Thêm thẳng vào giỏ
+   */
+  onProductClick(product: Product): void {
+    const hasOptions = product.optionGroups && product.optionGroups.length > 0;
+
+    if (hasOptions) {
+      // 1. Mở Modal (sử dụng modal component bạn đã cung cấp)
       const dialogRef = this.dialogService.open(ProductOptionsModalComponent, {
-        size: 'lg',
-        data: { product: product },
+        size: 'md',
+        data: {
+          product: product,
+        },
       });
 
-      // 2. Lắng nghe sự kiện khi modal đóng (đây là phần quan trọng)
-      dialogRef.afterClosed$.subscribe((result) => {
-        console.log('result', result);
+      // 2. Lắng nghe kết quả
+      dialogRef.afterClosed$.subscribe((result: ProductWithOptionsResult) => {
         if (result) {
-          // 4. Chỉ khi có kết quả, bạn mới thêm vào state
-          this.posState.addItem(result);
+          // 3. Thêm (Product + Options) vào giỏ
+          this.posState.addItem(result); //
         }
       });
     } else {
-      // Nếu không có tùy chọn, trực tiếp thêm sản phẩm vào giỏ hàng
-      this.posState.addItem(product);
+      // 1. Thêm (Product đơn giản) thẳng vào giỏ
+      this.posState.addItem(product); //
     }
+  }
+
+  /**
+   * Xử lý khi click 1 combo
+   */
+  onComboClick(combo: Combo): void {
+    // LƯU Ý: PosStateService hiện tại CHƯA hỗ trợ thêm Combo.
+    // Hàm addItem() chỉ nhận Product hoặc ProductWithOptionsResult.
+    // Chúng ta cần mở rộng PosStateService (hoặc tạo modal chọn combo) để hỗ trợ việc này.
+
+    console.warn('Chức năng thêm combo vào giỏ hàng POS chưa được hỗ trợ.', combo);
+    this.toastr.info('Chức năng thêm combo từ POS hiện chưa được hỗ trợ.');
   }
 }

@@ -6,29 +6,39 @@ import {
   OrderItem,
   OrderPayment,
   OrderShipping,
-  OrderItemOption, // SỬA: Import OrderItemOption
+  OrderItemOption,
+  // SỬA: Import DiscountType và OrderFormData (hoặc các type cần thiết)
+  DEFAULT_FORM,
 } from '../../models/order.model';
-import { Product, ProductOption } from '../../models/product.model';
+import { Product } from '../../models/product.model';
 
 // SỬA: Interface cho kết quả trả về từ Modal
-interface ProductWithOptionsResult {
+export interface ProductWithOptionsResult {
   product: Product;
-  options: OrderItemOption[]; // Modal phải trả về mảng đã được làm phẳng
+  options: OrderItemOption[];
   totalPrice: number;
   note: string;
 }
 
-// SỬA: Cập nhật State để khớp với Order Model
+// SỬA: Cập nhật State để khớp với OrderFormData
 export interface PosCartState {
   orderType: Order['orderType'];
   channel: Order['channel'];
-  profile: string | null; // SỬA: Dùng profile
-  profileType: Order['profileType'] | null; // SỬA: Dùng profileType
+  profile: string | null;
+  profileType: Order['profileType'] | null;
   items: OrderItem[];
-  totalAmount: number;
-  discountAmount: number;
+
+  // SỬA: Thay đổi cấu trúc discount
+  discountType: 'fixed' | 'percentage';
+  discountValue: number;
+
   shippingFee: number;
+
+  // SỬA: totalAmount và grandTotal sẽ được tính toán, không cần lưu trữ
+  // (Hoặc có thể lưu nhưng được tính lại trong calculateTotals)
+  totalAmount: number;
   grandTotal: number;
+
   payment: OrderPayment;
   shipping: OrderShipping | null;
   status: Order['status'];
@@ -39,12 +49,16 @@ export interface PosCartState {
 const initialState: PosCartState = {
   orderType: 'TakeAway',
   channel: 'POS',
-  profile: null, // SỬA: Dùng profile
-  profileType: null, // SỬA: Dùng profileType
+  profile: null,
+  profileType: null,
   items: [],
-  totalAmount: 0,
-  discountAmount: 0,
+
+  // SỬA: Khởi tạo discount mới
+  discountType: 'fixed',
+  discountValue: 0,
+
   shippingFee: 0,
+  totalAmount: 0,
   grandTotal: 0,
   payment: {
     method: 'cash',
@@ -65,21 +79,19 @@ export class PosStateService {
   }
 
   public getCurrentCart(): PosCartState {
-    return this.cartState.getValue();
+    // Trả về một bản sao để đảm bảo tính bất biến (immutable)
+    return { ...this.cartState.getValue() };
   }
 
   // --- CÁC HÀNH ĐỘNG TỪ COMPONENT ---
 
   /**
-   * SỬA: Hàm addItem được viết lại hoàn toàn.
-   * Nó có thể nhận 1 Product (click nhanh)
-   * hoặc 1 object ProductWithOptionsResult (từ modal)
+   * SỬA: Hàm addItem (đã ok trong file của bạn)
    */
   public addItem(itemInput: Product | ProductWithOptionsResult) {
     const state = this.getCurrentCart();
     let newItems: OrderItem[];
 
-    // Tách biến
     const isModalResult = (itemInput as any).product && (itemInput as any).options;
     const product: Product = isModalResult
       ? (itemInput as ProductWithOptionsResult).product
@@ -92,7 +104,6 @@ export class PosStateService {
       : (product as any).basePrice || (product as any).price || 0;
     const note: string = isModalResult ? (itemInput as ProductWithOptionsResult).note : '';
 
-    // Nếu không phải từ modal (không có options), thì tìm và tăng số lượng
     if (!isModalResult) {
       const existingItem = state.items.find(
         (item) =>
@@ -118,7 +129,6 @@ export class PosStateService {
         newItems = [...state.items, newItem];
       }
     } else {
-      // Nếu từ modal (có options), luôn tạo item mới
       const newItem: OrderItem = {
         item: product.id,
         itemType: 'Product',
@@ -136,7 +146,7 @@ export class PosStateService {
     this.updateState({ ...state, items: newItems });
   }
 
-  // SỬA: Dùng itemId (chính là item.item)
+  // SỬA: Dùng itemId (đã ok)
   public updateQuantity(itemId: string, newQuantity: number) {
     const state = this.getCurrentCart();
     if (newQuantity <= 0) {
@@ -150,14 +160,14 @@ export class PosStateService {
     this.updateState({ ...state, items: newItems });
   }
 
-  // SỬA: Dùng itemId
+  // SỬA: Dùng itemId (đã ok)
   public removeItem(itemId: string) {
     const state = this.getCurrentCart();
     const newItems = state.items.filter((item) => item.item !== itemId);
     this.updateState({ ...state, items: newItems });
   }
 
-  // SỬA: Cập nhật profile và profileType
+  // SỬA: Cập nhật profile và profileType (đã ok)
   public setCustomer(customer: Customer | null) {
     const state = this.getCurrentCart();
     this.updateState({
@@ -172,24 +182,9 @@ export class PosStateService {
     let shipping: OrderShipping | null = state.shipping;
     let shippingFee = Number(state.shippingFee || 0);
 
-    if (type === 'Delivery') {
-      if (!shipping) {
-        shipping = {
-          address: {
-            recipientName: '',
-            recipientPhone: '',
-            street: '',
-            ward: '',
-            district: '',
-            city: '',
-          },
-          status: 'pending',
-        };
-      }
-    } else {
-      shipping = null;
-      shippingFee = 0;
-    }
+    shipping = null;
+    shippingFee = 0;
+
     this.updateState({ ...state, orderType: type, shipping, shippingFee });
   }
 
@@ -198,10 +193,18 @@ export class PosStateService {
     this.updateState({ ...state, shippingFee: fee });
   }
 
-  public setDiscount(amount: number) {
+  // SỬA: Cập nhật 2 hàm setDiscount...
+  public setDiscountValue(value: number) {
     const state = this.getCurrentCart();
-    this.updateState({ ...state, discountAmount: amount });
+    this.updateState({ ...state, discountValue: value || 0 });
   }
+
+  public setDiscountType(type: 'fixed' | 'percentage') {
+    const state = this.getCurrentCart();
+    this.updateState({ ...state, discountType: type });
+  }
+
+  // (Hàm setDiscount(amount) cũ không còn dùng)
 
   public setNote(note: string) {
     const state = this.getCurrentCart();
@@ -224,15 +227,26 @@ export class PosStateService {
     this.cartState.next(stateWithTotals);
   }
 
+  // SỬA: Cập nhật calculateTotals để dùng discountType/Value
   private calculateTotals(state: PosCartState): PosCartState {
     const totalAmount = state.items.reduce((sum, item) => {
       const price = Number(item.price) || 0;
       return sum + price * item.quantity;
     }, 0);
 
-    const grandTotal =
-      totalAmount - Number(state.discountAmount || 0) + Number(state.shippingFee || 0);
+    // Tính discount thực tế
+    const discountValue = Number(state.discountValue || 0);
+    let discountAmount = 0;
+    if (state.discountType === 'percentage') {
+      discountAmount = (totalAmount * discountValue) / 100;
+    } else {
+      discountAmount = discountValue;
+    }
 
+    const grandTotal = totalAmount - discountAmount + Number(state.shippingFee || 0);
+
+    // Lưu ý: `discountAmount` vừa tính KHÔNG được lưu lại state
+    // state chỉ lưu `discountType` và `discountValue`
     return { ...state, totalAmount, grandTotal };
   }
 }

@@ -1,81 +1,132 @@
 <div class="flex flex-col h-full">
-  <div class="p-4 border-b border-gray-200 dark:border-gray-700 pt-0 pl-0">
-    <app-input-field
-      type="text"
-      placeholder="Tìm sản phẩm..."
-      [(value)]="searchQuery"
-      (valueChange)="filterProducts()"
-    />
-  </div>
+  <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+    <div class="mb-4">
+      <input type="text" placeholder="Tìm sản phẩm..."
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        [value]="searchTerm" (input)="onSearch($event)" />
+    </div>
 
-  <div class="p-4 border-b border-gray-200 dark:border-gray-700 pl-0">
-    <div class="flex flex-wrap items-center gap-2">
-      <app-button
-        size="sm"
-        [variant]="selectedCategory === 'all' ? 'primary' : 'outline'"
-        (btnClick)="onSelectCategory('all')"
-        className="rounded-full"
-      >
-        Tất cả
-      </app-button>
-      <app-button
-        size="sm"
-        [variant]="selectedCategory === 'coffee' ? 'primary' : 'outline'"
-        (btnClick)="onSelectCategory('coffee')"
-        className="rounded-full"
-      >
-        Coffee
-      </app-button>
-      <app-button
-        size="sm"
-        [variant]="selectedCategory === 'tea' ? 'primary' : 'outline'"
-        (btnClick)="onSelectCategory('tea')"
-        className="rounded-full"
-      >
-        Trà
-      </app-button>
-      <app-button
-        size="sm"
-        [variant]="selectedCategory === 'cakes' ? 'primary' : 'outline'"
-        (btnClick)="onSelectCategory('cakes')"
-        className="rounded-full"
-      >
-        Bánh ngọt
-      </app-button>
+    <div class="grid grid-cols-2 gap-2">
+      <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium"
+        [class.bg-brand-600]="selectedTab === 'products'" [class.text-white]="selectedTab === 'products'"
+        [class.bg-gray-100]="selectedTab !== 'products'" [class.dark:bg-gray-800]="selectedTab !== 'products'"
+        (click)="onSelectTab('products')">
+        Sản Phẩm
+      </button>
+      <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium"
+        [class.bg-brand-600]="selectedTab === 'combos'" [class.text-white]="selectedTab === 'combos'"
+        [class.bg-gray-100]="selectedTab !== 'combos'" [class.dark:bg-gray-800]="selectedTab !== 'combos'"
+        (click)="onSelectTab('combos')">
+        Combo
+      </button>
     </div>
   </div>
 
-  <div class="p-4 pl-0">
-    @if (filteredProducts.length > 0) {
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        @for (product of filteredProducts; track product.id) {
-          <button
-            (click)="onProductClick(product)"
-            class="flex flex-col justify-between p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:border-brand-500 hover:shadow-md transition"
-          >
-            <div class="w-full h-24 bg-gray-100 dark:bg-gray-700 rounded-md mb-2 flex items-center justify-center overflow-hidden">
-              @if(product.image) {
-                <img [src]="product.image" alt="{{ product.name }}" class="h-full w-full object-cover">
+  <div class="flex-1 overflow-y-auto">
+    @if (selectedTab === 'products') {
+    <div class="flex h-full">
+      <div class="w-1/4 h-full overflow-y-auto border-r border-gray-200 dark:border-gray-700">
+        <nav class="flex flex-col p-2 space-y-1">
+          <button type="button" class="w-full px-3 py-2 text-left rounded-md text-sm font-medium"
+            [class.bg-brand-50]="selectedCategoryId === 'all'" [class.text-brand-700]="selectedCategoryId === 'all'"
+            [class.dark:bg-gray-800]="selectedCategoryId === 'all'" [class.text-gray-600]="selectedCategoryId !== 'all'"
+            [class.dark:text-gray-300]="selectedCategoryId !== 'all'"
+            [class.hover:bg-gray-50]="selectedCategoryId !== 'all'"
+            [class.dark:hover:bg-gray-800]="selectedCategoryId !== 'all'" (click)="onSelectCategory('all')">
+            Tất cả sản phẩm
+          </button>
+          @for (cat of categories; track cat.id) {
+          <button type="button" class="w-full px-3 py-2 text-left rounded-md text-sm font-medium truncate"
+            [class.bg-brand-50]="selectedCategoryId === cat.id" [class.text-brand-700]="selectedCategoryId === cat.id"
+            [class.dark:bg-gray-800]="selectedCategoryId === cat.id"
+            [class.text-gray-600]="selectedCategoryId !== cat.id"
+            [class.dark:text-gray-300]="selectedCategoryId !== cat.id"
+            [class.hover:bg-gray-50]="selectedCategoryId !== cat.id"
+            [class.dark:hover:bg-gray-800]="selectedCategoryId !== cat.id" (click)="onSelectCategory(cat.id)">
+            {{ cat.name }}
+          </button>
+          }
+        </nav>
+      </div>
+
+      <div class="w-3/4 h-full p-4 overflow-y-auto">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          @for (product of filteredProducts; track product.id) {
+          <button type="button"
+            class="flex flex-col items-center justify-between p-3 text-center rounded-lg shadow bg-white dark:bg-gray-800 hover:shadow-md hover:scale-[1.02] transition-all duration-150"
+            (click)="onProductClick(product)">
+            <div class="w-full h-24 mb-2 bg-gray-100 rounded dark:bg-gray-700">
+              @if (product.image) {
+              <img [src]="product.image" [alt]="product.name" class="w-full h-full object-cover rounded" />
               } @else {
-                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l-1.586-1.586a2 2 0 00-2.828 0L6 16m12 4H6a2 2 0 01-2-2V6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2z"></path></svg>
+              <div class="flex items-center justify-center w-full h-full text-gray-400">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l-1-1m6 0h.01M5 12v-4a2 2 0 012-2h10a2 2 0 012 2v4M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2H5z">
+                  </path>
+                </svg>
+              </div>
               }
             </div>
-            
-            <span
-              class="text-sm font-medium text-center text-gray-800 dark:text-white line-clamp-2 h-10"
-            >
+            <p class="text-sm font-medium text-gray-800 dark:text-white leading-tight">
               {{ product.name }}
-            </span>
-            <span class="text-xs font-semibold text-brand-600 dark:text-brand-400 mt-1">
-              {{ product?.basePrice | number: '1.0-0' }}đ
-            </span>
+            </p>
+            <p class="text-xs font-semibold text-brand-600 dark:text-brand-400">
+              {{ product.basePrice | number: '1.0-0' }}đ
+            </p>
           </button>
+          }
+        </div>
+        @if (filteredProducts.length === 0) {
+        <div class="flex items-center justify-center h-full text-gray-400">
+          <p>Không tìm thấy sản phẩm nào.</p>
+        </div>
         }
       </div>
-    } @else {
-      <div class="flex items-center justify-center h-full text-gray-400 py-10">
-        <p>Không tìm thấy sản phẩm</p>
+    </div>
+    }
+
+    @if (selectedTab === 'combos') {
+    <div class="p-4">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        @for (combo of combos; track combo.id) {
+        <button type="button"
+          class="flex flex-col items-center justify-between p-3 text-center rounded-lg shadow bg-white dark:bg-gray-800 hover:shadow-md hover:scale-[1.02] transition-all duration-150"
+          (click)="onComboClick(combo)">
+          <div class="w-full h-24 mb-2 bg-gray-100 rounded dark:bg-gray-700">
+            @if (combo.image) {
+            <img [src]="combo.image" [alt]="combo.name" class="w-full h-full object-cover rounded" />
+            } @else {
+            <div class="flex items-center justify-center w-full h-full text-gray-400">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M5 11v2m14-2v2">
+                </path>
+              </svg>
+            </div>
+            }
+          </div>
+          <p class="text-sm font-medium text-gray-800 dark:text-white leading-tight">
+            {{ combo.name }}
+          </p>
+          <p class="text-xs font-semibold text-brand-600 dark:text-brand-400">
+            @if (combo.pricingMode === 'FIXED') {
+            {{ combo.comboPrice | number: '1.0-0' }}đ
+            } @else {
+            Giá linh hoạt
+            }
+          </p>
+        </button>
+        }
       </div>
+      @if (combos.length === 0) {
+      <div class="flex items-center justify-center h-64 text-gray-400">
+        <p>Không có combo nào.</p>
+      </div>
+      }
+    </div>
     }
   </div>
 </div>
