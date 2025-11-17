@@ -125,3 +125,54 @@ export interface Order {
   orderType?: 'TakeAway' | 'DineIn' | 'Delivery';
   channel?: 'AdminPanel' | 'POS' | 'WebApp' | 'MobileApp' | 'Grab';
 }
+
+export interface OrderFormData {
+  profile: string | null;
+  profileType: 'Customer' | 'Employee' | null;
+  orderType: 'TakeAway' | 'DineIn' | 'Delivery';
+  channel: 'AdminPanel' | 'POS' | 'WebApp' | 'MobileApp' | 'Grab';
+
+  items: OrderItem[];
+  totalAmount: number;
+  shippingFee: number;
+  grandTotal: number;
+
+  payment: OrderPayment;
+  shipping?: OrderShipping | null;
+
+  status: OrderStatus;
+  note: string;
+
+  // UI discount
+  discountType: 'fixed' | 'percentage';
+  discountValue: number;
+}
+
+export const DEFAULT_SHIPPING_ADDRESS: OrderShippingAddress = {
+  recipientName: '',
+  recipientPhone: '',
+  street: '',
+  ward: '',
+  district: '',
+  city: '',
+};
+
+export const DEFAULT_FORM: OrderFormData = {
+  profile: null,
+  profileType: null,
+  orderType: 'TakeAway',
+  channel: 'AdminPanel',
+  items: [],
+  totalAmount: 0,
+  discountType: 'fixed',
+  discountValue: 0,
+  shippingFee: 0,
+  grandTotal: 0,
+  payment: {
+    method: 'cash' as PaymentMethod,
+    status: 'pending' as PaymentStatus,
+  },
+  shipping: null,
+  status: 'pending' as OrderStatus,
+  note: '',
+};

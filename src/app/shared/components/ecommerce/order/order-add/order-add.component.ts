@@ -22,6 +22,8 @@ import {
   PaymentMethod,
   PaymentStatus,
   ShippingStatus,
+  DEFAULT_FORM,
+  DEFAULT_SHIPPING_ADDRESS,
 } from '../../../../models/order.model';
 
 import { Product, ProductOptionGroup, ProductOption } from '../../../../models/product.model';
@@ -36,58 +38,6 @@ import { ComboService } from '../../../../services/api/combo.service';
 import { CustomerService } from '../../../../services/api/customer.service';
 
 import { createFormData, deepSanitize } from '../../../../utils/form-data.utils';
-
-// ===== Form model =====
-interface OrderFormData {
-  profile: string | null;
-  profileType: 'Customer' | 'Employee' | null;
-  orderType: 'TakeAway' | 'DineIn' | 'Delivery';
-  channel: 'AdminPanel' | 'POS' | 'WebApp' | 'MobileApp' | 'Grab';
-
-  items: OrderItem[];
-  totalAmount: number;
-  shippingFee: number;
-  grandTotal: number;
-
-  payment: OrderPayment;
-  shipping?: OrderShipping | null;
-
-  status: OrderStatus;
-  note: string;
-
-  // UI discount
-  discountType: 'fixed' | 'percentage';
-  discountValue: number;
-}
-
-const DEFAULT_SHIPPING_ADDRESS: OrderShippingAddress = {
-  recipientName: '',
-  recipientPhone: '',
-  street: '',
-  ward: '',
-  district: '',
-  city: '',
-};
-
-const DEFAULT_FORM: OrderFormData = {
-  profile: null,
-  profileType: null,
-  orderType: 'TakeAway',
-  channel: 'AdminPanel',
-  items: [],
-  totalAmount: 0,
-  discountType: 'fixed',
-  discountValue: 0,
-  shippingFee: 0,
-  grandTotal: 0,
-  payment: {
-    method: 'cash' as PaymentMethod,
-    status: 'pending' as PaymentStatus,
-  },
-  shipping: null,
-  status: 'pending' as OrderStatus,
-  note: '',
-};
 
 @Component({
   selector: 'app-order-add',
@@ -957,154 +907,6 @@ export class OrderAddComponent implements OnInit {
     this.orderData.grandTotal = this.orderData.totalAmount - discount + shipping;
   }
 
-  // ===== HELPER: MAP OPTIONS / COMBO SELECTIONS -> API FORMAT =====
-  private mapOptionsForApi(
-    options: OrderItemOption[] | undefined | null,
-  ): Record<string, { name: string; priceModifier: number }[]> {
-    if (!options || !options.length) return {};
-
-    const result: Record<string, { name: string; priceModifier: number }[]> = {};
-
-    for (const opt of options) {
-      if (!result[opt.groupName]) {
-        result[opt.groupName] = [];
-      }
-      result[opt.groupName].push({
-        name: opt.optionName,
-        priceModifier: opt.priceModifier,
-      });
-    }
-
-    return result;
-  }
-
-  private findProductForComboSelection(
-    comboId: string | undefined,
-    slotName: string,
-    productId: string,
-  ): Product | undefined {
-    if (!comboId) return this.getProductById(productId);
-
-    const combo = this.getCombo(comboId);
-    if (!combo) return this.getProductById(productId);
-
-    const slot = combo.items.find((s) => s.slotName === slotName);
-    if (!slot) return this.getProductById(productId);
-
-    const sp = slot.selectableProducts.find((p: any) => {
-      const prod: any = p.product;
-      const pid = typeof prod === 'string' ? prod : prod?.id;
-      return pid === productId;
-    });
-
-    if (!sp) return this.getProductById(productId);
-
-    const prodObj: any = sp.product;
-    if (typeof prodObj === 'object') return prodObj as Product;
-
-    return this.getProductById(prodObj);
-  }
-
-  private mapComboSelectionForApi(orderItem: OrderItem, sel: OrderItemComboSelection) {
-    const comboId = orderItem.item as string;
-    const selProdId = typeof sel.product === 'string' ? sel.product : (sel.product as any)?.id;
-
-    const prod = this.findProductForComboSelection(comboId, sel.slotName, selProdId);
-
-    return {
-      slotName: sel.slotName,
-      product: {
-        id: prod?.id || selProdId,
-        name: prod?.name || sel.productName || '',
-        basePrice: prod?.basePrice ?? 0,
-      },
-      options: this.mapOptionsForApi(sel.options),
-    };
-  }
-
-  private mapOrderItemForApi(item: OrderItem): any {
-    const quantity = item.quantity || 0;
-    const unitPrice =
-      typeof item.price === 'string' ? parseFloat(item.price) || 0 : item.price || 0;
-    const totalPrice = unitPrice * quantity;
-
-    if (item.itemType === 'Combo') {
-      const combo = this.getCombo(item.item as string);
-
-      return {
-        itemType: 'Combo',
-        item: {
-          id: combo?.id || (item.item as any),
-          name: combo?.name || item.name || '',
-          comboPrice: combo?.comboPrice ?? 0,
-        },
-        totalPrice,
-        options: null,
-        comboSelections: (item.comboSelections || []).map((sel) =>
-          this.mapComboSelectionForApi(item, sel),
-        ),
-        quantity,
-        note: item.note || '',
-      };
-    }
-
-    // Product
-    const product = this.getProductById(item.item as string);
-
-    return {
-      itemType: 'Product',
-      item: {
-        id: product?.id || (item.item as any),
-        name: product?.name || item.name || '',
-        basePrice: product?.basePrice ?? item.basePrice ?? 0,
-      },
-      totalPrice,
-      options: this.mapOptionsForApi(item.options),
-      comboSelections: null,
-      quantity,
-      note: item.note || '',
-    };
-  }
-
-  private buildApiPayload(): any {
-    // Tính lại totals
-    this.calculateTotals();
-
-    const base: any = deepSanitize(this.orderData, DEFAULT_FORM);
-
-    // Map items -> schema backend (giống foody-user)
-    base.items = this.orderData.items.map((it) => this.mapOrderItemForApi(it));
-
-    base.totalAmount = this.orderData.totalAmount;
-    base.grandTotal = this.orderData.grandTotal;
-
-    // Discount
-    const discountValue =
-      typeof this.orderData.discountValue === 'string'
-        ? parseFloat(this.orderData.discountValue) || 0
-        : this.orderData.discountValue || 0;
-
-    let discount = 0;
-    if (this.orderData.discountType === 'percentage') {
-      discount = (this.orderData.totalAmount * discountValue) / 100;
-    } else {
-      discount = discountValue;
-    }
-    base.discountAmount = discount;
-
-    delete base.discountType;
-    delete base.discountValue;
-
-    // Profile type
-    if (base.profile) base.profileType = 'Customer';
-    else base.profileType = null;
-
-    // appliedCoupons giống foody-user
-    if (!base.appliedCoupons) base.appliedCoupons = [];
-
-    return base;
-  }
-
   // ===== VALIDATION & SUBMIT =====
   validateForm(): boolean {
     // Nếu metaOnly: bỏ qua validate items (items được tạo từ trước, coi là hợp lệ),
@@ -1213,7 +1015,13 @@ export class OrderAddComponent implements OnInit {
   onSubmit(): void {
     if (!this.validateForm()) return;
 
-    const fullPayload = this.buildApiPayload();
+    this.calculateTotals();
+
+    const fullPayload = this.orderService.buildAdminOrderPayload(
+      this.orderData,
+      this.products,
+      this.combos,
+    );
     let payload: any = fullPayload;
 
     if (this.isEditMode && this.editModeType === 'metaOnly') {
