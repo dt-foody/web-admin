@@ -11,21 +11,17 @@
   (mouseleave)="sidebarService.setHovered(false)"
 >
   <div
-    class="py-4 flex"
-    [ngClass]="{
-      'xl:justify-center': !((isExpanded$ | async) || (isHovered$ | async)),
-      'justify-start': (isExpanded$ | async) || (isHovered$ | async),
-    }"
+    class="py-4 flex justify-center"
   >
     <a routerLink="/">
       @if ((isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async)) {
-        <img class="dark:hidden" src="/images/logo/logo.svg" alt="Logo" width="150" height="40" />
+        <img class="dark:hidden" src="/images/logo/logo.svg" alt="Logo" width="140" height="32" />
         <img
           class="hidden dark:block"
           src="/images/logo/logo-dark.svg"
           alt="Logo"
           width="150"
-          height="40"
+          height="32"
         />
       } @else {
         <img src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
@@ -163,7 +159,7 @@
                       [routerLink]="nav.path"
                       routerLinkActive="menu-item-active"
                       [routerLinkActiveOptions]="{ exact: true }"
-                      class="menu-item group"
+                      class="menu-item group justify-center"
                       [ngClass]="{
                         'xl:justify-center': !((isExpanded$ | async) || (isHovered$ | async)),
                         'xl:justify-start': (isExpanded$ | async) || (isHovered$ | async),
