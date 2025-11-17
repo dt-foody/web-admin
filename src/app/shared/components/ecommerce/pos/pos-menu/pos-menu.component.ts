@@ -9,10 +9,12 @@ import { ProductService } from '../../../../services/api/product.service';
 import { InputFieldComponent } from '../../../form/input/input-field.component';
 import { DialogService } from '@ngneat/dialog';
 import { ProductOptionsModalComponent } from '../product-options-modal/product-options-modal.component';
+import { ButtonComponent } from '../../../ui/button/button.component';
+import { environment } from '../../../../../../environments/environment';
 @Component({
   selector: 'app-pos-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputFieldComponent],
+  imports: [CommonModule, FormsModule, InputFieldComponent, ButtonComponent],
   templateUrl: './pos-menu.component.html',
   styles: `
     .product-grid {
@@ -33,6 +35,7 @@ export class PosMenuComponent implements OnInit {
   categories: Category[] = [];
   selectedCategoryId: string | 'all' = 'all';
   searchQuery = '';
+  selectedCategory = '';
 
   ngOnInit() {
     this.loadCategories();
@@ -47,7 +50,11 @@ export class PosMenuComponent implements OnInit {
 
   loadProducts() {
     this.productService.getAll({ limit: 1000 }).subscribe((res: any) => {
-      this.allProducts = res.data || res.results || [];
+      this.allProducts = res.results || [];
+      this.allProducts.forEach((el) => {
+        el.image = el.image ? `${environment.urlBaseImage}${el.image}` : '';
+      });
+
       this.filterProducts();
     });
   }

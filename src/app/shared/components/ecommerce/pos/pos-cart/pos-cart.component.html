@@ -1,128 +1,88 @@
 @if (cart$ | async; as cart) {
-  <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-    <div class="grid grid-cols-2 gap-2">
-      <app-button
-        className="w-full"
-        size="sm"
-        [variant]="cart.orderType === 'TakeAway' ? 'primary' : 'outline'"
-        (btnClick)="onOrderTypeChange('TakeAway')"
-      >
-        Mang đi
-      </app-button>
+<div class="p-4 border-b border-gray-200 dark:border-gray-700">
+  <div class="grid grid-cols-2 gap-2">
+    <app-button className="w-full" size="sm" [variant]="cart.orderType === 'TakeAway' ? 'primary' : 'outline'"
+      (btnClick)="onOrderTypeChange('TakeAway')">
+      Mang đi
+    </app-button>
 
-      <app-button
-        className="w-full"
-        size="sm"
-        [variant]="cart.orderType === 'DineIn' ? 'primary' : 'outline'"
-        (btnClick)="onOrderTypeChange('DineIn')"
-      >
-        Tại quán
-      </app-button>
+    <app-button className="w-full" size="sm" [variant]="cart.orderType === 'DineIn' ? 'primary' : 'outline'"
+      (btnClick)="onOrderTypeChange('DineIn')">
+      Tại quán
+    </app-button>
+  </div>
+</div>
+
+<div class="p-4 border-b border-gray-200 dark:border-gray-700">
+  @if (selectedCustomer) {
+  <div class="flex items-center justify-between">
+    <div class="min-w-0">
+      <p class="text-xs text-gray-500 dark:text-gray-400">Khách hàng:</p>
+      <p class="text-base font-semibold text-gray-900 dark:text-white truncate">
+        {{ selectedCustomer.name }}
+      </p>
     </div>
+
+    <app-button size="xs" variant="outline" className="!bg-red-100 !text-red-700 hover:!bg-red-200 border-0"
+      (btnClick)="onClearCustomer()">
+      Hủy
+    </app-button>
   </div>
+  } @else {
+  <app-button size="md" variant="outline"
+    className="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-brand-500 hover:text-brand-500"
+    (btnClick)="openCustomerModal()">
+    + Tìm/Thêm Khách hàng (Vãng lai)
+  </app-button>
+  }
+</div>
 
-  <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-    @if (selectedCustomer) {
-      <div class="flex items-center justify-between">
-        <div class="min-w-0">
-          <p class="text-xs text-gray-500 dark:text-gray-400">Khách hàng:</p>
-          <p class="text-base font-semibold text-gray-900 dark:text-white truncate">
-            {{ selectedCustomer.name }}
-          </p>
-        </div>
-
-        <app-button
-          size="xs"
-          variant="outline"
-          className="!bg-red-100 !text-red-700 hover:!bg-red-200 border-0"
-          (btnClick)="onClearCustomer()"
-        >
-          Hủy
-        </app-button>
-      </div>
-    } @else {
-      <app-button
-        size="md"
-        variant="outline"
-        className="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-brand-500 hover:text-brand-500"
-        (btnClick)="openCustomerModal()"
-      >
-        + Tìm/Thêm Khách hàng (Vãng lai)
-      </app-button>
-    }
+<div class="flex-1 p-4 overflow-y-auto space-y-3">
+  @if (cart.items.length === 0) {
+  <div class="flex flex-col items-center justify-center h-full text-gray-400">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 opacity-50" fill="none" viewBox="0 0 24 24"
+      stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+    </svg>
+    <p class="mt-2 text-sm">Giỏ hàng trống</p>
   </div>
+  }
 
-  <div class="flex-1 p-4 overflow-y-auto space-y-3">
-    @if (cart.items.length === 0) {
-      <div class="flex flex-col items-center justify-center h-full text-gray-400">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-16 w-16 opacity-50"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-          />
-        </svg>
-        <p class="mt-2 text-sm">Giỏ hàng trống</p>
-      </div>
-    }
-
-    @for (item of cart.items; track item.item) {
-      <div class="flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ item.name }}</p>
-          @if (item.options && item.options.length > 0) {
-            <p class="text-xs text-gray-500 truncate">
-              {{ getOptionsString(item.options) }}
-            </p>
-          }
-          <p class="text-sm font-semibold text-brand-600 dark:text-brand-400">
-            {{ item.price | number: '1.0-0' }}đ
-          </p>
-        </div>
-
-        <input
-          type="number"
-          class="w-16 text-center px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
-          [value]="item.quantity"
-          (change)="onQuantityChange($any(item.item), $event)"
-          min="1"
-        />
-
-        <p class="text-sm font-bold text-gray-900 dark:text-white w-20 text-right">
-          {{ +item.price * item.quantity | number: '1.0-0' }}đ
-        </p>
-
-        <app-button
-          size="xs"
-          variant="outline"
-          [iconOnly]="true"
-          ariaLabel="Xóa sản phẩm"
-          [startIcon]="iconRemove"
-          className="!text-red-500 hover:!text-red-700 border-0"
-          (btnClick)="onRemoveItem($any(item.item))"
-        >
-        </app-button>
-      </div>
-    }
-  </div>
-
-  <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
-    @if (cart.orderType === 'Delivery' && cart.shipping) {}
-
-    <div>
-      <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Ghi chú đơn hàng:</div>
-      <app-text-area
-        placeholder="VD: Ít đường, thêm đá..."
-        [value]="cart.note"
-        (valueChange)="posState.setNote($event)"
-      ></app-text-area>
+  @for (item of cart.items; track item.item) {
+  <div class="flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
+    <div class="flex-1 min-w-0">
+      <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ item.name }}</p>
+      @if (item.options && item.options.length > 0) {
+      <p class="text-xs text-gray-500 truncate">
+        {{ getOptionsString(item.options) }}
+      </p>
+      }
+      <p class="text-sm font-semibold text-brand-600 dark:text-brand-400">
+        {{ item.price | number: '1.0-0' }}đ
+      </p>
     </div>
+
+    <input type="number"
+      class="w-16 text-center px-2 py-1 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+      [value]="item.quantity" (change)="onQuantityChange($any(item.item), $event)" min="1" />
+
+    <p class="text-sm font-bold text-gray-900 dark:text-white w-20 text-right">
+      {{ +item.price * item.quantity | number: '1.0-0' }}đ
+    </p>
+
+    <app-button size="xs" variant="outline" [iconOnly]="true" ariaLabel="Xóa sản phẩm" [startIcon]="iconRemove"
+      className="!text-red-500 hover:!text-red-700 border-0" (btnClick)="onRemoveItem($any(item.item))">
+    </app-button>
   </div>
+  }
+
+  <div class="pt-2">
+    <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Ghi chú đơn hàng:</div>
+    <app-text-area placeholder="VD: Ít đường, thêm đá..." [value]="cart.note"
+      (valueChange)="posState.setNote($event)"></app-text-area>
+  </div>
+
+</div>
+
 }
