@@ -25,14 +25,14 @@ export class DemographicCardComponent {
       img: '/images/country/country-01.svg',
       alt: 'usa',
       name: 'USA',
-      customers: '2,379 Customers',
+      customers: '2,379',
       percent: 79,
     },
     {
       img: '/images/country/country-02.svg',
       alt: 'france',
       name: 'France',
-      customers: '589 Customers',
+      customers: '589',
       percent: 23,
     },
   ];

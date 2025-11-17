@@ -26,7 +26,7 @@ import { DropdownItemComponent } from '../../ui/dropdown/dropdown-item/dropdown-
 export class MonthlySalesChartComponent {
   public series: ApexAxisChartSeries = [
     {
-      name: 'Sales',
+      name: 'Doanh số',
       data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
     },
   ];

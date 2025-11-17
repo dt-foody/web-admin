@@ -66,9 +66,9 @@ export class ProductAddComponent implements OnInit {
   categories: TreeOption[] = [];
 
   priceModifierTypes = [
-    { value: 'fixed_amount', label: 'Fixed Amount' },
-    { value: 'percentage', label: 'Percentage' },
-  ];
+    { value: 'fixed_amount', label: 'Số tiền cố định' },
+    { value: 'percentage', label: 'Phần trăm' },
+  ];  
 
   // Trạng thái UI
   expandedGroups: Set<number> = new Set();

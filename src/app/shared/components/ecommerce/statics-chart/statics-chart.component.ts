@@ -26,11 +26,11 @@ import { ChartTabComponent } from '../../common/chart-tab/chart-tab.component';
 export class StatisticsChartComponent {
   public series: ApexAxisChartSeries = [
     {
-      name: 'Sales',
+      name: 'Doanh số',
       data: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
     },
     {
-      name: 'Revenue',
+      name: 'Doanh thu',
       data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
     },
   ];
@@ -79,18 +79,18 @@ export class StatisticsChartComponent {
   public xaxis: ApexXAxis = {
     type: 'category',
     categories: [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      'Tháng 1',
+      'Tháng 2',
+      'Tháng 3',
+      'Tháng 4',
+      'Tháng 5',
+      'Tháng 6',
+      'Tháng 7',
+      'Tháng 8',
+      'Tháng 9',
+      'Tháng 10',
+      'Tháng 11',
+      'Tháng 12',
     ],
     axisBorder: { show: false },
     axisTicks: { show: false },

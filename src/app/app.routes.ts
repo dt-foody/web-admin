@@ -78,7 +78,7 @@ export const routes: Routes = [
         path: '',
         component: EcommerceComponent,
         pathMatch: 'full',
-        title: 'Bảng điều khiển thương mại điện tử',
+        title: 'Tổng quan',
       },
       {
         path: 'category',
