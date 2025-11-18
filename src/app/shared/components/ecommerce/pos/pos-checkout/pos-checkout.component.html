@@ -54,10 +54,10 @@
       </ng-select>
     </div>
 
-    <app-button variant="outline" size="lg" (btnClick)="posState.resetCart()">
+    <app-button variant="outline" className="w-full" size="lg" (btnClick)="posState.resetCart()">
       Hủy
     </app-button>
-    <app-button variant="primary" size="lg" (btnClick)="submitOrder()"
+    <app-button variant="primary" className="w-full" size="lg" (btnClick)="submitOrder()"
       [disabled]="isSubmitting || cart.items.length === 0">
       {{ isSubmitting ? 'Đang xử lý...' : 'Thanh Toán' }}
     </app-button>

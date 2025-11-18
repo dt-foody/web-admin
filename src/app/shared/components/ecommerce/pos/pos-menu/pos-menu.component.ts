@@ -7,10 +7,11 @@ import { ToastrService } from 'ngx-toastr';
 import { Product } from '../../../../models/product.model';
 import { Combo } from '../../../../models/combo.model';
 import { Category } from '../../../../models/category.model';
-import { PosStateService, ProductWithOptionsResult } from '../../../../services/api/pos.service';
+import { ComboWithOptionsResult, PosStateService, ProductWithOptionsResult } from '../../../../services/api/pos.service';
 
 // (Đây là modal bạn đã cung cấp)
 import { ProductOptionsModalComponent } from '../product-options-modal/product-options-modal.component';
+import { ComboOptionsModalComponent } from '../combo-options-modal/combo-options-modal.component';
 
 @Component({
   selector: 'app-pos-menu',
@@ -113,15 +114,25 @@ export class PosMenuComponent implements OnChanges {
     }
   }
 
-  /**
-   * Xử lý khi click 1 combo
-   */
   onComboClick(combo: Combo): void {
-    // LƯU Ý: PosStateService hiện tại CHƯA hỗ trợ thêm Combo.
-    // Hàm addItem() chỉ nhận Product hoặc ProductWithOptionsResult.
-    // Chúng ta cần mở rộng PosStateService (hoặc tạo modal chọn combo) để hỗ trợ việc này.
+    // 1. Mở Modal Combo
+    const dialogRef = this.dialogService.open(ComboOptionsModalComponent, {
+      size: 'lg', // Combo modal thường cần to hơn
+      data: {
+        combo: combo,
+      },
+    });
 
-    console.warn('Chức năng thêm combo vào giỏ hàng POS chưa được hỗ trợ.', combo);
-    this.toastr.info('Chức năng thêm combo từ POS hiện chưa được hỗ trợ.');
+    // 2. Lắng nghe kết quả
+    dialogRef.afterClosed$.subscribe((result: ComboWithOptionsResult) => {
+      if (result) {
+        // 3. Thêm (Combo + Lựa chọn) vào giỏ
+        this.posState.addItem(result); // Gửi kết quả cho service
+      }
+    });
+
+    // Bỏ phần code cũ
+    // console.warn('Chức năng thêm combo vào giỏ hàng POS chưa được hỗ trợ.', combo);
+    // this.toastr.info('Chức năng thêm combo từ POS hiện chưa được hỗ trợ.');
   }
 }

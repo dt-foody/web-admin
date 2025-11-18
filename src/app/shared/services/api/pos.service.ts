@@ -10,13 +10,22 @@ import {
   // SỬA: Import DiscountType và OrderFormData (hoặc các type cần thiết)
   DEFAULT_FORM,
   OrderFormData,
+  OrderItemComboSelection,
 } from '../../models/order.model';
 import { Product } from '../../models/product.model';
+import { Combo } from '../../models/combo.model';
 
 // SỬA: Interface cho kết quả trả về từ Modal
 export interface ProductWithOptionsResult {
   product: Product;
   options: OrderItemOption[];
+  totalPrice: number;
+  note: string;
+}
+
+export interface ComboWithOptionsResult {
+  combo: Combo;
+  selections: OrderItemComboSelection[];
   totalPrice: number;
   note: string;
 }
@@ -61,26 +70,57 @@ export class PosStateService {
 
   // --- CÁC HÀNH ĐỘNG TỪ COMPONENT ---
 
-  /**
-   * SỬA: Hàm addItem (đã ok trong file của bạn)
-   */
-  public addItem(itemInput: Product | ProductWithOptionsResult) {
+  public addItem(itemInput: Product | ProductWithOptionsResult | ComboWithOptionsResult) {
     const state = this.getCurrentCart();
     let newItems: OrderItem[];
 
-    const isModalResult = (itemInput as any).product && (itemInput as any).options;
-    const product: Product = isModalResult
-      ? (itemInput as ProductWithOptionsResult).product
-      : (itemInput as Product);
-    const options: OrderItemOption[] = isModalResult
-      ? (itemInput as ProductWithOptionsResult).options
-      : [];
-    const price: number = isModalResult
-      ? (itemInput as ProductWithOptionsResult).totalPrice
-      : (product as any).basePrice || (product as any).price || 0;
-    const note: string = isModalResult ? (itemInput as ProductWithOptionsResult).note : '';
+    // Type Guards
+    const isProductWithOption = (itemInput as any).product && (itemInput as any).options;
+    const isComboResult = (itemInput as any).combo && (itemInput as any).selections;
+    const isSimpleProduct = !isProductWithOption && !isComboResult;
 
-    if (!isModalResult) {
+    if (isComboResult) {
+      // --- 1. XỬ LÝ KHI THÊM COMBO ---
+      const result = itemInput as ComboWithOptionsResult;
+      const combo = result.combo;
+
+      // Logic kiểm tra combo đã tồn tại (nếu cần - hiện tại chỉ thêm mới)
+      // (Bạn có thể thêm logic gộp combo sau, tương tự gộp product)
+
+      const newItem: OrderItem = {
+        item: combo.id, // ID của combo
+        itemType: 'Combo', // Type là 'Combo'
+        name: combo.name,
+        quantity: 1,
+        basePrice: result.totalPrice, // (Hoặc combo.comboPrice tùy logic của bạn)
+        price: result.totalPrice, // Giá cuối cùng đã tính
+        options: [], // Combo không có options
+        comboSelections: result.selections, // Lưu các lựa chọn sản phẩm
+        note: result.note,
+        image: combo.image || '',
+      };
+      newItems = [...state.items, newItem];
+    } else if (isProductWithOption) {
+      // --- 2. XỬ LÝ SẢN PHẨM CÓ TÙY CHỌN (Giữ nguyên logic của bạn) ---
+      const result = itemInput as ProductWithOptionsResult;
+      const product = result.product;
+
+      const newItem: OrderItem = {
+        item: product.id,
+        itemType: 'Product',
+        name: product.name,
+        quantity: 1,
+        basePrice: (product as any)?.basePrice || (product as any)?.price || 0,
+        price: result.totalPrice,
+        options: result.options,
+        comboSelections: [],
+        note: result.note,
+        image: product?.image || '',
+      };
+      newItems = [...state.items, newItem];
+    } else {
+      // --- 3. XỬ LÝ SẢN PHẨM ĐƠN LẺ (Giữ nguyên logic của bạn) ---
+      const product = itemInput as Product;
       const existingItem = state.items.find(
         (item) =>
           item.item === product.id && item.itemType === 'Product' && item.options.length === 0,
@@ -97,7 +137,7 @@ export class PosStateService {
           name: product.name,
           quantity: 1,
           basePrice: (product as any)?.basePrice || (product as any)?.price || 0,
-          price: price,
+          price: (product as any)?.basePrice || (product as any)?.price || 0,
           options: [],
           comboSelections: [],
           note: '',
@@ -105,20 +145,6 @@ export class PosStateService {
         };
         newItems = [...state.items, newItem];
       }
-    } else {
-      const newItem: OrderItem = {
-        item: product.id,
-        itemType: 'Product',
-        name: product.name,
-        quantity: 1,
-        basePrice: (product as any)?.basePrice || (product as any)?.price || 0,
-        price: price,
-        options: options,
-        comboSelections: [],
-        note: note,
-        image: product?.image || '',
-      };
-      newItems = [...state.items, newItem];
     }
 
     this.updateState({ ...state, items: newItems });

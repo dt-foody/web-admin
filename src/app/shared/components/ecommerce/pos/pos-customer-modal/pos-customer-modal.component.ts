@@ -16,10 +16,6 @@ import { CustomerService } from '../../../../services/api/customer.service';
   templateUrl: './pos-customer-modal.component.html',
 })
 export class PosCustomerModalComponent implements OnInit {
-  // --- SỬA LỖI: Bỏ injectData và injectData ---
-  // private data = injectData<{ customers: Customer[] }>(); // <-- XÓA DÒNG NÀY
-  // public dialogRef = inject(DialogRef); // <-- XÓA DÒNG NÀY
-
   customers: Customer[] = [];
 
   private customerService = inject(CustomerService);
