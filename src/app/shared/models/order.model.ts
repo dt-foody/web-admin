@@ -89,7 +89,7 @@ export interface OrderAppliedCoupon {
 export interface Order {
   id: string;
   orderId: number; // ID tăng tự động
-  orderCode: number; // Mã cho PayOS
+  orderCode?: number; // Mã cho PayOS
 
   // Profile (Khách hàng hoặc Nhân viên)
   profileType?: 'Customer' | 'Employee';
