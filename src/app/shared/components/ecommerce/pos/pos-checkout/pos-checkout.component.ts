@@ -9,7 +9,6 @@ import { PosStateService } from '../../../../services/api/pos.service';
 import { OrderService } from '../../../../services/api/order.service';
 import { Product } from '../../../../models/product.model';
 import { Combo } from '../../../../models/combo.model';
-import { PosCartState } from '../../../../services/api/pos.service';
 
 import { ButtonComponent } from '../../../ui/button/button.component';
 import { LabelComponent } from '../../../form/label/label.component';
@@ -103,7 +102,7 @@ export class PosCheckoutComponent implements OnInit {
     // 1. Lấy state (đã khớp cấu trúc)
     // 2. Gọi hàm build payload
     const payload = this.orderService.buildAdminOrderPayload(
-      cartState as any, // ép kiểu PosCartState sang OrderFormData (vì đã làm cho chúng khớp)
+      cartState as any,
       this.products,
       this.combos
     );

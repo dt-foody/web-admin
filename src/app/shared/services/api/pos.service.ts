@@ -9,6 +9,7 @@ import {
   OrderItemOption,
   // SỬA: Import DiscountType và OrderFormData (hoặc các type cần thiết)
   DEFAULT_FORM,
+  OrderFormData,
 } from '../../models/order.model';
 import { Product } from '../../models/product.model';
 
@@ -20,33 +21,8 @@ export interface ProductWithOptionsResult {
   note: string;
 }
 
-// SỬA: Cập nhật State để khớp với OrderFormData
-export interface PosCartState {
-  orderType: Order['orderType'];
-  channel: Order['channel'];
-  profile: string | null;
-  profileType: Order['profileType'] | null;
-  items: OrderItem[];
-
-  // SỬA: Thay đổi cấu trúc discount
-  discountType: 'fixed' | 'percentage';
-  discountValue: number;
-
-  shippingFee: number;
-
-  // SỬA: totalAmount và grandTotal sẽ được tính toán, không cần lưu trữ
-  // (Hoặc có thể lưu nhưng được tính lại trong calculateTotals)
-  totalAmount: number;
-  grandTotal: number;
-
-  payment: OrderPayment;
-  shipping: OrderShipping | null;
-  status: Order['status'];
-  note: string;
-}
-
 // SỬA: Cập nhật initialState
-const initialState: PosCartState = {
+const initialState: OrderFormData = {
   orderType: 'TakeAway',
   channel: 'POS',
   profile: null,
@@ -71,14 +47,14 @@ const initialState: PosCartState = {
 
 @Injectable()
 export class PosStateService {
-  private readonly cartState = new BehaviorSubject<PosCartState>(initialState);
-  public readonly cartState$: Observable<PosCartState> = this.cartState.asObservable();
+  private readonly cartState = new BehaviorSubject<OrderFormData>(initialState);
+  public readonly cartState$: Observable<OrderFormData> = this.cartState.asObservable();
 
   constructor() {
     console.log('PosStateService Initialized!');
   }
 
-  public getCurrentCart(): PosCartState {
+  public getCurrentCart(): OrderFormData {
     // Trả về một bản sao để đảm bảo tính bất biến (immutable)
     return { ...this.cartState.getValue() };
   }
@@ -181,7 +157,7 @@ export class PosStateService {
 
   public setOrderType(type: Order['orderType']) {
     const state = this.getCurrentCart();
-    let shipping: OrderShipping | null = state.shipping;
+    let shipping: OrderShipping | null | undefined = state.shipping;
     let shippingFee = Number(state.shippingFee || 0);
 
     shipping = null;
@@ -224,13 +200,13 @@ export class PosStateService {
 
   // --- LOGIC NỘI BỘ ---
 
-  private updateState(newState: PosCartState) {
+  private updateState(newState: OrderFormData) {
     const stateWithTotals = this.calculateTotals(newState);
     this.cartState.next(stateWithTotals);
   }
 
   // SỬA: Cập nhật calculateTotals để dùng discountType/Value
-  private calculateTotals(state: PosCartState): PosCartState {
+  private calculateTotals(state: OrderFormData): OrderFormData {
     const totalAmount = state.items.reduce((sum, item) => {
       const price = Number(item.price) || 0;
       return sum + price * item.quantity;

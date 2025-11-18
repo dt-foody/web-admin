@@ -130,7 +130,7 @@ export interface Order {
 export interface OrderFormData {
   profile: string | null;
   profileType: 'Customer' | 'Employee' | null;
-  orderType: 'TakeAway' | 'DineIn' | 'Delivery';
+  orderType?: 'TakeAway' | 'DineIn' | 'Delivery';
   channel: 'AdminPanel' | 'POS' | 'WebApp' | 'MobileApp' | 'Grab';
 
   items: OrderItem[];
