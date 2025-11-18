@@ -12,10 +12,12 @@ import { BaseListComponent } from '../../../../core/base-list.component';
 import { SortHeaderComponent } from '../../../_core/sort-header/sort-header.component';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
 import { CheckboxComponent } from '../../../form/input/checkbox.component';
+// [Cite: 1] Import DndModule và các type cần thiết
+import { DndModule, DndDropEvent } from 'ngx-drag-drop';
 
 @Component({
   selector: 'app-order-list',
-  standalone: true, // Đảm bảo standalone nếu project dùng Angular 17+
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -25,6 +27,7 @@ import { CheckboxComponent } from '../../../form/input/checkbox.component';
     SortHeaderComponent,
     CheckboxComponent,
     HasPermissionDirective,
+    DndModule, // [Cite: 1] Thêm DndModule vào imports
   ],
   templateUrl: './order-list.component.html',
 })
@@ -32,9 +35,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
   @ViewChild('filterRef') filterRef!: ElementRef;
 
-  // Thêm biến viewMode, mặc định là 'table'
   viewMode: 'table' | 'kanban' = 'table';
-
   itemToDelete: Order | null = null;
 
   orderStatuses = [
@@ -47,7 +48,6 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     { value: 'canceled', label: 'Đã hủy' },
   ];
 
-  // Getter để lấy danh sách cột cho Kanban (bỏ option 'All Status')
   get kanbanColumns() {
     return this.orderStatuses.filter((s) => s.value !== '');
   }
@@ -82,7 +82,6 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     this.query.paymentStatus = '';
     this.query.shippingStatus = '';
 
-    // Có thể load viewMode từ localStorage nếu muốn nhớ trạng thái
     const savedMode = localStorage.getItem('orderViewMode');
     if (savedMode === 'kanban') this.viewMode = 'kanban';
   }
@@ -90,7 +89,6 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
   fetchData() {
     const params: any = {
       page: this.query.page,
-      // Nếu ở chế độ Kanban, có thể bạn muốn load nhiều item hơn (ví dụ 50)
       limit: this.viewMode === 'kanban' ? 50 : this.query.pageSize,
       populate: 'profile',
       sortBy: this.query.sort?.key + ':' + (this.query.sort?.asc ? 'asc' : 'desc'),
@@ -121,19 +119,59 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     });
   }
 
-  // Hàm chuyển đổi chế độ xem
   setViewMode(mode: 'table' | 'kanban') {
     this.viewMode = mode;
     localStorage.setItem('orderViewMode', mode);
-
-    // Reload data để áp dụng limit mới nếu cần
     this.query.page = 1;
     this.fetchData();
   }
 
-  // Helper lấy orders cho từng cột Kanban từ data hiện tại
   getOrdersByStatus(status: string): Order[] {
     return this.dataSources.filter((order) => order.status === status);
+  }
+
+  // [Cite: 1] Hàm xử lý sự kiện Drop
+  onDrop(event: DndDropEvent, targetStatus: string) {
+    const order = event.data as Order;
+    // Nếu không có data hoặc trạng thái không đổi thì bỏ qua
+    if (!order || order.status === targetStatus) return;
+
+    const oldStatus = order.status;
+
+    // Optimistic Update: Cập nhật giao diện ngay lập tức
+    // Lưu ý: Vì getOrdersByStatus filter từ dataSources nên ta cần update trực tiếp object trong dataSources
+    const targetOrder = this.dataSources.find((o) => o.id === order.id);
+    if (targetOrder) {
+      targetOrder.status = targetStatus as any;
+    }
+
+    // Gọi API cập nhật
+    this.orderService.adminUpdateOrder(order.id, { status: targetStatus }).subscribe({
+      next: () => {
+        this.toastr.success(`Đã cập nhật trạng thái thành công`, 'Thành công');
+      },
+      error: (err) => {
+        // Revert nếu lỗi
+        if (targetOrder) {
+          targetOrder.status = oldStatus;
+        }
+        this.toastr.error('Cập nhật trạng thái thất bại', 'Lỗi');
+      },
+    });
+  }
+
+  // [Cite: 1] Hàm lấy màu đậm cho chấm tròn (Dot)
+  getStatusDotColor(status: string): string {
+    const colors: { [key: string]: string } = {
+      pending: 'bg-yellow-500',
+      confirmed: 'bg-blue-500',
+      preparing: 'bg-purple-500',
+      delivering: 'bg-indigo-500',
+      completed: 'bg-green-500',
+      canceled: 'bg-red-500',
+      refunded: 'bg-pink-500',
+    };
+    return colors[status] || 'bg-gray-500';
   }
 
   getCustomerPhone(profile: any): string | null {
@@ -168,9 +206,6 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     );
   }
 
-  // ... (Giữ nguyên các hàm getPaymentStatusColor, getShippingStatusColor, getItemsCount, handle...)
-
-  // Giữ nguyên logic cũ
   getPaymentStatusColor(status: string): string {
     const colors: { [key: string]: string } = {
       pending: 'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400',
