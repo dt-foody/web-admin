@@ -7,15 +7,12 @@ import {
   OrderPayment,
   OrderShipping,
   OrderItemOption,
-  // SỬA: Import DiscountType và OrderFormData (hoặc các type cần thiết)
-  DEFAULT_FORM,
   OrderFormData,
   OrderItemComboSelection,
 } from '../../models/order.model';
 import { Product } from '../../models/product.model';
 import { Combo } from '../../models/combo.model';
 
-// SỬA: Interface cho kết quả trả về từ Modal
 export interface ProductWithOptionsResult {
   product: Product;
   options: OrderItemOption[];
@@ -30,18 +27,18 @@ export interface ComboWithOptionsResult {
   note: string;
 }
 
-// SỬA: Cập nhật initialState
+// Định nghĩa lại OrderItem để TypeScript không báo lỗi field tempId
+// Nếu bạn có thể sửa file model, hãy thêm tempId?: string vào interface OrderItem gốc
+type OrderItemWithTempId = OrderItem & { tempId?: string };
+
 const initialState: OrderFormData = {
   orderType: 'TakeAway',
   channel: 'POS',
   profile: null,
   profileType: null,
   items: [],
-
-  // SỬA: Khởi tạo discount mới
   discountType: 'fixed',
   discountValue: 0,
-
   shippingFee: 0,
   totalAmount: 0,
   grandTotal: 0,
@@ -54,7 +51,7 @@ const initialState: OrderFormData = {
   note: '',
 };
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class PosStateService {
   private readonly cartState = new BehaviorSubject<OrderFormData>(initialState);
   public readonly cartState$: Observable<OrderFormData> = this.cartState.asObservable();
@@ -64,114 +61,134 @@ export class PosStateService {
   }
 
   public getCurrentCart(): OrderFormData {
-    // Trả về một bản sao để đảm bảo tính bất biến (immutable)
     return { ...this.cartState.getValue() };
+  }
+
+  // --- HÀM HELPER TẠO ID DUY NHẤT CHO FRONTEND ---
+  private generateTempId(): string {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
   }
 
   // --- CÁC HÀNH ĐỘNG TỪ COMPONENT ---
 
   public addItem(itemInput: Product | ProductWithOptionsResult | ComboWithOptionsResult) {
     const state = this.getCurrentCart();
-    let newItems: OrderItem[];
+    const newItems: OrderItemWithTempId[] = [...state.items];
 
     // Type Guards
     const isProductWithOption = (itemInput as any).product && (itemInput as any).options;
     const isComboResult = (itemInput as any).combo && (itemInput as any).selections;
-    const isSimpleProduct = !isProductWithOption && !isComboResult;
 
     if (isComboResult) {
-      // --- 1. XỬ LÝ KHI THÊM COMBO ---
+      // --- 1. XỬ LÝ COMBO (Luôn thêm dòng mới vì cấu hình combo phức tạp) ---
       const result = itemInput as ComboWithOptionsResult;
       const combo = result.combo;
 
-      // Logic kiểm tra combo đã tồn tại (nếu cần - hiện tại chỉ thêm mới)
-      // (Bạn có thể thêm logic gộp combo sau, tương tự gộp product)
-
-      const newItem: OrderItem = {
-        item: combo.id, // ID của combo
-        itemType: 'Combo', // Type là 'Combo'
+      const newItem: OrderItemWithTempId = {
+        tempId: this.generateTempId(), // <--- QUAN TRỌNG: ID duy nhất
+        item: combo.id,
+        itemType: 'Combo',
         name: combo.name,
         quantity: 1,
-        basePrice: result.totalPrice, // (Hoặc combo.comboPrice tùy logic của bạn)
-        price: result.totalPrice, // Giá cuối cùng đã tính
-        options: [], // Combo không có options
-        comboSelections: result.selections, // Lưu các lựa chọn sản phẩm
+        basePrice: result.totalPrice,
+        price: result.totalPrice,
+        options: [],
+        comboSelections: result.selections,
         note: result.note,
         image: combo.image || '',
       };
-      newItems = [...state.items, newItem];
+      newItems.push(newItem);
     } else if (isProductWithOption) {
-      // --- 2. XỬ LÝ SẢN PHẨM CÓ TÙY CHỌN (Giữ nguyên logic của bạn) ---
+      // --- 2. XỬ LÝ SẢN PHẨM CÓ OPTIONS (Luôn thêm dòng mới để tách biệt topping) ---
+      // (Nếu muốn gộp các món y hệt options thì cần logic so sánh sâu mảng options, nhưng đơn giản nhất là thêm mới)
       const result = itemInput as ProductWithOptionsResult;
       const product = result.product;
 
-      const newItem: OrderItem = {
+      const newItem: OrderItemWithTempId = {
+        tempId: this.generateTempId(), // <--- QUAN TRỌNG
         item: product.id,
         itemType: 'Product',
         name: product.name,
         quantity: 1,
-        basePrice: (product as any)?.basePrice || (product as any)?.price || 0,
+        basePrice: (product as any)?.basePrice || 0,
         price: result.totalPrice,
         options: result.options,
         comboSelections: [],
         note: result.note,
         image: product?.image || '',
       };
-      newItems = [...state.items, newItem];
+      newItems.push(newItem);
     } else {
-      // --- 3. XỬ LÝ SẢN PHẨM ĐƠN LẺ (Giữ nguyên logic của bạn) ---
+      // --- 3. XỬ LÝ SẢN PHẨM ĐƠN LẺ (Gộp nếu đã có sản phẩm đơn lẻ cùng loại) ---
       const product = itemInput as Product;
-      const existingItem = state.items.find(
+
+      const existingItemIndex = newItems.findIndex(
         (item) =>
-          item.item === product.id && item.itemType === 'Product' && item.options.length === 0,
+          item.item === product.id &&
+          item.itemType === 'Product' &&
+          (!item.options || item.options.length === 0), // Chỉ gộp nếu không có options
       );
 
-      if (existingItem) {
-        newItems = state.items.map((item) =>
-          item.item === product.id ? { ...item, quantity: item.quantity + 1 } : item,
-        );
+      if (existingItemIndex !== -1) {
+        // Nếu đã có -> Tăng số lượng
+        const updatedItem = { ...newItems[existingItemIndex] };
+        updatedItem.quantity += 1;
+        newItems[existingItemIndex] = updatedItem;
       } else {
-        const newItem: OrderItem = {
+        // Chưa có -> Thêm mới
+        const newItem: OrderItemWithTempId = {
+          tempId: this.generateTempId(), // <--- QUAN TRỌNG
           item: product.id,
           itemType: 'Product',
           name: product.name,
           quantity: 1,
-          basePrice: (product as any)?.basePrice || (product as any)?.price || 0,
-          price: (product as any)?.basePrice || (product as any)?.price || 0,
+          basePrice: (product as any)?.basePrice || 0,
+          price: (product as any)?.basePrice || 0,
           options: [],
           comboSelections: [],
           note: '',
           image: product?.image || '',
         };
-        newItems = [...state.items, newItem];
+        newItems.push(newItem);
       }
     }
 
     this.updateState({ ...state, items: newItems });
   }
 
-  // SỬA: Dùng itemId (đã ok)
-  public updateQuantity(itemId: string, newQuantity: number) {
+  // SỬA: Dùng tempId để update
+  public updateQuantity(tempId: string, newQuantity: number) {
     const state = this.getCurrentCart();
+
+    // Nếu số lượng <= 0 thì xóa
     if (newQuantity <= 0) {
-      this.removeItem(itemId);
+      this.removeItem(tempId);
       return;
     }
 
-    const newItems = state.items.map((item) =>
-      item.item === itemId ? { ...item, quantity: newQuantity } : item,
+    // Update đúng item có tempId tương ứng
+    const newItems = (state.items as OrderItemWithTempId[]).map((item) => {
+      if (item.tempId === tempId) {
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    });
+
+    this.updateState({ ...state, items: newItems });
+  }
+
+  // SỬA: Dùng tempId để remove
+  public removeItem(tempId: string) {
+    const state = this.getCurrentCart();
+    // Lọc bỏ item có tempId trùng khớp
+    const newItems = (state.items as OrderItemWithTempId[]).filter(
+      (item) => item.tempId !== tempId,
     );
     this.updateState({ ...state, items: newItems });
   }
 
-  // SỬA: Dùng itemId (đã ok)
-  public removeItem(itemId: string) {
-    const state = this.getCurrentCart();
-    const newItems = state.items.filter((item) => item.item !== itemId);
-    this.updateState({ ...state, items: newItems });
-  }
+  // ... (Các hàm setCustomer, setOrderType, setShippingFee... giữ nguyên)
 
-  // SỬA: Cập nhật profile và profileType (đã ok)
   public setCustomer(customer: Customer | null) {
     const state = this.getCurrentCart();
     this.updateState({
@@ -183,13 +200,7 @@ export class PosStateService {
 
   public setOrderType(type: Order['orderType']) {
     const state = this.getCurrentCart();
-    let shipping: OrderShipping | null | undefined = state.shipping;
-    let shippingFee = Number(state.shippingFee || 0);
-
-    shipping = null;
-    shippingFee = 0;
-
-    this.updateState({ ...state, orderType: type, shipping, shippingFee });
+    this.updateState({ ...state, orderType: type, shipping: null, shippingFee: 0 });
   }
 
   public setShippingFee(fee: number) {
@@ -197,7 +208,6 @@ export class PosStateService {
     this.updateState({ ...state, shippingFee: fee });
   }
 
-  // SỬA: Cập nhật 2 hàm setDiscount...
   public setDiscountValue(value: number) {
     const state = this.getCurrentCart();
     this.updateState({ ...state, discountValue: value || 0 });
@@ -207,8 +217,6 @@ export class PosStateService {
     const state = this.getCurrentCart();
     this.updateState({ ...state, discountType: type });
   }
-
-  // (Hàm setDiscount(amount) cũ không còn dùng)
 
   public setNote(note: string) {
     const state = this.getCurrentCart();
@@ -224,21 +232,19 @@ export class PosStateService {
     this.cartState.next(initialState);
   }
 
-  // --- LOGIC NỘI BỘ ---
+  // --- LOGIC TÍNH TOÁN ---
 
   private updateState(newState: OrderFormData) {
     const stateWithTotals = this.calculateTotals(newState);
     this.cartState.next(stateWithTotals);
   }
 
-  // SỬA: Cập nhật calculateTotals để dùng discountType/Value
   private calculateTotals(state: OrderFormData): OrderFormData {
     const totalAmount = state.items.reduce((sum, item) => {
       const price = Number(item.price) || 0;
       return sum + price * item.quantity;
     }, 0);
 
-    // Tính discount thực tế
     const discountValue = Number(state.discountValue || 0);
     let discountAmount = 0;
     if (state.discountType === 'percentage') {
@@ -247,10 +253,8 @@ export class PosStateService {
       discountAmount = discountValue;
     }
 
-    const grandTotal = totalAmount - discountAmount + Number(state.shippingFee || 0);
+    const grandTotal = Math.max(0, totalAmount - discountAmount + Number(state.shippingFee || 0));
 
-    // Lưu ý: `discountAmount` vừa tính KHÔNG được lưu lại state
-    // state chỉ lưu `discountType` và `discountValue`
     return { ...state, totalAmount, grandTotal };
   }
 }

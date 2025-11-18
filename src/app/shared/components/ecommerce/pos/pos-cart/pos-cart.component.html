@@ -123,7 +123,7 @@
         <div class="mt-2 flex items-center justify-between gap-3">
           <div
             class="inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/80 overflow-hidden h-8">
-            <button type="button" (click)="onDecreaseQuantity($any(item.item), item.quantity)"
+            <button type="button" (click)="onDecreaseQuantity(item)"
               class="size-8 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40"
               [disabled]="item.quantity <= 1">
               <svg class="size-3.5" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"
@@ -134,9 +134,9 @@
 
             <input type="number"
               class="w-10 text-center text-sm px-0 py-1 border-x border-gray-300 dark:border-gray-600 bg-transparent focus:ring-0 focus:border-brand-500"
-              [value]="item.quantity" (change)="onQuantityChange($any(item.item), $event)" min="1" />
+              [value]="item.quantity" (change)="onQuantityChange(item, $event)" min="1" />
 
-            <button type="button" (click)="onIncreaseQuantity($any(item.item), item.quantity)"
+            <button type="button" (click)="onIncreaseQuantity(item)"
               class="size-8 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
               <svg class="size-3.5" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
@@ -146,7 +146,7 @@
           </div>
 
           <app-button size="xs" variant="outline" [iconOnly]="true" ariaLabel="Xóa sản phẩm" [startIcon]="iconRemove"
-            className="!text-red-500 hover:!text-red-700 border-0 hover:bg-red-50" (btnClick)="onRemoveItem($any(item.item))">
+            className="!text-red-500 hover:!text-red-700 border-0 hover:bg-red-50" (btnClick)="onRemoveItem(item)">
           </app-button>
         </div>
       </div>

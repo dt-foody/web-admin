@@ -17,6 +17,7 @@ import { Order, OrderItemOption } from '../../../../models/order.model';
   imports: [
     CommonModule,
     FormsModule,
+    PosCustomerModalComponent,
     ButtonComponent,
     TextAreaComponent,
   ],
@@ -27,16 +28,7 @@ export class PosCartComponent implements OnInit {
   private customerService = inject(CustomerService);
   private dialogService = inject(DialogService);
 
-  iconRemove = `<svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="size-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>`;
+  iconRemove = `<svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>`;
 
   cart$ = this.posState.cartState$;
   customers: Customer[] = [];
@@ -64,9 +56,7 @@ export class PosCartComponent implements OnInit {
   openCustomerModal() {
     const dialogRef = this.dialogService.open(PosCustomerModalComponent, {
       size: 'lg',
-      data: {
-        customers: this.customers,
-      },
+      data: { customers: this.customers },
     });
 
     dialogRef.afterClosed$.subscribe((customer: Customer) => {
@@ -83,27 +73,36 @@ export class PosCartComponent implements OnInit {
     this.posState.setCustomer(null);
   }
 
-  onQuantityChange(itemId: string, event: Event) {
+  // SỬA: Truyền item object (any để lấy tempId)
+  onQuantityChange(item: any, event: Event) {
     let newQuantity = (event.target as HTMLInputElement).valueAsNumber;
     if (newQuantity < 1 || isNaN(newQuantity)) {
       newQuantity = 1;
       (event.target as HTMLInputElement).value = '1';
     }
-    this.posState.updateQuantity(itemId, newQuantity);
+    // Dùng tempId nếu có, fallback về id thường (nếu dữ liệu cũ)
+    const idToUpdate = item.tempId || item.item;
+    this.posState.updateQuantity(idToUpdate, newQuantity);
   }
 
-  onDecreaseQuantity(itemId: string, currentQuantity: number) {
-    if (currentQuantity > 1) {
-      this.posState.updateQuantity(itemId, currentQuantity - 1);
+  // SỬA: Truyền item object
+  onDecreaseQuantity(item: any) {
+    if (item.quantity > 1) {
+      const idToUpdate = item.tempId || item.item;
+      this.posState.updateQuantity(idToUpdate, item.quantity - 1);
     }
   }
 
-  onIncreaseQuantity(itemId: string, currentQuantity: number) {
-    this.posState.updateQuantity(itemId, currentQuantity + 1);
+  // SỬA: Truyền item object
+  onIncreaseQuantity(item: any) {
+    const idToUpdate = item.tempId || item.item;
+    this.posState.updateQuantity(idToUpdate, item.quantity + 1);
   }
 
-  onRemoveItem(itemId: string) {
-    this.posState.removeItem(itemId);
+  // SỬA: Truyền item object để lấy tempId
+  onRemoveItem(item: any) {
+    const idToRemove = item.tempId || item.item;
+    this.posState.removeItem(idToRemove);
   }
 
   onOrderTypeChange(type: Order['orderType']) {
@@ -114,7 +113,6 @@ export class PosCartComponent implements OnInit {
     if (!options || !Array.isArray(options) || options.length === 0) {
       return '';
     }
-    // Hiển thị dạng: Size L, Thêm đá
     return options.map((o) => o.optionName).join(', ');
   }
 }
