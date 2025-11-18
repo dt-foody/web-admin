@@ -9,7 +9,7 @@ import { CustomerService } from '../../../../services/api/customer.service';
 import { PosStateService } from '../../../../services/api/pos.service';
 import { ButtonComponent } from '../../../ui/button/button.component';
 import { TextAreaComponent } from '../../../form/input/text-area.component';
-import { Order, OrderItemOption } from '../../../../models/order.model'; // SỬA: Import Order
+import { Order, OrderItemOption } from '../../../../models/order.model';
 
 @Component({
   selector: 'app-pos-cart',
@@ -46,17 +46,14 @@ export class PosCartComponent implements OnInit {
   ngOnInit() {
     this.customerService.getAll({ limit: 1000 }).subscribe((res: any) => {
       this.customers = res.data || res.results || [];
-      // SỬA: Kích hoạt kiểm tra khách hàng sau khi đã tải xong
       this.checkSelectedCustomer(this.posState.getCurrentCart().profile);
     });
 
     this.cart$.subscribe((cart) => {
-      // SỬA: Lắng nghe 'profile' thay vì 'customer'
       this.checkSelectedCustomer(cart.profile);
     });
   }
 
-  // SỬA: Tách logic kiểm tra khách hàng
   checkSelectedCustomer(profileId: string | null) {
     if (profileId) {
       this.selectedCustomer = this.customers.find((c) => c.id === profileId) || null;
@@ -87,43 +84,38 @@ export class PosCartComponent implements OnInit {
     this.posState.setCustomer(null);
   }
 
-  // SỬA: Đổi tên tham số 'id' -> 'itemId'
   onQuantityChange(itemId: string, event: Event) {
     let newQuantity = (event.target as HTMLInputElement).valueAsNumber;
-    // SỬA: Đảm bảo số lượng tối thiểu là 1
     if (newQuantity < 1 || isNaN(newQuantity)) {
       newQuantity = 1;
-      (event.target as HTMLInputElement).value = '1'; // Cập nhật lại UI nếu cần
+      (event.target as HTMLInputElement).value = '1';
     }
     this.posState.updateQuantity(itemId, newQuantity);
   }
 
-  // SỬA: Thêm hàm giảm số lượng
   onDecreaseQuantity(itemId: string, currentQuantity: number) {
     if (currentQuantity > 1) {
       this.posState.updateQuantity(itemId, currentQuantity - 1);
     }
   }
 
-  // SỬA: Thêm hàm tăng số lượng
   onIncreaseQuantity(itemId: string, currentQuantity: number) {
     this.posState.updateQuantity(itemId, currentQuantity + 1);
   }
 
-  // SỬA: Đổi tên tham số 'id' -> 'itemId'
   onRemoveItem(itemId: string) {
     this.posState.removeItem(itemId);
   }
 
-  // SỬA: Thêm type cho 'type'
   onOrderTypeChange(type: Order['orderType']) {
     this.posState.setOrderType(type);
   }
 
   public getOptionsString(options: OrderItemOption[]): string {
-    if (!options || options.length === 0) {
+    if (!options || !Array.isArray(options) || options.length === 0) {
       return '';
     }
+    // Hiển thị dạng: Size L, Thêm đá
     return options.map((o) => o.optionName).join(', ');
   }
 }
