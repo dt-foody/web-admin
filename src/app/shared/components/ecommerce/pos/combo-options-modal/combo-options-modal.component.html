@@ -1,171 +1,180 @@
 <div class="flex flex-col h-full max-h-[90vh] bg-white rounded-2xl overflow-hidden">
+
   <header class="flex-shrink-0 px-4 py-3 border-b border-gray-200 flex items-center">
-    <button
-      (click)="closeModal()"
-      class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors flex-shrink-0"
-    >
+    @if (!configuringItem) {
+    <button (click)="closeModal()"
+      class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors flex-shrink-0">
       <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"
-        />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
-
     <div class="flex-1 text-center pr-10">
-      <h2 class="text-lg font-bold text-gray-900 truncate">
-        {{ combo?.name }}
-      </h2>
-      <p class="text-center text-sm text-gray-500 mt-0.5">
-        @if (combo?.pricingMode === 'FIXED') {
-        Giá combo: {{ combo?.comboPrice | number: '1.0-0' }}đ
-        } @else {
-        Tổng tạm tính (chưa phụ phí)
-        }
-      </p>
+      <h2 class="text-lg font-bold text-gray-900 truncate">{{ combo?.name }}</h2>
+      <p class="text-center text-sm text-gray-500 mt-0.5">Tổng cộng: {{ totalPrice | number: '1.0-0' }}đ</p>
     </div>
+    } @else {
+    <button (click)="cancelConfiguring()"
+      class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors flex-shrink-0 text-blue-600">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    <div class="flex-1 text-center pr-10">
+      <h2 class="text-lg font-bold text-gray-900 truncate">Tùy chỉnh {{ configuringItem.product.product.name }}</h2>
+      <p class="text-sm text-gray-500">Chọn các tùy chọn bên dưới</p>
+    </div>
+    }
   </header>
 
-  <main class="flex-1 overflow-y-auto p-4 space-y-4">
-    @for (slot of combo?.items; track slot.slotName) {
-    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-200">
-      <div class="flex items-start justify-between mb-4">
-        <div class="flex-1">
-          <h3 class="font-semibold text-base text-gray-900">{{ slot.slotName }}</h3>
-          <p class="text-sm text-gray-500 mt-0.5">
-            {{ getSlotSelectionText(slot) }}
-          </p>
-        </div>
-        <span
-          class="px-2.5 py-1 text-xs font-medium rounded-full flex-shrink-0 ml-2"
-          [class.bg-red-100]="getSlotError(slot)"
-          [class.text-red-700]="getSlotError(slot)"
-          [class.bg-green-100]="!getSlotError(slot)"
-          [class.text-green-700]="!getSlotError(slot)"
-        >
-          {{ getSlotError(slot) ? 'Bắt buộc' : 'Đã chọn' }}
-        </span>
-      </div>
+  <main class="flex-1 overflow-y-auto p-4 scrollbar-hide">
 
-      @if (getSlotError(slot)) {
-      <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
-        <p class="text-sm text-red-700 flex items-center gap-2">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          {{ getSlotError(slot) }}
-        </p>
+    @if (!configuringItem) {
+    <div class="space-y-4">
+      @for (slot of combo?.items; track slot.slotName) {
+      <div class="bg-gray-50 rounded-2xl p-4 border border-gray-200">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h3 class="font-semibold text-base text-gray-900">{{ slot.slotName }}</h3>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          @for (product of slot.selectableProducts; track product.product.id) {
+          <div (click)="onProductClick(slot, product, $event)"
+            class="relative flex items-center justify-between p-3 bg-white rounded-xl border-2 transition-all cursor-pointer hover:border-gray-300"
+            [class.border-blue-500]="isProductSelected(slot.slotName, product)"
+            [class.bg-blue-50]="isProductSelected(slot.slotName, product)"
+            [class.border-gray-200]="!isProductSelected(slot.slotName, product)">
+            <div class="flex items-center gap-3 flex-1 overflow-hidden">
+              @if (isProductSelected(slot.slotName, product)) {
+              <div class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">✓</div>
+              } @else {
+              <div class="w-5 h-5 border-2 border-gray-300 rounded-full"></div>
+              }
+
+              <div class="flex flex-col overflow-hidden">
+                <span class="font-medium text-gray-900 truncate"
+                  [class.text-blue-700]="isProductSelected(slot.slotName, product)">
+                  {{ product.product.name }}
+                </span>
+                @if (isProductSelected(slot.slotName, product) && getSelectedOptionsText(slot.slotName, product)) {
+                <span class="text-xs text-gray-500 truncate">{{ getSelectedOptionsText(slot.slotName, product) }}</span>
+                }
+              </div>
+            </div>
+
+            <span class="font-semibold text-gray-900 ml-3">
+              {{ getProductPriceText(product) }}
+            </span>
+
+            @if (isProductSelected(slot.slotName, product) && product.product.optionGroups?.length) {
+            <button (click)="$event.stopPropagation(); startConfiguring(slot, product)"
+              class="ml-2 p-1 text-blue-600 hover:bg-blue-100 rounded">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+            }
+          </div>
+          }
+        </div>
       </div>
       }
 
-      <div class="space-y-3">
-        @for (product of slot.selectableProducts; track product.product.id) {
-        <div
-          (click)="onProductClick(slot, product, $event)"
-          tabindex="0"
-          (keydown.enter)="onProductClick(slot, product, $event)"
-          (keydown.space)="onProductClick(slot, product, $event)"
-          class="relative flex items-center justify-between p-3 bg-white rounded-xl border-2 transition-all cursor-pointer hover:border-gray-300"
-          [class.border-blue-500]="isProductSelected(slot.slotName, product)"
-          [class.bg-blue-50]="isProductSelected(slot.slotName, product)"
-          [class.border-gray-200]="!isProductSelected(slot.slotName, product)"
-        >
-          <div class="flex items-center gap-3 flex-1">
-            @if (slot.maxSelection === 1) {
-            <div
-              class="flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
-              [class.border-blue-500]="isProductSelected(slot.slotName, product)"
-              [class.border-gray-300]="!isProductSelected(slot.slotName, product)"
-            >
-              @if (isProductSelected(slot.slotName, product)) {
-              <div class="w-2.5 h-2.5 bg-blue-500 rounded-full"></div>
-              }
-            </div>
-            } @else {
-            <div
-              class="flex-shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all"
-              [class.border-blue-500]="isProductSelected(slot.slotName, product)"
-              [class.bg-blue-500]="isProductSelected(slot.slotName, product)"
-              [class.border-gray-300]="!isProductSelected(slot.slotName, product)"
-            >
-              @if (isProductSelected(slot.slotName, product)) {
-              <svg
-                class="w-3.5 h-3.5 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="3"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              }
-            </div>
-            }
-            <span
-              class="font-medium text-gray-900"
-              [class.text-blue-700]="isProductSelected(slot.slotName, product)"
-            >
-              {{ product.product.name }}
-            </span>
-          </div>
-          <span
-            class="font-semibold text-gray-900 ml-3"
-            [class.text-blue-600]="isProductSelected(slot.slotName, product)"
-          >
-            {{ getProductPriceText(product) }}
-          </span>
-        </div>
-        }
+      <div class="bg-gray-50 rounded-2xl p-4 border border-gray-200">
+        <label class="block text-base font-semibold text-gray-900 mb-3">Ghi chú</label>
+        <textarea [(ngModel)]="note"
+          class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none text-gray-900"
+          rows="3"></textarea>
       </div>
     </div>
     }
 
-    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-200">
-      <label for="note" class="block text-base font-semibold text-gray-900 mb-3">
-        Ghi chú cho quán
-      </label>
-      <textarea
-        id="note"
-        [(ngModel)]="note"
-        placeholder="Ví dụ: Ít đường, không cay, thêm đá..."
-        class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all resize-none text-gray-900 placeholder-gray-400"
-        rows="3"
-      ></textarea>
+    @else {
+    <div class="space-y-6 animate-fadeIn"> @for (group of configuringItem.product.product.optionGroups; track group.id)
+      {
+      <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-gray-800">{{ group.name }}</h3>
+          <span class="text-xs font-medium px-2 py-1 bg-gray-100 rounded-full text-gray-600">
+            {{ group.maxOptions === 1 ? 'Chọn 1' : 'Chọn nhiều' }}
+            @if(group.minOptions > 0) { <span class="text-red-500 ml-1">*Bắt buộc</span> }
+          </span>
+        </div>
+
+        @if(getOptionGroupError(group)) {
+        <div class="text-red-500 text-sm mb-2 flex items-center gap-1">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+              clip-rule="evenodd" />
+          </svg>
+          {{ getOptionGroupError(group) }}
+        </div>
+        }
+
+        <div class="grid grid-cols-1 gap-3">
+          @for (option of group.options; track option.name) {
+          <div (click)="onOptionChange(group, option)"
+            class="flex items-center justify-between p-3 rounded-lg border cursor-pointer hover:bg-gray-50 transition-colors"
+            [class.border-blue-500]="isOptionSelected(group.name, option.name)"
+            [class.bg-blue-50]="isOptionSelected(group.name, option.name)"
+            [class.border-gray-200]="!isOptionSelected(group.name, option.name)">
+
+            <div class="flex items-center gap-3">
+              @if (group.maxOptions === 1) {
+              <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                [class.border-blue-500]="isOptionSelected(group.name, option.name)"
+                [class.border-gray-300]="!isOptionSelected(group.name, option.name)">
+                @if(isOptionSelected(group.name, option.name)) { <div class="w-2.5 h-2.5 bg-blue-500 rounded-full">
+                </div> }
+              </div>
+              } @else {
+              <div class="w-5 h-5 rounded border-2 flex items-center justify-center"
+                [class.border-blue-500]="isOptionSelected(group.name, option.name)"
+                [class.bg-blue-500]="isOptionSelected(group.name, option.name)"
+                [class.border-gray-300]="!isOptionSelected(group.name, option.name)">
+                @if(isOptionSelected(group.name, option.name)) { <svg class="w-3.5 h-3.5 text-white" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg> }
+              </div>
+              }
+              <span class="text-gray-700 font-medium">{{ option.name }}</span>
+            </div>
+
+            <span class="text-gray-500 text-sm">
+              {{ option.priceModifier > 0 ? '+' + (option.priceModifier | number) + 'đ' : '' }}
+            </span>
+          </div>
+          }
+        </div>
+      </div>
+      }
     </div>
+    }
   </main>
 
   <footer class="flex-shrink-0 p-3 bg-white border-t border-gray-200">
-    <button
-      (click)="onAddToCart()"
-      [disabled]="!isFormValid"
+    @if (!configuringItem) {
+    <button (click)="onAddToCart()" [disabled]="!isFormValid"
       class="w-full py-3 rounded-xl font-bold text-base transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
-      [class.bg-blue-600]="isFormValid"
-      [class.hover:bg-blue-700]="isFormValid"
-      [class.text-white]="isFormValid"
-      [class.bg-gray-300]="!isFormValid"
-      [class.text-gray-500]="!isFormValid"
-    >
-      <span class="flex items-center justify-center gap-2">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-          />
-        </svg>
-        <span>Thêm vào giỏ - {{ totalPrice | number: '1.0-0' }}đ</span>
-      </span>
+      [class.bg-blue-600]="isFormValid" [class.text-white]="isFormValid" [class.bg-gray-300]="!isFormValid"
+      [class.text-gray-500]="!isFormValid">
+      Thêm combo vào giỏ - {{ totalPrice | number: '1.0-0' }}đ
     </button>
+    } @else {
+    <div class="flex gap-3">
+      <button (click)="cancelConfiguring()"
+        class="px-4 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200">
+        Quay lại
+      </button>
+      <button (click)="confirmConfiguration()" [disabled]="!isOptionsValid"
+        class="flex-1 py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        Xác nhận tùy chọn
+      </button>
+    </div>
+    }
   </footer>
 </div>
