@@ -5,17 +5,17 @@
   >
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
       <h2 class="text-lg font-medium text-gray-800 dark:text-white">
-        {{ isEditMode ? 'Edit User' : 'Create New User' }}
+        {{ isEditMode ? 'Chỉnh sửa người dùng' : 'Tạo người dùng mới' }}
       </h2>
     </div>
     <div class="p-4 sm:p-6">
       <div class="grid grid-cols-1 gap-5">
         <!-- Name -->
         <div>
-          <app-label for="user-name" className="required">Full Name</app-label>
+          <app-label for="user-name" className="required">Họ và tên</app-label>
           <app-input-field
             id="user-name"
-            placeholder="Enter full name"
+            placeholder="Nhập họ và tên"
             [(value)]="userData.name"
           ></app-input-field>
         </div>
@@ -34,13 +34,13 @@
         <!-- Password -->
         <div>
           <app-label for="user-password" [className]="isEditMode ? '' : 'required'">
-            Password {{ isEditMode ? '(Leave blank to keep current)' : '' }}
+            Mật khẩu {{ isEditMode ? '(Để trống nếu muốn giữ nguyên)' : '' }}
           </app-label>
           <div class="relative">
             <app-input-field
               id="user-password"
               [type]="showPassword ? 'text' : 'password'"
-              placeholder="Enter password (min 8 chars)"
+              placeholder="Nhập mật khẩu (tối thiểu 8 ký tự)"
               [(value)]="userData.password"
             ></app-input-field>
             <button
@@ -85,30 +85,30 @@
             </button>
           </div>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Must be at least 8 characters with letters and numbers
+            Phải có ít nhất 8 ký tự bao gồm chữ và số
           </p>
         </div>
 
         <!-- Role & Email Verified -->
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div>
-            <app-label for="user-role" className="required">System Role</app-label>
+            <app-label for="user-role" className="required">Vai trò hệ thống</app-label>
             <app-select
               id="user-role"
               [options]="systemRoles"
-              placeholder="Select role"
+              placeholder="Chọn vai trò"
               [(value)]="userData.role"
             ></app-select>
           </div>
           <div>
-            <app-label for="email-verified">Email Verified</app-label>
+            <app-label for="email-verified">Email đã xác minh</app-label>
             <app-select
               id="email-verified"
               [options]="[
-                { value: 'true', label: 'Verified' },
-                { value: 'false', label: 'Not Verified' },
+                { value: 'true', label: 'Đã xác minh' },
+                { value: 'false', label: 'Chưa xác minh' },
               ]"
-              placeholder="Select status"
+              placeholder="Chọn trạng thái"
               [value]="userData.isEmailVerified.toString()"
               (valueChange)="handleSelectChange('isEmailVerified', $event)"
             ></app-select>
@@ -117,12 +117,12 @@
 
         <!-- Custom Roles -->
         <div>
-          <app-label for="custom-roles">Additional Custom Roles</app-label>
+          <app-label for="custom-roles">Vai trò tùy chỉnh bổ sung</app-label>
           <ng-select
             [items]="roles"
             bindLabel="name"
             bindValue="id"
-            placeholder="Select custom roles"
+            placeholder="Chọn vai trò tùy chỉnh"
             [(ngModel)]="userData.rolesCustom"
             (ngModelChange)="onCustomRolesChange($event)"
             [multiple]="true"
@@ -138,7 +138,7 @@
             </ng-template>
           </ng-select>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Select additional roles to grant more permissions
+            Chọn thêm vai trò để cấp thêm quyền hạn
           </p>
         </div>
       </div>
@@ -152,23 +152,23 @@
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
       <div class="flex items-start justify-between">
         <div>
-          <h2 class="text-lg font-medium text-gray-800 dark:text-white">Permissions Management</h2>
+          <h2 class="text-lg font-medium text-gray-800 dark:text-white">Quản lý quyền hạn</h2>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Effective Permissions = (Role Permissions + Extra Permissions) - Excluded Permissions
+            Quyền hiệu lực = (Quyền từ vai trò + Quyền bổ sung) – Quyền loại trừ
           </p>
         </div>
         <div class="flex items-center gap-4 text-xs">
           <div class="flex items-center gap-1.5">
             <div class="h-3 w-3 rounded-full bg-blue-500"></div>
-            <span class="text-gray-600 dark:text-gray-400">From Roles</span>
+            <span class="text-gray-600 dark:text-gray-400">Từ vai trò</span>
           </div>
           <div class="flex items-center gap-1.5">
             <div class="h-3 w-3 rounded-full bg-green-500"></div>
-            <span class="text-gray-600 dark:text-gray-400">Extra</span>
+            <span class="text-gray-600 dark:text-gray-400">Bổ sung</span>
           </div>
           <div class="flex items-center gap-1.5">
             <div class="h-3 w-3 rounded-full bg-red-500"></div>
-            <span class="text-gray-600 dark:text-gray-400">Excluded</span>
+            <span class="text-gray-600 dark:text-gray-400">Loại trừ</span>
           </div>
         </div>
       </div>
@@ -182,7 +182,7 @@
           <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
             {{ rolePermissions.size + customRolePermissions.size }}
           </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">From Roles</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Từ vai trò</div>
         </div>
         <div
           class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/50"
@@ -190,7 +190,7 @@
           <div class="text-2xl font-bold text-green-600 dark:text-green-400">
             {{ userData.extraPermissions.length }}
           </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">Extra Added</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Quyền bổ sung</div>
         </div>
         <div
           class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/50"
@@ -198,7 +198,7 @@
           <div class="text-2xl font-bold text-red-600 dark:text-red-400">
             {{ userData.excludePermissions.length }}
           </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">Excluded</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Đã loại trừ</div>
         </div>
         <div
           class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/50"
@@ -206,7 +206,7 @@
           <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">
             {{ effectivePermissions.size }}
           </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">Total Effective</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Tổng quyền hiệu lực</div>
         </div>
       </div>
 
@@ -242,7 +242,7 @@
                   {{ group.resource }}
                 </h3>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ group.permissions.length }} permission(s)
+                  {{ group.permissions.length }} quyền
                 </p>
               </div>
             </div>
@@ -250,12 +250,12 @@
               <span
                 class="rounded-full bg-blue-100 px-2 py-1 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
               >
-                {{ countPermissionInRoles(group) }} from roles
+                {{ countPermissionInRoles(group) }} từ vai trò
               </span>
               <span
                 class="rounded-full bg-purple-100 px-2 py-1 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
               >
-                {{ countPermissionEffective(group) }} effective
+                {{ countPermissionEffective(group) }} hiệu lực
               </span>
             </div>
           </div>
@@ -288,19 +288,19 @@
                       *ngIf="isPermissionInRoles(permission.id)"
                       class="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
                     >
-                      From Role
+                      Từ vai trò
                     </span>
                     <span
                       *ngIf="isPermissionExtra(permission.id)"
                       class="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900/50 dark:text-green-300"
                     >
-                      Extra
+                      Bổ sung
                     </span>
                     <span
                       *ngIf="isPermissionExcluded(permission.id)"
                       class="rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900/50 dark:text-red-300"
                     >
-                      Excluded
+                      Đã loại trừ
                     </span>
                   </div>
                   <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
@@ -334,7 +334,7 @@
                     >
                       <path d="M12 5v14M5 12h14" />
                     </svg>
-                    {{ isPermissionExtra(permission.id) ? 'Added' : 'Add Extra' }}
+                    {{ isPermissionExtra(permission.id) ? 'Đã thêm' : 'Thêm quyền bổ sung' }}
                   </button>
 
                   <!-- Exclude Permission Button -->
@@ -367,7 +367,7 @@
                     >
                       <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
-                    {{ isPermissionExcluded(permission.id) ? 'Excluded' : 'Exclude' }}
+                    {{ isPermissionExcluded(permission.id) ? 'Đã loại trừ' : 'Loại trừ' }}
                   </button>
                 </div>
               </div>
@@ -396,10 +396,10 @@
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
           <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-            No permissions available
+            Không có quyền nào
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Permissions will appear here once loaded
+            Các quyền sẽ hiển thị tại đây khi được tải
           </p>
         </div>
       </div>
@@ -427,22 +427,19 @@
         <path d="M12 16v-4M12 8h.01" />
       </svg>
       <div class="flex-1">
-        <h3 class="font-medium text-blue-900 dark:text-blue-300">How Permissions Work</h3>
+        <h3 class="font-medium text-blue-900 dark:text-blue-300">Cách quyền hoạt động</h3>
         <div class="mt-2 space-y-2 text-sm text-blue-800 dark:text-blue-400">
           <p>
-            <strong>1. Base Permissions:</strong> User inherits all permissions from their system
-            role and custom roles
+            <strong>1. Quyền cơ bản:</strong> Người dùng thừa hưởng tất cả quyền từ vai trò hệ thống và vai trò tùy chỉnh
           </p>
           <p>
-            <strong>2. Extra Permissions:</strong> Add specific permissions not included in their
-            roles
+            <strong>2. Quyền bổ sung:</strong> Thêm các quyền không có trong vai trò
           </p>
           <p>
-            <strong>3. Excluded Permissions:</strong> Remove specific permissions even if they come
-            from roles
+            <strong>3. Quyền loại trừ:</strong> Loại bỏ quyền ngay cả khi chúng đến từ vai trò
           </p>
           <p class="mt-3 rounded-lg bg-blue-100 p-3 font-mono text-xs dark:bg-blue-900/40">
-            Final = (System Role + Custom Roles + Extra) - Excluded
+            Kết quả = (Vai trò hệ thống + Vai trò tùy chỉnh + Bổ sung) – Loại trừ
           </p>
         </div>
       </div>
@@ -451,9 +448,9 @@
 
   <!-- Action Buttons -->
   <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-    <app-button variant="outline" (btnClick)="onCancel()"> Cancel </app-button>
+    <app-button variant="outline" (btnClick)="onCancel()"> Hủy </app-button>
     <app-button variant="primary" (btnClick)="onSubmit()">
-      {{ isEditMode ? 'Update User' : 'Create User' }}
+      {{ isEditMode ? 'Cập nhật' : 'Tạo mới' }}
     </app-button>
   </div>
 </div>

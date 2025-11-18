@@ -1,17 +1,17 @@
 <div
   class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
 >
-  <!-- Header -->
+  <!-- Phần đầu -->
   <div
     class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
   >
-    <!-- Search -->
+    <!-- Tìm kiếm -->
     <div class="flex gap-3 sm:justify-between">
-      <app-search-input placeholder="Search roles..." (search)="onSearchChange($event)">
+      <app-search-input placeholder="Tìm kiếm vai trò..." (search)="onSearchChange($event)">
       </app-search-input>
     </div>
 
-    <!-- Add Role Button -->
+    <!-- Nút Thêm Vai trò -->
     <div class="flex gap-3">
       <a
         routerLink="/role/add"
@@ -33,12 +33,12 @@
             strokeLinejoin="round"
           />
         </svg>
-        Create
+        Tạo mới
       </a>
     </div>
   </div>
 
-  <!-- Table -->
+  <!-- Bảng -->
   <div class="overflow-x-auto custom-scrollbar">
     <table class="w-full">
       <thead>
@@ -49,7 +49,7 @@
 
           <th>
             <app-sort-header
-              label="Role Name"
+              label="Tên vai trò"
               key="name"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -61,18 +61,18 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Description
+            Mô tả
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Permissions
+            Quyền hạn
           </th>
 
           <th>
             <app-sort-header
-              label="Created At"
+              label="Ngày tạo"
               key="createdAt"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -84,7 +84,7 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Action
+            Hành động
           </th>
         </tr>
       </thead>
@@ -120,7 +120,7 @@
                   {{ role.description }}
                 </p>
               } @else {
-                <span class="text-xs text-gray-400 dark:text-gray-500">No description</span>
+                <span class="text-xs text-gray-400 dark:text-gray-500">Chưa có mô tả</span>
               }
             </td>
 
@@ -143,10 +143,10 @@
                   >
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   </svg>
-                  {{ getPermissionsCount(role) }} permission(s)
+                  {{ getPermissionsCount(role) }} quyền
                 </button>
               } @else {
-                <span class="text-xs text-gray-400 dark:text-gray-500">No permissions</span>
+                <span class="text-xs text-gray-400 dark:text-gray-500">Chưa có quyền</span>
               }
             </td>
 
@@ -158,12 +158,12 @@
 
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex gap-2">
-                <!-- Edit Icon -->
+                <!-- Biểu tượng Chỉnh sửa -->
                 <button
                   (click)="handleEdit(role)"
                   *appHasPermission="'role.update'"
                   class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded transition"
-                  title="Edit role"
+                  title="Chỉnh sửa vai trò"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -181,12 +181,12 @@
                   </svg>
                 </button>
 
-                <!-- Delete Icon -->
+                <!-- Biểu tượng Xóa -->
                 <button
                   (click)="handleDelete(role)"
                   *appHasPermission="'role.delete'"
                   class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded transition"
-                  title="Delete role"
+                  title="Xóa vai trò"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -207,7 +207,7 @@
     </table>
   </div>
 
-  <!-- Pagination -->
+  <!-- Phân trang -->
   <app-pagination
     [page]="query.page"
     [totalPages]="totalPages"
@@ -218,7 +218,7 @@
   </app-pagination>
 </div>
 
-<!-- Confirm Delete Modal -->
+<!-- Modal Xác nhận Xóa -->
 <ng-template #confirmDelete let-dialog>
   <div class="p-5">
     <div class="flex items-center gap-3 mb-4">
@@ -240,25 +240,25 @@
           />
         </svg>
       </div>
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Confirm Delete</h3>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Xác nhận xóa</h3>
     </div>
     <p class="mb-6 text-gray-600 dark:text-gray-400">
-      Are you sure you want to delete the role
+      Bạn có chắc chắn muốn xóa vai trò
       <strong class="text-gray-900 dark:text-gray-100">{{ itemToDelete?.name }}</strong
-      >? This action cannot be undone.
+      > không? Hành động này không thể hoàn tác.
     </p>
     <div class="flex justify-end gap-3">
       <button
         (click)="dialog.close(false)"
         class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
       >
-        Cancel
+        Hủy
       </button>
       <button
         (click)="dialog.close(true)"
         class="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
       >
-        Delete
+        Xóa
       </button>
     </div>
   </div>

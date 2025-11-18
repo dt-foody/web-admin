@@ -8,7 +8,7 @@
     <!-- Search and Filters -->
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
       <app-search-input
-        placeholder="Search users by name or email..."
+        placeholder="Tìm kiếm người dùng theo tên hoặc email..."
         (search)="onSearchChange($event)"
       >
       </app-search-input>
@@ -18,7 +18,7 @@
         [items]="roleOptions"
         bindLabel="label"
         bindValue="value"
-        placeholder="Select role"
+        placeholder="Chọn vai trò"
         [(ngModel)]="query.role"
         [searchable]="true"
         [clearable]="true"
@@ -40,7 +40,7 @@
         [startIcon]="iconDelete"
         [className]="classOutlineDanger"
       >
-        Delete ({{ selected.length }})
+        Xóa ({{ selected.length }})
       </app-button>
 
       <!-- Add User Button -->
@@ -50,7 +50,7 @@
         variant="primary"
         [startIcon]="iconAdd"
       >
-        Create
+        Tạo mới
       </app-button>
     </div>
   </div>
@@ -73,7 +73,7 @@
 
           <th>
             <app-sort-header
-              label="User"
+              label="Người dùng"
               key="name"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -95,7 +95,7 @@
 
           <th>
             <app-sort-header
-              label="Role"
+              label="Vai trò"
               key="role"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -107,18 +107,18 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Custom Roles
+            Vai trò tùy chỉnh
           </th>
 
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Email Status
+            Trạng thái email
           </th>
 
           <th>
             <app-sort-header
-              label="Created At"
+              label="Ngày tạo"
               key="createdAt"
               [activeKey]="query.sort?.key || ''"
               [asc]="query.sort?.asc || false"
@@ -130,7 +130,7 @@
           <th
             class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Action
+            Thao tác
           </th>
         </tr>
       </thead>
@@ -222,7 +222,7 @@
                     {{ user.rolesCustom.length }} role(s)
                   </span>
                 } @else {
-                  <span class="text-xs text-gray-400 dark:text-gray-500">None</span>
+                  <span class="text-xs text-gray-400 dark:text-gray-500">Không có</span>
                 }
               </div>
             </td>
@@ -237,7 +237,7 @@
                   'bg-gray-200 dark:bg-gray-700': !user.isEmailVerified,
                 }"
               >
-                <span class="sr-only">Toggle verification</span>
+                <span class="sr-only">Chuyển trạng thái xác minh</span>
                 <span
                   class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
                   [ngClass]="{
@@ -249,9 +249,9 @@
               </button>
               <div class="mt-1">
                 @if (user.isEmailVerified) {
-                  <span class="text-xs text-green-600 dark:text-green-400">Verified</span>
+                  <span class="text-xs text-green-600 dark:text-green-400">Đã xác minh</span>
                 } @else {
-                  <span class="text-xs text-gray-500 dark:text-gray-400">Not verified</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">Chưa xác minh</span>
                 }
               </div>
             </td>
@@ -334,10 +334,10 @@
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
                 <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  No users found
+                  Không tìm thấy người dùng
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                  Try adjusting your search or filters
+                  Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc
                 </p>
               </div>
             </td>
@@ -360,17 +360,17 @@
 
 <ng-template #confirmDelete let-dialog>
   <div class="p-5">
-    <h3 class="text-lg font-semibold mb-4">Confirm Delete</h3>
+    <h3 class="text-lg font-semibold mb-4">Xác nhận xóa</h3>
     <p class="mb-6">
-      Are you sure you want to delete <strong>{{ itemToDelete?.name }}</strong
+      Bạn có chắc muốn xóa <strong>{{ itemToDelete?.name }}</strong
       >?
     </p>
     <div class="flex justify-end gap-3">
       <button (click)="dialog.close(false)" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700">
-        Cancel
+        Hủy
       </button>
       <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 text-white">
-        Delete
+        Xóa
       </button>
     </div>
   </div>
@@ -378,16 +378,16 @@
 
 <ng-template #confirmDeleteMany let-dialog>
   <div class="p-5">
-    <h3 class="text-lg font-semibold mb-4">Confirm Delete</h3>
+    <h3 class="text-lg font-semibold mb-4">Xác nhận xóa</h3>
     <p class="mb-6">
-      Are you sure you want to delete <strong>{{ selected.length }} records</strong>?
+      Bạn có chắc muốn xóa <strong>{{ selected.length }} bản ghi</strong>?
     </p>
     <div class="flex justify-end gap-3">
       <button (click)="dialog.close(false)" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700">
-        Cancel
+        Hủy
       </button>
       <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 text-white">
-        Delete
+        Xóa
       </button>
     </div>
   </div>
