@@ -49,7 +49,6 @@ Hệ thống cung cấp đầy đủ các chức năng Thêm (Add), Sửa (Edit)
 Dự án **Foody Angular** có cấu trúc source code mạch lạc, phân chia module rõ ràng và áp dụng các công nghệ tiên tiến nhất hiện nay (Angular 20, Tailwind v4). Việc thiết kế sẵn hệ thống phân quyền (`PermissionGuard`) và các module nghiệp vụ cốt lõi (POS, Order, Product) giúp dự án này trở thành một nền tảng vững chắc để phát triển các hệ thống quản lý thực tế.
 
 ---
----
 
 ## Phụ lục: Nội dung file README.md
 
@@ -102,41 +101,31 @@ Trước khi bạn bắt đầu, hãy chắc chắn rằng bạn có:
 npm install -g @angular/cli
 ```
 
-Clone the repository:
+**Clone the repository:**
 ```bash
 git clone [https://github.com/Foody/free-angular-admin-dashboard.git](https://github.com/Foody/free-angular-admin-dashboard.git)
 ```
 
-Install Dependencies
+**Install Dependencies**
 ```bash
 npm install
 # or
 yarn install
 ```
 
-Start Development Server
+**Start Development Server**
 ```bash
 npm start
 ```
 Sau đó mở: 👉 http://localhost:4200
 
-Angular.js Tailwind Components
+**Angular.js Tailwind Components**
 Foody Angular đi kèm với một bộ phong phú các tính năng dashboard sẵn sàng sử dụng:
-
-Ecommerce Dashboard với các yếu tố thiết yếu
-
-Thanh điều hướng bên (sidebar) hiện đại, dễ tiếp cận
-
-Trực quan hóa dữ liệu với các biểu đồ và đồ thị
-
-Quản lý hồ sơ người dùng và một trang 404 tùy chỉnh
-
-Bảng và biểu đồ (đường, cột, v.v.)
-
-Các biểu mẫu xác thực và các thành phần đầu vào có thể tái sử dụng
-
-Các yếu tố UI: alerts, dropdowns, modals, buttons, và nhiều hơn nữa
-
-Tích hợp Chế độ tối (Dark Mode) 🕶️
-
-và nhiều hơn nữa
+- Ecommerce Dashboard với các yếu tố thiết yếu
+- Thanh điều hướng bên (sidebar) hiện đại, dễ tiếp cận
+- Trực quan hóa dữ liệu với các biểu đồ và đồ thị
+- Quản lý hồ sơ người dùng và một trang 404 tùy chỉnh
+- Bảng và biểu đồ (đường, cột, v.v.)
+- Các biểu mẫu xác thực và các thành phần đầu vào có thể tái sử dụng
+- Các yếu tố UI: alerts, dropdowns, modals, buttons, và nhiều hơn nữa
+- Tích hợp Chế độ tối (Dark Mode) 🕶️ và nhiều hơn nữa
