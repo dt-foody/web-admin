@@ -17,7 +17,6 @@ import { Order, OrderItemOption } from '../../../../models/order.model';
   imports: [
     CommonModule,
     FormsModule,
-    PosCustomerModalComponent,
     ButtonComponent,
     TextAreaComponent,
   ],
