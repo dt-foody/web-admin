@@ -131,20 +131,20 @@ export class ConditionRowComponent {
 
   get operatorNameMapping(): Record<Operator, string> {
     return {
-      [Operator.EQUALS]: 'Equals',
-      [Operator.NOT_EQUALS]: 'Does Not Equal',
-      [Operator.CONTAINS]: 'Contains',
-      [Operator.DOES_NOT_CONTAIN]: 'Does Not Contain',
-      [Operator.GREATER_THAN]: 'Greater Than',
-      [Operator.LESS_THAN]: 'Less Than',
-      [Operator.IS_EMPTY]: 'Is Empty',
-      [Operator.IS_NOT_EMPTY]: 'Is Not Empty',
-      [Operator.IN]: 'Is One Of',
-      [Operator.NOT_IN]: 'Is Not One Of',
-      [Operator.BETWEEN]: 'Between',
-      [Operator.NOT_BETWEEN]: 'Not Between',
-      [Operator.BEFORE]: 'Before',
-      [Operator.AFTER]: 'After',
+      [Operator.EQUALS]: 'Bằng',
+      [Operator.NOT_EQUALS]: 'Không bằng',
+      [Operator.CONTAINS]: 'Chứa',
+      [Operator.DOES_NOT_CONTAIN]: 'Không chứa',
+      [Operator.GREATER_THAN]: 'Lớn hơn',
+      [Operator.LESS_THAN]: 'Nhỏ hơn',
+      [Operator.IS_EMPTY]: 'Rỗng',
+      [Operator.IS_NOT_EMPTY]: 'Không rỗng',
+      [Operator.IN]: 'Nằm trong',
+      [Operator.NOT_IN]: 'Không nằm trong',
+      [Operator.BETWEEN]: 'Trong khoảng',
+      [Operator.NOT_BETWEEN]: 'Không trong khoảng',
+      [Operator.BEFORE]: 'Trước',
+      [Operator.AFTER]: 'Sau',
     };
   }
 }

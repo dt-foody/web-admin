@@ -98,28 +98,28 @@ export class CouponAddComponent implements OnInit {
   isLoadingVoucherData = false;
 
   valueTypeOptions = [
-    { value: 'percentage', label: 'Percentage (%)' },
-    { value: 'fixed', label: 'Fixed Amount' },
+    { value: 'percentage', label: 'Phần trăm (%)' },
+    { value: 'fixed', label: 'Số tiền cố định' },
   ];
 
   typeOptions = [
-    { value: 'discount_code', label: 'Discount Code' },
-    { value: 'freeship', label: 'Free Shipping' },
-    { value: 'gift', label: 'Gift' },
+    { value: 'discount_code', label: 'Mã giảm giá' },
+    { value: 'freeship', label: 'Miễn phí vận chuyển' },
+    { value: 'gift', label: 'Quà tặng' },
   ];
 
   statusOptions = [
-    { value: 'DRAFT', label: 'Draft' },
-    { value: 'ACTIVE', label: 'Active' },
-    { value: 'PAUSED', label: 'Paused' },
-    { value: 'EXPIRED', label: 'Expired' },
+    { value: 'DRAFT', label: 'Nháp' },
+    { value: 'ACTIVE', label: 'Đang hoạt động' },
+    { value: 'PAUSED', label: 'Tạm dừng' },
+    { value: 'EXPIRED', label: 'Hết hạn' },
   ];
 
   fields: Field[] = [
     {
       id: 'customer_name',
-      group: 'Customer',
-      name: 'Customer Name',
+      group: 'Khách hàng',
+      name: 'Tên khách hàng',
       type: 'text',
       operators: [
         Operator.EQUALS,
@@ -132,72 +132,72 @@ export class CouponAddComponent implements OnInit {
     },
     {
       id: 'customer_age',
-      group: 'Customer',
-      name: 'Customer Age',
+      group: 'Khách hàng',
+      name: 'Tuổi khách hàng',
       type: 'number',
       operators: [Operator.EQUALS, Operator.GREATER_THAN, Operator.LESS_THAN],
     },
     {
       id: 'customer_is_new',
-      group: 'Customer',
-      name: 'Customer Is New',
+      group: 'Khách hàng',
+      name: 'Khách hàng mới',
       type: 'boolean',
       operators: [Operator.EQUALS, Operator.NOT_EQUALS],
     },
-    {
-      id: 'product_id',
-      group: 'Product',
-      name: 'Product',
-      type: 'multi-select',
-      operators: [Operator.IN, Operator.NOT_IN],
-      source: {
-        valueField: 'id',
-        labelField: 'name',
-        optionsLoader: (params) => this.productService.getAll({ ...params }),
-      },
-    },
-    {
-      id: 'combo_id',
-      group: 'Combo',
-      name: 'Combo',
-      type: 'multi-select',
-      operators: [Operator.IN, Operator.NOT_IN],
-      source: {
-        valueField: 'id',
-        labelField: 'name',
-        optionsLoader: (params) => this.comboService.getAll({ ...params }),
-      },
-    },
-    {
-      id: 'category_id',
-      group: 'Category',
-      name: 'Category',
-      type: 'multi-select',
-      operators: [Operator.IN, Operator.NOT_IN],
-      source: {
-        valueField: 'id',
-        labelField: 'name',
-        optionsLoader: (params) => this.categoryService.getAll({ ...params }),
-      },
-    },
+    // {
+    //   id: 'product_id',
+    //   group: 'Sản phẩm',
+    //   name: 'Sản phẩm',
+    //   type: 'multi-select',
+    //   operators: [Operator.IN, Operator.NOT_IN],
+    //   source: {
+    //     valueField: 'id',
+    //     labelField: 'name',
+    //     optionsLoader: (params) => this.productService.getAll({ ...params }),
+    //   },
+    // },
+    // {
+    //   id: 'combo_id',
+    //   group: 'Combo',
+    //   name: 'Combo',
+    //   type: 'multi-select',
+    //   operators: [Operator.IN, Operator.NOT_IN],
+    //   source: {
+    //     valueField: 'id',
+    //     labelField: 'name',
+    //     optionsLoader: (params) => this.comboService.getAll({ ...params }),
+    //   },
+    // },
+    // {
+    //   id: 'category_id',
+    //   group: 'Danh mục',
+    //   name: 'Danh mục',
+    //   type: 'multi-select',
+    //   operators: [Operator.IN, Operator.NOT_IN],
+    //   source: {
+    //     valueField: 'id',
+    //     labelField: 'name',
+    //     optionsLoader: (params) => this.categoryService.getAll({ ...params }),
+    //   },
+    // },
     {
       id: 'order_count',
-      group: 'Order',
-      name: 'Order Count',
+      group: 'Đơn hàng',
+      name: 'Số lượng đơn hàng',
       type: 'number',
       operators: [Operator.EQUALS, Operator.GREATER_THAN, Operator.LESS_THAN],
     },
     {
       id: 'order_date',
-      group: 'Order',
-      name: 'Order Date',
+      group: 'Đơn hàng',
+      name: 'Ngày đặt hàng',
       type: 'date',
       operators: [Operator.BEFORE, Operator.AFTER, Operator.BETWEEN],
     },
     {
       id: 'order_contains_product_count',
-      group: 'Order',
-      name: 'Number of Products in Order',
+      group: 'Đơn hàng',
+      name: 'Số lượng sản phẩm trong đơn',
       type: 'number',
       operators: [Operator.GREATER_THAN, Operator.LESS_THAN, Operator.EQUALS],
     },

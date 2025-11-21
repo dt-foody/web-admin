@@ -42,24 +42,24 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
   filterStatus: 'all' | CouponStatus = 'all'; // Thêm filter status
 
   visibilityOptions = [
-    { value: 'all', label: 'All Visibilities' },
-    { value: 'true', label: 'Public' }, // Cập nhật value
-    { value: 'false', label: 'Private' }, // Cập nhật value
+    { value: 'all', label: 'Tất cả quyền xem' },
+    { value: 'true', label: 'Công khai' },
+    { value: 'false', label: 'Riêng tư' },
   ];
 
   typeOptions = [
-    { value: 'all', label: 'All Types' },
-    { value: 'discount_code', label: 'Discount Code' },
-    { value: 'freeship', label: 'Free Shipping' },
-    { value: 'gift', label: 'Gift' },
+    { value: 'all', label: 'Tất cả loại' },
+    { value: 'discount_code', label: 'Mã giảm giá' },
+    { value: 'freeship', label: 'Miễn phí vận chuyển' },
+    { value: 'gift', label: 'Quà tặng' },
   ];
 
   statusOptions = [
-    { value: 'all', label: 'All Statuses' },
-    { value: 'DRAFT', label: 'Draft' },
-    { value: 'ACTIVE', label: 'Active' },
-    { value: 'PAUSED', label: 'Paused' },
-    { value: 'EXPIRED', label: 'Expired' },
+    { value: 'all', label: 'Tất cả trạng thái' },
+    { value: 'DRAFT', label: 'Nháp' },
+    { value: 'ACTIVE', label: 'Đang hoạt động' },
+    { value: 'PAUSED', label: 'Tạm dừng' },
+    { value: 'EXPIRED', label: 'Hết hạn' },
   ];
 
   constructor(
