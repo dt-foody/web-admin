@@ -161,8 +161,8 @@
                       [routerLinkActiveOptions]="{ exact: true }"
                       class="menu-item group justify-center"
                       [ngClass]="{
-                        'xl:justify-center': !((isExpanded$ | async) || (isHovered$ | async)),
-                        'xl:justify-start': (isExpanded$ | async) || (isHovered$ | async),
+                        'justify-center': !((isExpanded$ | async) || (isHovered$ | async)),
+                        'justify-start': (isExpanded$ | async) || (isHovered$ | async),
                         'menu-item-inactive': !isActive(nav.path),
                       }"
                     >
