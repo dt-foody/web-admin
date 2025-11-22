@@ -10,9 +10,7 @@
   (mouseenter)="onSidebarMouseEnter()"
   (mouseleave)="sidebarService.setHovered(false)"
 >
-  <div
-    class="py-2 flex justify-center"
-  >
+  <div class="py-2 flex justify-center">
     <a routerLink="/">
       @if ((isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async)) {
         <img class="dark:hidden" src="/images/logo/logo.svg" alt="Logo" width="120" height="32" />

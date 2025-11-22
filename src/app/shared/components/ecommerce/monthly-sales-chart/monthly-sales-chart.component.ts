@@ -50,7 +50,7 @@ export class MonthlySalesChartComponent {
       'Tháng 10',
       'Tháng 11',
       'Tháng 12',
-    ],    
+    ],
     axisBorder: { show: false },
     axisTicks: { show: false },
   };

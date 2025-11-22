@@ -1,18 +1,35 @@
-<div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+<div
+  class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+>
   <!-- Header -->
   <div
-    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
+    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
+  >
     <!-- Search and Filter -->
     <div class="flex gap-3 sm:justify-between">
       <app-search-input placeholder="Tìm bài viết..." (search)="onSearchChange($event)">
       </app-search-input>
     </div>
     <div class="flex gap-3">
-      <a routerLink="/blog-post/add" *appHasPermission="'blogPost.create'"
-        class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M5 10.0002H15.0006M10.0002 5V15.0006" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
-            strokeLinejoin="round" />
+      <a
+        routerLink="/blog-post/add"
+        *appHasPermission="'blogPost.create'"
+        class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+        >
+          <path
+            d="M5 10.0002H15.0006M10.0002 5V15.0006"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
         Tạo mới
       </a>
@@ -29,214 +46,319 @@
           </th>
 
           <th>
-            <app-sort-header label="Tiêu đề" key="title" [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)" className="w-[300px]">
+            <app-sort-header
+              label="Tiêu đề"
+              key="title"
+              [activeKey]="query.sort?.key || ''"
+              [asc]="query.sort?.asc || false"
+              (sortChange)="onSortChange($event)"
+              className="w-[300px]"
+            >
             </app-sort-header>
           </th>
 
-          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
+          <th
+            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
+          >
             Tác giả
           </th>
 
-          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
+          <th
+            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
+          >
             Danh mục
           </th>
 
-          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
+          <th
+            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
+          >
             Thẻ
           </th>
 
           <th>
-            <app-sort-header label="Trạng thái" key="status" [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)">
+            <app-sort-header
+              label="Trạng thái"
+              key="status"
+              [activeKey]="query.sort?.key || ''"
+              [asc]="query.sort?.asc || false"
+              (sortChange)="onSortChange($event)"
+            >
             </app-sort-header>
           </th>
 
           <th>
-            <app-sort-header label="Ngày xuất bản" key="publishedAt" [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)">
+            <app-sort-header
+              label="Ngày xuất bản"
+              key="publishedAt"
+              [activeKey]="query.sort?.key || ''"
+              [asc]="query.sort?.asc || false"
+              (sortChange)="onSortChange($event)"
+            >
             </app-sort-header>
           </th>
 
           <th>
-            <app-sort-header label="Ngày tạo" key="createdAt" [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)">
+            <app-sort-header
+              label="Ngày tạo"
+              key="createdAt"
+              [activeKey]="query.sort?.key || ''"
+              [asc]="query.sort?.asc || false"
+              (sortChange)="onSortChange($event)"
+            >
             </app-sort-header>
           </th>
 
-          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
+          <th
+            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
+          >
             Hành động
           </th>
         </tr>
       </thead>
       <tbody class="divide-x divide-y divide-gray-200 dark:divide-gray-800 w-100 overflow-x-auto">
         @for (post of dataSources; track post.id) {
-        <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
-          <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
-            <app-checkbox type="checkbox" [checked]="selected.includes(post.id)"
-              (checkedChange)="toggleSelect(post.id, $event)" />
-          </td>
+          <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
+            <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
+              <app-checkbox
+                type="checkbox"
+                [checked]="selected.includes(post.id)"
+                (checkedChange)="toggleSelect(post.id, $event)"
+              />
+            </td>
 
-          <!-- Title with Cover Image -->
-          <td class="px-5 py-4">
-            <div class="flex items-center gap-3 min-w-0">
-              <!-- Thumbnail -->
-              <div class="flex-shrink-0">
-                @if (post.coverImage) {
-                <img [src]="post.coverImage" [alt]="post.coverImageAlt || post.title"
-                  class="h-11 w-16 rounded-lg object-cover border border-gray-200 dark:border-gray-700"
-                  (error)="$any($event.target).style.display = 'none'" />
-                } @else {
+            <!-- Title with Cover Image -->
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-3 min-w-0">
+                <!-- Thumbnail -->
+                <div class="flex-shrink-0">
+                  @if (post.coverImage) {
+                    <img
+                      [src]="post.coverImage"
+                      [alt]="post.coverImageAlt || post.title"
+                      class="h-11 w-16 rounded-lg object-cover border border-gray-200 dark:border-gray-700"
+                      (error)="$any($event.target).style.display = 'none'"
+                    />
+                  } @else {
+                    <div
+                      class="h-11 w-16 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        class="text-gray-400"
+                      >
+                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                        <circle cx="9" cy="9" r="2" />
+                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                      </svg>
+                    </div>
+                  }
+                </div>
+
+                <!-- Title & Meta -->
+                <div class="flex flex-col min-w-0 flex-1">
+                  <button
+                    (click)="handleViewDetail(post)"
+                    class="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:text-brand-600 dark:hover:text-brand-400 text-left line-clamp-2 transition"
+                  >
+                    {{ post.title }}
+                  </button>
+                  @if (post.slug) {
+                    <span
+                      class="text-xs text-gray-500 dark:text-gray-500 mt-0.5 font-mono truncate"
+                    >
+                      /{{ post.slug }}
+                    </span>
+                  }
+
+                  <div class="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    {{ post.views || 0 }}
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Author -->
+            <td class="px-5 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-2" *ngIf="post.createdBy && post.createdBy.name">
                 <div
-                  class="h-11 w-16 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.5" class="text-gray-400">
-                    <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                    <circle cx="9" cy="9" r="2" />
-                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                  </svg>
+                  class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white font-semibold text-xs"
+                >
+                  {{ post.createdBy.name.charAt(0).toUpperCase() }}
                 </div>
-                }
-              </div>
-
-              <!-- Title & Meta -->
-              <div class="flex flex-col min-w-0 flex-1">
-                <button (click)="handleViewDetail(post)"
-                  class="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:text-brand-600 dark:hover:text-brand-400 text-left line-clamp-2 transition">
-                  {{ post.title }}
-                </button>
-                @if (post.slug) {
-                <span class="text-xs text-gray-500 dark:text-gray-500 mt-0.5 font-mono truncate">
-                  /{{ post.slug }}
-                </span>
-                }
-
-                <div class="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                  {{ post.views || 0 }}
-                </div>
-              </div>
-            </div>
-          </td>
-
-          <!-- Author -->
-          <td class="px-5 py-4 whitespace-nowrap">
-            <div class="flex items-center gap-2" *ngIf="post.createdBy && post.createdBy.name">
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white font-semibold text-xs">
-                {{ post.createdBy.name.charAt(0).toUpperCase() }}
-              </div>
-              <span class="text-sm text-gray-600 dark:text-gray-400">{{
-                post.createdBy.name
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{
+                  post.createdBy.name
                 }}</span>
-            </div>
-          </td>
+              </div>
+            </td>
 
-          <!-- categories -->
-          <td class="px-5 py-4 whitespace-nowrap">
-            <div class="flex items-center gap-1">
-              @if (post.categories && post.categories.length > 0) {
-              @for (category of post.categories.slice(0, 2); track category.id) {
-              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                [style.backgroundColor]="category.backgroundColor" [style.color]="category.textColor">
-                {{ category.name }}
-              </span>
-              }
-              @if (post.categories.length > 2) {
-              <span
-                class="inline-flex items-center rounded-full bg-gray-200 dark:bg-gray-700 px-2 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-300">
-                +{{ post.categories.length - 2 }}
-              </span>
-              }
-              } @else {
-              <span class="text-xs text-gray-400 dark:text-gray-500">Không có danh mục</span>
-              }
-            </div>
-          </td>
+            <!-- categories -->
+            <td class="px-5 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-1">
+                @if (post.categories && post.categories.length > 0) {
+                  @for (category of post.categories.slice(0, 2); track category.id) {
+                    <span
+                      class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                      [style.backgroundColor]="category.backgroundColor"
+                      [style.color]="category.textColor"
+                    >
+                      {{ category.name }}
+                    </span>
+                  }
+                  @if (post.categories.length > 2) {
+                    <span
+                      class="inline-flex items-center rounded-full bg-gray-200 dark:bg-gray-700 px-2 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-300"
+                    >
+                      +{{ post.categories.length - 2 }}
+                    </span>
+                  }
+                } @else {
+                  <span class="text-xs text-gray-400 dark:text-gray-500">Không có danh mục</span>
+                }
+              </div>
+            </td>
 
-          <!-- tags -->
-          <td class="px-5 py-4 whitespace-nowrap">
-            <div class="flex items-center gap-1">
-              @if (post.tags && post.tags.length > 0) {
-              @for (tag of post.tags.slice(0, 2); track tag.id) {
-              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                [style.backgroundColor]="tag.backgroundColor" [style.color]="tag.textColor">
-                {{ tag.name }}
-              </span>
-              }
-              @if (post.tags.length > 2) {
-              <span
-                class="inline-flex items-center rounded-full bg-gray-200 dark:bg-gray-700 px-2 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-300">
-                +{{ post.tags.length - 2 }}
-              </span>
-              }
-              } @else {
-              <span class="text-xs text-gray-400 dark:text-gray-500">Không có thẻ</span>
-              }
-            </div>
-          </td>
-          <!-- Status -->
-          <td class="px-5 py-4 whitespace-nowrap">
-            <button (click)="handleToggleStatus(post)"
-              class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
-              [ngClass]="getStatusBadgeClass(post.status)">
-              {{ getStatusLabel(post.status) }}
-            </button>
-          </td>
-
-          <!-- Published Date -->
-          <td class="px-5 py-4 whitespace-nowrap">
-            @if (post.publishedAt) {
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{ formatDate(post.publishedAt) }}
-            </p>
-            } @else {
-            <span class="text-xs text-gray-400 dark:text-gray-500">Chưa xuất bản</span>
-            }
-          </td>
-
-          <!-- Created At -->
-          <td class="px-5 py-4 whitespace-nowrap">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{ post.createdAt | date: 'HH:ss dd/MM/yyyy' }}
-            </p>
-          </td>
-
-          <!-- Actions -->
-          <td class="px-5 py-4 whitespace-nowrap">
-            <div class="flex gap-2">
-              <!-- Edit -->
-              <button *appHasPermission="'blogPost.update'" (click)="handleEdit(post)"
-                class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded" title="Chỉnh sửa">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor" class="size-5">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                </svg>
+            <!-- tags -->
+            <td class="px-5 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-1">
+                @if (post.tags && post.tags.length > 0) {
+                  @for (tag of post.tags.slice(0, 2); track tag.id) {
+                    <span
+                      class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                      [style.backgroundColor]="tag.backgroundColor"
+                      [style.color]="tag.textColor"
+                    >
+                      {{ tag.name }}
+                    </span>
+                  }
+                  @if (post.tags.length > 2) {
+                    <span
+                      class="inline-flex items-center rounded-full bg-gray-200 dark:bg-gray-700 px-2 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-300"
+                    >
+                      +{{ post.tags.length - 2 }}
+                    </span>
+                  }
+                } @else {
+                  <span class="text-xs text-gray-400 dark:text-gray-500">Không có thẻ</span>
+                }
+              </div>
+            </td>
+            <!-- Status -->
+            <td class="px-5 py-4 whitespace-nowrap">
+              <button
+                (click)="handleToggleStatus(post)"
+                class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
+                [ngClass]="getStatusBadgeClass(post.status)"
+              >
+                {{ getStatusLabel(post.status) }}
               </button>
-              <!-- Delete -->
-              <button *appHasPermission="'blogPost.delete'" (click)="handleDelete(post)"
-                class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded" title="Xóa">
-                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </td>
-        </tr>
+            </td>
+
+            <!-- Published Date -->
+            <td class="px-5 py-4 whitespace-nowrap">
+              @if (post.publishedAt) {
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  {{ formatDate(post.publishedAt) }}
+                </p>
+              } @else {
+                <span class="text-xs text-gray-400 dark:text-gray-500">Chưa xuất bản</span>
+              }
+            </td>
+
+            <!-- Created At -->
+            <td class="px-5 py-4 whitespace-nowrap">
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                {{ post.createdAt | date: 'HH:ss dd/MM/yyyy' }}
+              </p>
+            </td>
+
+            <!-- Actions -->
+            <td class="px-5 py-4 whitespace-nowrap">
+              <div class="flex gap-2">
+                <!-- Edit -->
+                <button
+                  *appHasPermission="'blogPost.update'"
+                  (click)="handleEdit(post)"
+                  class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
+                  title="Chỉnh sửa"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                    />
+                  </svg>
+                </button>
+                <!-- Delete -->
+                <button
+                  *appHasPermission="'blogPost.delete'"
+                  (click)="handleDelete(post)"
+                  class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
+                  title="Xóa"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="size-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="12" class="py-10 text-center text-gray-500 dark:text-gray-400">
+              <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
+                Không tìm thấy bài viết
+              </h3>
+              <p class="mt-1 text-sm">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
+            </td>
+          </tr>
         }
       </tbody>
     </table>
   </div>
 
   <!-- Pagination -->
-  <app-pagination [page]="query.page" [totalPages]="totalPages" [totalResults]="totalResults"
-    [pageSize]="query.pageSize" (pageChange)="onPageChange($event)">
+  <app-pagination
+    [page]="query.page"
+    [totalPages]="totalPages"
+    [totalResults]="totalResults"
+    [pageSize]="query.pageSize"
+    (pageChange)="onPageChange($event)"
+  >
   </app-pagination>
 </div>
 
@@ -248,11 +370,16 @@
       Bạn có chắc muốn xóa bài viết <strong>{{ itemToDelete?.title }}</strong> không?
     </p>
     <div class="flex justify-end gap-3">
-      <button (click)="dialog.close(false)"
-        class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600">
+      <button
+        (click)="dialog.close(false)"
+        class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+      >
         Hủy
       </button>
-      <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600">
+      <button
+        (click)="dialog.close(true)"
+        class="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+      >
         Xóa
       </button>
     </div>

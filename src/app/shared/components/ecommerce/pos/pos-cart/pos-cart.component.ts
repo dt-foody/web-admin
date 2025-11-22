@@ -14,12 +14,7 @@ import { Order, OrderItemOption } from '../../../../models/order.model';
 @Component({
   selector: 'app-pos-cart',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ButtonComponent,
-    TextAreaComponent,
-  ],
+  imports: [CommonModule, FormsModule, ButtonComponent, TextAreaComponent],
   templateUrl: './pos-cart.component.html',
 })
 export class PosCartComponent implements OnInit {

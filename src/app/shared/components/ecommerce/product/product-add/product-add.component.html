@@ -180,7 +180,8 @@
                   {{ group.name || 'Unnamed Group ' + (groupIndex + 1) }}
                 </h3>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ group.options.length }} tùy chọn | Tối thiểu: {{ group.minOptions }} | Tối đa: {{ group.maxOptions }}
+                  {{ group.options.length }} tùy chọn | Tối thiểu: {{ group.minOptions }} | Tối đa:
+                  {{ group.maxOptions }}
                 </p>
               </div>
             </div>
@@ -321,7 +322,9 @@
                 *ngIf="group.options.length === 0"
                 class="rounded-lg border border-dashed border-gray-300 p-6 text-center dark:border-gray-600"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">Chưa có tùy chọn nào được thêm</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Chưa có tùy chọn nào được thêm
+                </p>
               </div>
 
               <!-- Options -->

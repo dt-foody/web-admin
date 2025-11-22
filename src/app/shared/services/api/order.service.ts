@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { DEFAULT_FORM, Order, OrderFormData, OrderItem, OrderItemComboSelection, OrderItemOption } from '../../models/order.model';
+import {
+  DEFAULT_FORM,
+  Order,
+  OrderFormData,
+  OrderItem,
+  OrderItemComboSelection,
+  OrderItemOption,
+} from '../../models/order.model';
 import { BaseService } from './_base.service';
 import { catchError } from 'rxjs';
-
 
 import { deepSanitize } from '../../utils/form-data.utils';
 import { Product } from '../../models/product.model';
@@ -71,13 +77,11 @@ export class OrderService extends BaseService<Order> {
     const grandTotal = totalAmount - discount + shipping;
 
     // ---
-    
+
     const base: any = deepSanitize(orderData, DEFAULT_FORM);
-    
+
     // Map items -> schema backend
-    base.items = orderData.items.map((it) =>
-      this.mapOrderItemForApi(it, products, combos),
-    );
+    base.items = orderData.items.map((it) => this.mapOrderItemForApi(it, products, combos));
 
     base.totalAmount = totalAmount;
     base.grandTotal = grandTotal;
@@ -185,11 +189,7 @@ export class OrderService extends BaseService<Order> {
     };
   }
 
-  private mapOrderItemForApi(
-    item: OrderItem,
-    products: Product[],
-    combos: Combo[],
-  ): any {
+  private mapOrderItemForApi(item: OrderItem, products: Product[], combos: Combo[]): any {
     const quantity = item.quantity || 0;
     const unitPrice =
       typeof item.price === 'string' ? parseFloat(item.price) || 0 : item.price || 0;

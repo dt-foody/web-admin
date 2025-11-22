@@ -17,7 +17,11 @@
             >
               Tên vai trò <span class="text-red-500">*</span>
             </label>
-            <app-input-field id="role-name" placeholder="Nhập tên vai trò" [(value)]="roleForm.name">
+            <app-input-field
+              id="role-name"
+              placeholder="Nhập tên vai trò"
+              [(value)]="roleForm.name"
+            >
             </app-input-field>
           </div>
 
@@ -70,7 +74,9 @@
         <table class="w-full border-collapse">
           <thead>
             <tr class="border-b border-gray-200 dark:border-gray-700">
-              <th class="px-4 py-3 text-left text-sm text-gray-600 dark:text-gray-300">Tài nguyên</th>
+              <th class="px-4 py-3 text-left text-sm text-gray-600 dark:text-gray-300">
+                Tài nguyên
+              </th>
               <th
                 *ngFor="let action of allActions"
                 class="px-4 py-3 text-center text-sm text-gray-600 dark:text-gray-300"

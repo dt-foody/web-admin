@@ -38,7 +38,7 @@ export class PosCheckoutComponent implements OnInit {
   private router = inject(Router);
 
   cart$ = this.posState.cartState$;
-  
+
   // Dùng cho UI
   discountTypeOptions = [
     { value: 'fixed', label: 'Số tiền (đ)' },
@@ -54,7 +54,7 @@ export class PosCheckoutComponent implements OnInit {
   isSubmitting = false;
 
   ngOnInit(): void {
-    console.log("init checkout");
+    console.log('init checkout');
   }
 
   onDiscountTypeChange(type: 'fixed' | 'percentage') {
@@ -95,7 +95,7 @@ export class PosCheckoutComponent implements OnInit {
         // Tạm thời bỏ qua
       }
     }
-    
+
     this.isSubmitting = true;
 
     // ----- ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT -----
@@ -104,7 +104,7 @@ export class PosCheckoutComponent implements OnInit {
     const payload = this.orderService.buildAdminOrderPayload(
       cartState as any,
       this.products,
-      this.combos
+      this.combos,
     );
 
     // 3. Gọi API

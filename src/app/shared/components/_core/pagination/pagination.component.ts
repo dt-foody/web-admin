@@ -15,7 +15,7 @@ export class PaginationComponent {
   @Output() pageChange = new EventEmitter<number>();
 
   get startItem() {
-    return (this.page - 1) * this.pageSize + 1;
+    return this.totalResults ? (this.page - 1) * this.pageSize + 1 : 0;
   }
 
   get endItem() {

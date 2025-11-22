@@ -5,10 +5,11 @@
 Đây là dự án **Admin Dashboard** (Trang quản trị) cho hệ thống `dt-foody`. Dự án được xây dựng dưới dạng Single Page Application (SPA) hiện đại, phục vụ cho việc quản lý hệ thống nhà hàng, F&B hoặc thương mại điện tử.
 
 ### Công nghệ sử dụng
-* **Framework:** Angular 20+ (Phiên bản rất mới).
-* **Ngôn ngữ:** TypeScript.
-* **Giao diện (Styling):** Tailwind CSS v4 (Utility-first CSS framework).
-* **Quản lý gói:** NPM.
+
+- **Framework:** Angular 20+ (Phiên bản rất mới).
+- **Ngôn ngữ:** TypeScript.
+- **Giao diện (Styling):** Tailwind CSS v4 (Utility-first CSS framework).
+- **Quản lý gói:** NPM.
 
 ---
 
@@ -17,14 +18,17 @@
 Dựa trên cấu trúc định tuyến (`app.routes.ts`) và các cấu hình (`package.json`, `angular.json`), hệ thống bao gồm các phân hệ chính sau:
 
 ### A. Xác thực & Bảo mật (Authentication & Security)
-* **Cơ chế:** Sử dụng Guards để bảo vệ các routes.
-    * `authGuard`: Yêu cầu đăng nhập để truy cập trang quản trị.
-    * `guestGuard`: Chặn người dùng đã đăng nhập truy cập lại trang login/register.
-    * `PermissionGuard`: Phân quyền chi tiết đến từng chức năng (Ví dụ: `category.read`, `product.create`).
-* **Giao diện:** Có đầy đủ trang Đăng nhập (`SignInComponent`), Đăng ký (`SignUpComponent`) và trang báo lỗi truy cập (`ForbiddenComponent`, `403`).
+
+- **Cơ chế:** Sử dụng Guards để bảo vệ các routes.
+  - `authGuard`: Yêu cầu đăng nhập để truy cập trang quản trị.
+  - `guestGuard`: Chặn người dùng đã đăng nhập truy cập lại trang login/register.
+  - `PermissionGuard`: Phân quyền chi tiết đến từng chức năng (Ví dụ: `category.read`, `product.create`).
+- **Giao diện:** Có đầy đủ trang Đăng nhập (`SignInComponent`), Đăng ký (`SignUpComponent`) và trang báo lỗi truy cập (`ForbiddenComponent`, `403`).
 
 ### B. Các Module Quản Lý (CRUD)
+
 Hệ thống cung cấp đầy đủ các chức năng Thêm (Add), Sửa (Edit), Xóa/Danh sách (List) cho các đối tượng nghiệp vụ:
+
 1.  **Sản phẩm & Danh mục:** Quản lý Category, Product, Combo.
 2.  **Khách hàng & Đơn hàng:** Quản lý Customer (có trang chi tiết), Order (xử lý đơn hàng).
 3.  **Marketing:** Quản lý Coupon (Mã giảm giá), Price Promotion (Khuyến mãi giá).
@@ -32,15 +36,17 @@ Hệ thống cung cấp đầy đủ các chức năng Thêm (Add), Sửa (Edit)
 5.  **Hệ thống:** Quản lý User (Người dùng nội bộ), Role (Vai trò/Phân quyền).
 
 ### C. Tính năng Nổi bật
-* **POS (Point of Sale):** Có module `PosTerminalComponent` tích hợp sẵn để bán hàng tại quầy.
-* **Thống kê (Dashboard):** Trang `EcommerceComponent` hiển thị tổng quan dữ liệu.
-* **Tiện ích khác:** Lịch (`CalenderComponent`), Quản lý hóa đơn (`Invoice`), Hồ sơ cá nhân (`Profile`).
+
+- **POS (Point of Sale):** Có module `PosTerminalComponent` tích hợp sẵn để bán hàng tại quầy.
+- **Thống kê (Dashboard):** Trang `EcommerceComponent` hiển thị tổng quan dữ liệu.
+- **Tiện ích khác:** Lịch (`CalenderComponent`), Quản lý hóa đơn (`Invoice`), Hồ sơ cá nhân (`Profile`).
 
 ### D. Thư viện & Tooling
-* **Biểu đồ:** Sử dụng `apexcharts` và `ng-apexcharts` để trực quan hóa dữ liệu.
-* **Lịch:** Tích hợp `@fullcalendar/angular`.
-* **Soạn thảo văn bản:** Sử dụng `@ckeditor/ckeditor5-angular`.
-* **Chất lượng code:** Tích hợp chặt chẽ `eslint`, `prettier`, và `husky` để đảm bảo quy chuẩn code trước khi commit.
+
+- **Biểu đồ:** Sử dụng `apexcharts` và `ng-apexcharts` để trực quan hóa dữ liệu.
+- **Lịch:** Tích hợp `@fullcalendar/angular`.
+- **Soạn thảo văn bản:** Sử dụng `@ckeditor/ckeditor5-angular`.
+- **Chất lượng code:** Tích hợp chặt chẽ `eslint`, `prettier`, và `husky` để đảm bảo quy chuẩn code trước khi commit.
 
 ---
 
@@ -83,10 +89,10 @@ Foody Angular đi kèm với các thành phần UI và bố cục thiết yếu 
 
 | Feature                        | Free Version                    | Pro Version 🌟                                                                                                    |
 | ------------------------------ | ------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **Dashboards** | 1 Unique Dashboard              | 7 Unique Dashboards: Analytics, Ecommerce, Marketing, SaaS, CRM, Stocks, Logistics and more (more coming soon) 📈 |
+| **Dashboards**                 | 1 Unique Dashboard              | 7 Unique Dashboards: Analytics, Ecommerce, Marketing, SaaS, CRM, Stocks, Logistics and more (more coming soon) 📈 |
 | **UI Elements and Components** | 100+ UI elements and components | Included in 500+ components and UI elements                                                                       |
-| **Design Files** | Basic Figma design files        | Complete Figma design system file                                                                                 |
-| **Support** | Community support               | Email support                                                                                                     |
+| **Design Files**               | Basic Figma design files        | Complete Figma design system file                                                                                 |
+| **Support**                    | Community support               | Email support                                                                                                     |
 
 ## Installation
 
@@ -102,11 +108,13 @@ npm install -g @angular/cli
 ```
 
 **Clone the repository:**
+
 ```bash
 git clone [https://github.com/Foody/free-angular-admin-dashboard.git](https://github.com/Foody/free-angular-admin-dashboard.git)
 ```
 
 **Install Dependencies**
+
 ```bash
 npm install
 # or
@@ -114,13 +122,16 @@ yarn install
 ```
 
 **Start Development Server**
+
 ```bash
 npm start
 ```
+
 Sau đó mở: 👉 http://localhost:4200
 
 **Angular.js Tailwind Components**
 Foody Angular đi kèm với một bộ phong phú các tính năng dashboard sẵn sàng sử dụng:
+
 - Ecommerce Dashboard với các yếu tố thiết yếu
 - Thanh điều hướng bên (sidebar) hiện đại, dễ tiếp cận
 - Trực quan hóa dữ liệu với các biểu đồ và đồ thị

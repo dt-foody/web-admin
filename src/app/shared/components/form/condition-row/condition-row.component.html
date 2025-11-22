@@ -1,68 +1,124 @@
-<div class="flex items-center gap-2 p-2 rounded-lg bg-white shadow-sm border border-gray-200 w-full mt-4">
+<div
+  class="flex items-center gap-2 p-2 rounded-lg bg-white shadow-sm border border-gray-200 w-full mt-4"
+>
   <!-- Field Selector -->
 
-  <ng-select [items]="fields()" bindLabel="name" bindValue="id" [ngModel]="condition().fieldId" groupBy="group"
-    (ngModelChange)="onFieldChange($event)" [searchable]="true" [clearable]="false" placeholder="Chọn trường"
-    class="w-1/3">
+  <ng-select
+    [items]="fields()"
+    bindLabel="name"
+    bindValue="id"
+    [ngModel]="condition().fieldId"
+    groupBy="group"
+    (ngModelChange)="onFieldChange($event)"
+    [searchable]="true"
+    [clearable]="false"
+    placeholder="Chọn trường"
+    class="w-1/3"
+  >
   </ng-select>
 
   @if (selectedField()) {
+    <!-- Operator Selector -->
+    <ng-select
+      [items]="operatorOptions() || []"
+      bindLabel="label"
+      bindValue="value"
+      [ngModel]="condition().operator"
+      (ngModelChange)="onOperatorChange($event)"
+      class="w-1/4"
+      [clearable]="false"
+    >
+    </ng-select>
 
-  <!-- Operator Selector -->
-  <ng-select [items]="operatorOptions() || []" bindLabel="label" bindValue="value" [ngModel]="condition().operator"
-    (ngModelChange)="onOperatorChange($event)" class="w-1/4" [clearable]="false">
-  </ng-select>
-
-  <!-- Value Input -->
-  @if (condition().operator !== 'IS_EMPTY' && condition().operator !== 'IS_NOT_EMPTY') {
-  <div class="w-1/3">
-    @switch (selectedField()?.type) {
-    @case ('text') {
-    <app-input-field [value]="condition().value" (valueChange)="onValueChange($event)" placeholder="Nhập giá trị" />
-    }
-    @case ('number') {
-    <app-input-field type="number" [value]="condition().value" (valueChange)="onValueChange($event)"
-      placeholder="Nhập số" />
-    }
-    @case ('date') {
-    <app-input-field id="start-date" type="datetime-local" [value]="condition().value"
-      (valueChange)="onValueChange($event)"></app-input-field>
-    }
-    @case ('boolean') {
-    <app-select [options]="[
+    <!-- Value Input -->
+    @if (condition().operator !== 'IS_EMPTY' && condition().operator !== 'IS_NOT_EMPTY') {
+      <div class="w-1/3">
+        @switch (selectedField()?.type) {
+          @case ('text') {
+            <app-input-field
+              [value]="condition().value"
+              (valueChange)="onValueChange($event)"
+              placeholder="Nhập giá trị"
+            />
+          }
+          @case ('number') {
+            <app-input-field
+              type="number"
+              [value]="condition().value"
+              (valueChange)="onValueChange($event)"
+              placeholder="Nhập số"
+            />
+          }
+          @case ('date') {
+            <app-input-field
+              id="start-date"
+              type="datetime-local"
+              [value]="condition().value"
+              (valueChange)="onValueChange($event)"
+            ></app-input-field>
+          }
+          @case ('boolean') {
+            <app-select
+              [options]="[
                 { value: 'true', label: 'Đúng' },
                 { value: 'false', label: 'Sai' },
-              ]" placeholder="Chọn trạng thái" [value]="condition().value"
-      (valueChange)="onValueChange($event)"></app-select>
+              ]"
+              placeholder="Chọn trạng thái"
+              [value]="condition().value"
+              (valueChange)="onValueChange($event)"
+            ></app-select>
+          }
+          @case ('select') {
+            <ng-select
+              [items]="options()"
+              [bindLabel]="selectedField()!.source!.labelField"
+              [virtualScroll]="true"
+              [bindValue]="selectedField()!.source!.valueField"
+              [ngModel]="condition().value"
+              (ngModelChange)="onValueChange($event)"
+              (search)="onTypeahead($event.term)"
+              (scrollToEnd)="onScrollToEnd()"
+              [loading]="loading()"
+              placeholder="Chọn giá trị..."
+              class="w-full"
+            ></ng-select>
+          }
+          @case ('multi-select') {
+            <ng-select
+              [items]="options()"
+              [bindLabel]="selectedField()!.source!.labelField"
+              [virtualScroll]="true"
+              [bindValue]="selectedField()!.source!.valueField"
+              [ngModel]="condition().value"
+              (ngModelChange)="onValueChange($event)"
+              (search)="onTypeahead($event.term)"
+              (scrollToEnd)="onScrollToEnd()"
+              [loading]="loading()"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              placeholder="Chọn nhiều giá trị..."
+              class="w-full"
+            ></ng-select>
+          }
+        }
+      </div>
+    } @else {
+      <div class="w-1/3"></div>
     }
-    @case ('select') {
-    <ng-select [items]="options()" [bindLabel]="selectedField()!.source!.labelField" [virtualScroll]="true"
-      [bindValue]="selectedField()!.source!.valueField" [ngModel]="condition().value"
-      (ngModelChange)="onValueChange($event)" (search)="onTypeahead($event.term)" (scrollToEnd)="onScrollToEnd()"
-      [loading]="loading()" placeholder="Chọn giá trị..." class="w-full"></ng-select>
-    }
-    @case ('multi-select') {
-    <ng-select [items]="options()" [bindLabel]="selectedField()!.source!.labelField" [virtualScroll]="true"
-      [bindValue]="selectedField()!.source!.valueField" [ngModel]="condition().value"
-      (ngModelChange)="onValueChange($event)" (search)="onTypeahead($event.term)" (scrollToEnd)="onScrollToEnd()"
-      [loading]="loading()" [multiple]="true" [closeOnSelect]="false" placeholder="Chọn nhiều giá trị..."
-      class="w-full"></ng-select>
-    }
-    }
-  </div>
-  } @else {
-  <div class="w-1/3"></div>
-  }
   }
 
   <!-- Remove Button -->
-  <button (click)="remove.emit()"
+  <button
+    (click)="remove.emit()"
     class="flex-shrink-0 text-gray-500 hover:text-red-600 transition-colors p-2 rounded-full hover:bg-red-100"
-    aria-label="Xóa điều kiện">
+    aria-label="Xóa điều kiện"
+  >
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-      <path fill-rule="evenodd"
+      <path
+        fill-rule="evenodd"
         d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z"
-        clip-rule="evenodd" />
+        clip-rule="evenodd"
+      />
     </svg>
   </button>
 </div>

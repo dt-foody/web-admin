@@ -1,36 +1,59 @@
-<div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+<div
+  class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+>
   <div
-    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
+    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
+  >
     <div class="flex flex-wrap gap-3">
       <app-search-input placeholder="Tìm đơn hàng..." (search)="onSearchChange($event)">
       </app-search-input>
 
       @if (viewMode === 'table') {
-      <select [(ngModel)]="query.status" (change)="onFilterChange()"
-        class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
-        @for (status of orderStatuses; track status.value) {
-        <option [value]="status.value">{{ status.label }}</option>
-        }
-      </select>
+        <select
+          [(ngModel)]="query.status"
+          (change)="onFilterChange()"
+          class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+        >
+          @for (status of orderStatuses; track status.value) {
+            <option [value]="status.value">{{ status.label }}</option>
+          }
+        </select>
       }
 
-      <select [(ngModel)]="query.paymentStatus" (change)="onFilterChange()"
-        class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+      <select
+        [(ngModel)]="query.paymentStatus"
+        (change)="onFilterChange()"
+        class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+      >
         @for (status of paymentStatuses; track status.value) {
-        <option [value]="status.value">{{ status.label }}</option>
+          <option [value]="status.value">{{ status.label }}</option>
         }
       </select>
     </div>
 
     <div class="flex gap-3 items-center">
       <div
-        class="flex items-center rounded-lg border border-gray-200 bg-gray-50 p-1 dark:border-gray-700 dark:bg-gray-800">
-        <button (click)="setViewMode('table')" [class.bg-white]="viewMode === 'table'"
-          [class.shadow-sm]="viewMode === 'table'" [class.dark:bg-gray-700]="viewMode === 'table'"
+        class="flex items-center rounded-lg border border-gray-200 bg-gray-50 p-1 dark:border-gray-700 dark:bg-gray-800"
+      >
+        <button
+          (click)="setViewMode('table')"
+          [class.bg-white]="viewMode === 'table'"
+          [class.shadow-sm]="viewMode === 'table'"
+          [class.dark:bg-gray-700]="viewMode === 'table'"
           class="rounded px-2 py-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition"
-          title="Table View">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          title="Table View"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <line x1="8" y1="6" x2="21" y2="6"></line>
             <line x1="8" y1="12" x2="21" y2="12"></line>
             <line x1="8" y1="18" x2="21" y2="18"></line>
@@ -39,12 +62,25 @@
             <line x1="3" y1="18" x2="3.01" y2="18"></line>
           </svg>
         </button>
-        <button (click)="setViewMode('kanban')" [class.bg-white]="viewMode === 'kanban'"
-          [class.shadow-sm]="viewMode === 'kanban'" [class.dark:bg-gray-700]="viewMode === 'kanban'"
+        <button
+          (click)="setViewMode('kanban')"
+          [class.bg-white]="viewMode === 'kanban'"
+          [class.shadow-sm]="viewMode === 'kanban'"
+          [class.dark:bg-gray-700]="viewMode === 'kanban'"
           class="rounded px-2 py-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition"
-          title="Kanban View">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          title="Kanban View"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <rect x="3" y="3" width="7" height="9"></rect>
             <rect x="14" y="3" width="7" height="5"></rect>
             <rect x="14" y="12" width="7" height="9"></rect>
@@ -53,11 +89,25 @@
         </button>
       </div>
 
-      <a routerLink="/order/add" *appHasPermission="'order.create'"
-        class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M5 10.0002H15.0006M10.0002 5V15.0006" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
-            strokeLinejoin="round" />
+      <a
+        routerLink="/order/add"
+        *appHasPermission="'order.create'"
+        class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+        >
+          <path
+            d="M5 10.0002H15.0006M10.0002 5V15.0006"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
         <span class="hidden sm:inline">Tạo mới</span>
       </a>
@@ -65,291 +115,466 @@
   </div>
 
   @if (viewMode === 'table') {
-  <div class="overflow-x-auto custom-scrollbar">
-    <table class="w-full">
-      <thead>
-        <tr class="border-b border-gray-200 dark:divide-gray-800 dark:border-gray-800">
-          <th class="lg:w-14 px-5 py-4 text-left whitespace-nowrap">
-            <app-checkbox [checked]="isAllSelected()" (checkedChange)="toggleAll()"></app-checkbox>
-          </th>
-          <th>
-            <app-sort-header label="Mã đơn hàng" key="orderId" [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)"></app-sort-header>
-          </th>
-          <th>
-            <app-sort-header label="Khách hàng" key="profile" [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)"></app-sort-header>
-          </th>
-          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">Sản
-            phẩm</th>
-          <th>
-            <app-sort-header label="Tổng tiền" key="grandTotal" [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)"></app-sort-header>
-          </th>
-          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">Trạng
-            thái</th>
-          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">Thanh
-            toán</th>
-          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">Vận
-            chuyển</th>
-          <th>
-            <app-sort-header label="Ngày tạo" key="createdAt" [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)"></app-sort-header>
-          </th>
-          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">Hành
-            động</th>
-        </tr>
-      </thead>
-      <tbody class="divide-x divide-y divide-gray-200 dark:divide-gray-800">
-        @for (order of dataSources; track order.id) {
-        <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
-          <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
-            <app-checkbox type="checkbox" [checked]="selected.includes(order.id)"
-              (checkedChange)="toggleSelect(order.id, $event)" />
-          </td>
-          <td class="px-5 py-4 whitespace-nowrap">
-            <div class="flex flex-col">
-              <span class="text-sm font-semibold text-gray-900 dark:text-white">#{{ order.orderId ||
-                order.id.substring(0, 8) }}</span>
-            </div>
-          </td>
-          <td class="px-5 py-4 whitespace-nowrap">
-            <div class="flex flex-col">
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ order?.profile?.name || 'Khách vãng
-                lai' }}</span>
-              @if (getCustomerPhone(order.profile)) {
-              <span class="text-xs text-gray-500 dark:text-gray-400">{{ getCustomerPhone(order.profile) }}</span>
-              }
-            </div>
-          </td>
-          <td class="px-5 py-4 whitespace-nowrap">
-            <span class="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-              </svg>
-              {{ getItemsCount(order) }} sản phẩm
-            </span>
-          </td>
-          <td class="px-5 py-4 whitespace-nowrap">
-            <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ getFormattedPrice(order.grandTotal) }}</p>
-          </td>
-          <td class="px-5 py-4 whitespace-nowrap">
-            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize"
-              [ngClass]="getStatusColor(order.status)">
-              {{ order.status }}
-            </span>
-          </td>
-          <td class="px-5 py-4 whitespace-nowrap">
-            <div class="flex flex-col gap-1">
-              <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize"
-                [ngClass]="getPaymentStatusColor(order.payment.status || 'pending')">
-                {{ order?.payment?.status || 'đang chờ' }}
-              </span>
-            </div>
-          </td>
-          <td class="px-5 py-4 whitespace-nowrap">
-            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize"
-              [ngClass]="getShippingStatusColor(order?.shipping?.status || 'n/a')">
-              {{ order?.shipping?.status || (order.orderType === 'Delivery' ? 'đang chờ' : 'n/a') }}
-            </span>
-          </td>
-          <td class="px-5 py-4 whitespace-nowrap">
-            <p class="text-sm text-gray-600 dark:text-gray-400">{{ order.createdAt | date: 'HH:mm dd/MM' }}</p>
-          </td>
-          <td class="px-5 py-4 whitespace-nowrap">
-            <div class="flex gap-2">
-              <button *appHasPermission="'order.read'" (click)="handleView(order)"
-                class="text-green-500 hover:text-green-700 dark:hover:text-green-400 p-1 rounded" title="Xem">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor" class="size-5">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg>
-              </button>
-              <button *appHasPermission="'order.update'" (click)="handleEdit(order)"
-                class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded" title="Sửa">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor" class="size-5">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                </svg>
-              </button>
-              <button *appHasPermission="'order.delete'" (click)="handleDelete(order)"
-                class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded" title="Xóa">
-                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-  <app-pagination [page]="query.page" [totalPages]="totalPages" [totalResults]="totalResults"
-    [pageSize]="query.pageSize" (pageChange)="onPageChange($event)">
-  </app-pagination>
+    <div class="overflow-x-auto custom-scrollbar">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-gray-200 dark:divide-gray-800 dark:border-gray-800">
+            <th class="lg:w-14 px-5 py-4 text-left whitespace-nowrap">
+              <app-checkbox
+                [checked]="isAllSelected()"
+                (checkedChange)="toggleAll()"
+              ></app-checkbox>
+            </th>
+            <th>
+              <app-sort-header
+                label="Mã đơn hàng"
+                key="orderId"
+                [activeKey]="query.sort?.key || ''"
+                [asc]="query.sort?.asc || false"
+                (sortChange)="onSortChange($event)"
+              ></app-sort-header>
+            </th>
+            <th>
+              <app-sort-header
+                label="Khách hàng"
+                key="profile"
+                [activeKey]="query.sort?.key || ''"
+                [asc]="query.sort?.asc || false"
+                (sortChange)="onSortChange($event)"
+              ></app-sort-header>
+            </th>
+            <th
+              class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Sản phẩm
+            </th>
+            <th>
+              <app-sort-header
+                label="Tổng tiền"
+                key="grandTotal"
+                [activeKey]="query.sort?.key || ''"
+                [asc]="query.sort?.asc || false"
+                (sortChange)="onSortChange($event)"
+              ></app-sort-header>
+            </th>
+            <th
+              class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Trạng thái
+            </th>
+            <th
+              class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Thanh toán
+            </th>
+            <th
+              class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Vận chuyển
+            </th>
+            <th>
+              <app-sort-header
+                label="Ngày tạo"
+                key="createdAt"
+                [activeKey]="query.sort?.key || ''"
+                [asc]="query.sort?.asc || false"
+                (sortChange)="onSortChange($event)"
+              ></app-sort-header>
+            </th>
+            <th
+              class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Hành động
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-x divide-y divide-gray-200 dark:divide-gray-800">
+          @for (order of dataSources; track order.id) {
+            <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
+              <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
+                <app-checkbox
+                  type="checkbox"
+                  [checked]="selected.includes(order.id)"
+                  (checkedChange)="toggleSelect(order.id, $event)"
+                />
+              </td>
+              <td class="px-5 py-4 whitespace-nowrap">
+                <div class="flex flex-col">
+                  <span class="text-sm font-semibold text-gray-900 dark:text-white"
+                    >#{{ order.orderId || order.id.substring(0, 8) }}</span
+                  >
+                </div>
+              </td>
+              <td class="px-5 py-4 whitespace-nowrap">
+                <div class="flex flex-col">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
+                    order?.profile?.name ||
+                      'Khách vãng
+                lai'
+                  }}</span>
+                  @if (getCustomerPhone(order.profile)) {
+                    <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                      getCustomerPhone(order.profile)
+                    }}</span>
+                  }
+                </div>
+              </td>
+              <td class="px-5 py-4 whitespace-nowrap">
+                <span
+                  class="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                  </svg>
+                  {{ getItemsCount(order) }} sản phẩm
+                </span>
+              </td>
+              <td class="px-5 py-4 whitespace-nowrap">
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">
+                  {{ getFormattedPrice(order.grandTotal) }}
+                </p>
+              </td>
+              <td class="px-5 py-4 whitespace-nowrap">
+                <span
+                  class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize"
+                  [ngClass]="getStatusColor(order.status)"
+                >
+                  {{ order.status }}
+                </span>
+              </td>
+              <td class="px-5 py-4 whitespace-nowrap">
+                <div class="flex flex-col gap-1">
+                  <span
+                    class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize"
+                    [ngClass]="getPaymentStatusColor(order.payment.status || 'pending')"
+                  >
+                    {{ order?.payment?.status || 'đang chờ' }}
+                  </span>
+                </div>
+              </td>
+              <td class="px-5 py-4 whitespace-nowrap">
+                <span
+                  class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize"
+                  [ngClass]="getShippingStatusColor(order?.shipping?.status || 'n/a')"
+                >
+                  {{
+                    order?.shipping?.status || (order.orderType === 'Delivery' ? 'đang chờ' : 'n/a')
+                  }}
+                </span>
+              </td>
+              <td class="px-5 py-4 whitespace-nowrap">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  {{ order.createdAt | date: 'HH:mm dd/MM' }}
+                </p>
+              </td>
+              <td class="px-5 py-4 whitespace-nowrap">
+                <div class="flex gap-2">
+                  <button
+                    *appHasPermission="'order.read'"
+                    (click)="handleView(order)"
+                    class="text-green-500 hover:text-green-700 dark:hover:text-green-400 p-1 rounded"
+                    title="Xem"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-5"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    *appHasPermission="'order.update'"
+                    (click)="handleEdit(order)"
+                    class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
+                    title="Sửa"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-5"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    *appHasPermission="'order.delete'"
+                    (click)="handleDelete(order)"
+                    class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
+                    title="Xóa"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="size-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="12" class="py-10 text-center text-gray-500 dark:text-gray-400">
+                <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
+                  Không tìm thấy đơn hàng
+                </h3>
+                <p class="mt-1 text-sm">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-pagination
+      [page]="query.page"
+      [totalPages]="totalPages"
+      [totalResults]="totalResults"
+      [pageSize]="query.pageSize"
+      (pageChange)="onPageChange($event)"
+    >
+    </app-pagination>
   }
 
   @if (viewMode === 'kanban') {
-  <div class="w-full overflow-x-auto px-5 py-4 bg-gray-50 dark:bg-gray-950">
-    <div class="flex min-w-full gap-5 pb-2">
-      @for (statusCol of kanbanColumns; track statusCol.value) {
+    <div class="w-full overflow-x-auto px-5 py-4 bg-gray-50 dark:bg-gray-950">
+      <div class="flex min-w-full gap-5 pb-2">
+        @for (statusCol of kanbanColumns; track statusCol.value) {
+          <section
+            class="flex w-80 min-w-[320px] flex-col rounded-2xl border border-gray-200/70 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/90"
+          >
+            <header
+              class="flex items-center justify-between border-b border-gray-200/80 px-4 py-3 bg-gray-50/80 dark:bg-gray-900/70 dark:border-gray-800"
+            >
+              <div class="flex items-center gap-2">
+                <span
+                  class="block h-2.5 w-2.5 rounded-full shadow-sm"
+                  [ngClass]="getStatusDotColor(statusCol.value)"
+                ></span>
 
-      <section class="flex w-80 min-w-[320px] flex-col rounded-2xl border border-gray-200/70 bg-white/90 shadow-sm backdrop-blur-sm
-               dark:border-gray-800 dark:bg-gray-900/90">
-        <header class="flex items-center justify-between border-b border-gray-200/80 px-4 py-3
-                 bg-gray-50/80 dark:bg-gray-900/70 dark:border-gray-800">
-          <div class="flex items-center gap-2">
-            <span class="block h-2.5 w-2.5 rounded-full shadow-sm"
-              [ngClass]="getStatusDotColor(statusCol.value)"></span>
+                <div class="flex flex-col">
+                  <h3 class="text-sm font-semibold text-gray-800 dark:text-white capitalize">
+                    {{ statusCol.label }}
+                  </h3>
+                </div>
+              </div>
 
-            <div class="flex flex-col">
-              <h3 class="text-sm font-semibold text-gray-800 dark:text-white capitalize">
-                {{ statusCol.label }}
-              </h3>
-            </div>
-          </div>
+              <span
+                class="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-[11px] font-semibold text-gray-600 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+              >
+                {{ getOrdersByStatus(statusCol.value).length }} đơn
+              </span>
+            </header>
 
-          <span class="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-2.5 py-0.5
-                   text-[11px] font-semibold text-gray-600 shadow-sm
-                   dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-            {{ getOrdersByStatus(statusCol.value).length }} đơn
-          </span>
-        </header>
+            <div
+              class="flex flex-1 flex-col gap-3 p-3 overflow-y-auto max-h-[calc(100vh-260px)] custom-scrollbar"
+              dndDropzone
+              (dndDrop)="onDrop($event, statusCol.value)"
+            >
+              <div
+                dndPlaceholderRef
+                class="h-[120px] w-full rounded-xl border-2 border-dashed border-brand-300 bg-brand-50/50 dark:border-brand-700 dark:bg-brand-900/20"
+              ></div>
 
-        <div class="flex flex-1 flex-col gap-3 p-3 overflow-y-auto max-h-[calc(100vh-260px)] custom-scrollbar"
-          dndDropzone (dndDrop)="onDrop($event, statusCol.value)">
+              @for (order of getOrdersByStatus(statusCol.value); track order.id) {
+                <article
+                  (click)="handleView(order)"
+                  [dndDraggable]="order"
+                  [dndEffectAllowed]="'move'"
+                  class="group relative flex cursor-pointer flex-col gap-3 rounded-xl border border-gray-200 bg-white/95 p-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-500/60 hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+                >
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="flex flex-col gap-1">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="text-[11px] font-semibold uppercase tracking-wide text-brand-600 dark:text-brand-400"
+                        >
+                          #{{ order.orderId || order.id.substring(0, 6) }}
+                        </span>
 
-          <div dndPlaceholderRef
-            class="h-[120px] w-full rounded-xl border-2 border-dashed border-brand-300 bg-brand-50/50 dark:border-brand-700 dark:bg-brand-900/20">
-          </div>
+                        <span
+                          class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium capitalize bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                        >
+                          {{ order.orderType || 'Tại quán' }}
+                        </span>
+                      </div>
 
-          @for (order of getOrdersByStatus(statusCol.value); track order.id) {
+                      <h4
+                        class="mt-0.5 max-w-[220px] truncate text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        {{ order?.profile?.name || 'Khách vãng lai' }}
+                      </h4>
 
-          <article (click)="handleView(order)" [dndDraggable]="order" [dndEffectAllowed]="'move'" class="group relative flex cursor-pointer flex-col gap-3 rounded-xl border border-gray-200 bg-white/95 p-3.5
-                   shadow-sm transition
-                   hover:-translate-y-0.5 hover:border-brand-500/60 hover:shadow-md
-                   dark:border-gray-700 dark:bg-gray-800">
+                      @if (getCustomerPhone(order.profile)) {
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400">
+                          {{ getCustomerPhone(order.profile) }}
+                        </p>
+                      }
+                    </div>
 
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex flex-col gap-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-[11px] font-semibold uppercase tracking-wide text-brand-600 dark:text-brand-400">
-                    #{{ order.orderId || order.id.substring(0, 6) }}
-                  </span>
+                    <div class="text-right flex flex-col items-end gap-1">
+                      <p class="text-sm font-bold text-gray-900 dark:text-white">
+                        {{ getFormattedPrice(order.grandTotal) }}
+                      </p>
+                      <p class="text-[11px] text-gray-400 dark:text-gray-500">
+                        {{ order.createdAt | date: 'HH:mm dd/MM' }}
+                      </p>
+                    </div>
+                  </div>
 
-                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium capitalize
-                           bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-                    {{ order.orderType || 'Tại quán' }}
+                  <div
+                    class="mt-1 flex flex-wrap items-center gap-2 rounded-lg bg-gray-50 px-2.5 py-2 text-[11px] text-gray-500 dark:bg-gray-900 dark:text-gray-400"
+                  >
+                    <div class="flex items-center gap-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                      </svg>
+                      {{ getItemsCount(order) }} sản phẩm
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      {{ order.createdAt | date: 'HH:mm' }}
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                      <span class="inline-block h-1.5 w-1.5 rounded-full bg-gray-400"></span>
+                      {{
+                        order?.shipping?.status ||
+                          (order.orderType === 'Delivery' ? 'Chờ giao' : 'Tại quán')
+                      }}
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-between mt-1">
+                    <div
+                      class="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400"
+                    >
+                      <span class="uppercase tracking-wide">
+                        {{ order?.payment?.method || 'Chưa chọn phương thức' }}
+                      </span>
+                    </div>
+
+                    @if (order?.payment?.status === 'paid') {
+                      <span
+                        class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300"
+                      >
+                        ● Đã thanh toán
+                      </span>
+                    } @else {
+                      <span
+                        class="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600 dark:bg-amber-900/30 dark:text-amber-300"
+                      >
+                        ● Chưa thanh toán
+                      </span>
+                    }
+                  </div>
+
+                  <div
+                    class="absolute right-2 top-2 hidden items-center gap-1 rounded-lg border border-gray-100 bg-white/95 p-1 shadow-sm backdrop-blur-sm group-hover:flex dark:border-gray-700 dark:bg-gray-800/95"
+                  >
+                    <button
+                      (click)="$event.stopPropagation(); handleEdit(order)"
+                      class="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      title="Sửa"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </article>
+              }
+
+              @if (getOrdersByStatus(statusCol.value).length === 0) {
+                <div
+                  class="flex h-28 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-200 bg-gray-50 text-xs text-gray-400 dark:border-gray-700 dark:bg-gray-900"
+                >
+                  <span>Chưa có đơn nào</span>
+                  <span class="text-[11px] text-gray-400 dark:text-gray-500">
+                    Đơn mới sẽ hiện ở đây
                   </span>
                 </div>
-
-                <h4 class="mt-0.5 max-w-[220px] truncate text-sm font-medium text-gray-900 dark:text-white">
-                  {{ order?.profile?.name || 'Khách vãng lai' }}
-                </h4>
-
-                @if (getCustomerPhone(order.profile)) {
-                <p class="text-[11px] text-gray-500 dark:text-gray-400">
-                  {{ getCustomerPhone(order.profile) }}
-                </p>
-                }
-              </div>
-
-              <div class="text-right flex flex-col items-end gap-1">
-                <p class="text-sm font-bold text-gray-900 dark:text-white">
-                  {{ getFormattedPrice(order.grandTotal) }}
-                </p>
-                <p class="text-[11px] text-gray-400 dark:text-gray-500">
-                  {{ order.createdAt | date: 'HH:mm dd/MM' }}
-                </p>
-              </div>
-            </div>
-
-            <div class="mt-1 flex flex-wrap items-center gap-2 rounded-lg bg-gray-50 px-2.5 py-2 text-[11px]
-                     text-gray-500 dark:bg-gray-900 dark:text-gray-400">
-              <div class="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                </svg>
-                {{ getItemsCount(order) }} sản phẩm
-              </div>
-
-              <div class="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                {{ order.createdAt | date: 'HH:mm' }}
-              </div>
-
-              <div class="flex items-center gap-1">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-gray-400"></span>
-                {{ order?.shipping?.status || (order.orderType === 'Delivery' ? 'Chờ giao' : 'Tại quán') }}
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between mt-1">
-              <div class="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">
-                <span class="uppercase tracking-wide">
-                  {{ order?.payment?.method || 'Chưa chọn phương thức' }}
-                </span>
-              </div>
-
-              @if (order?.payment?.status === 'paid') {
-              <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold
-                       text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
-                ● Đã thanh toán
-              </span>
-              } @else {
-              <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold
-                       text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
-                ● Chưa thanh toán
-              </span>
               }
             </div>
-
-            <div class="absolute right-2 top-2 hidden items-center gap-1 rounded-lg border border-gray-100 bg-white/95
-                     p-1 shadow-sm backdrop-blur-sm
-                     group-hover:flex dark:border-gray-700 dark:bg-gray-800/95">
-              <button (click)="$event.stopPropagation(); handleEdit(order)"
-                class="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-700" title="Sửa">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-              </button>
-            </div>
-          </article>
-          }
-
-          @if (getOrdersByStatus(statusCol.value).length === 0) {
-          <div class="flex h-28 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-200
-                   bg-gray-50 text-xs text-gray-400
-                   dark:border-gray-700 dark:bg-gray-900">
-            <span>Chưa có đơn nào</span>
-            <span class="text-[11px] text-gray-400 dark:text-gray-500">
-              Đơn mới sẽ hiện ở đây
-            </span>
-          </div>
-          }
-        </div>
-      </section>
-
-      }
+          </section>
+        }
+      </div>
     </div>
-  </div>
   }
-
 </div>
 
 <ng-template #confirmDelete let-dialog>
@@ -357,17 +582,22 @@
     <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Xác nhận xóa</h3>
     <p class="mb-6 text-gray-700 dark:text-gray-300">
       Bạn có chắc chắn muốn xóa đơn hàng
-      <strong class="text-gray-900 dark:text-white">#{{ itemToDelete?.orderId || itemToDelete?.id?.substring(0, 8)
-        }}</strong>
+      <strong class="text-gray-900 dark:text-white"
+        >#{{ itemToDelete?.orderId || itemToDelete?.id?.substring(0, 8) }}</strong
+      >
       không?
     </p>
     <div class="flex justify-end gap-3">
-      <button (click)="dialog.close(false)"
-        class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white transition">
+      <button
+        (click)="dialog.close(false)"
+        class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white transition"
+      >
         Hủy
       </button>
-      <button (click)="dialog.close(true)"
-        class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition">
+      <button
+        (click)="dialog.close(true)"
+        class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition"
+      >
         Xóa
       </button>
     </div>

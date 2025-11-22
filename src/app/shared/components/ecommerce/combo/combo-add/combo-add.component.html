@@ -415,7 +415,9 @@
                 *ngIf="item.selectableProducts.length === 0"
                 class="rounded-lg border border-dashed border-gray-300 p-6 text-center dark:border-gray-600"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">Chưa có sản phẩm nào được thêm</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Chưa có sản phẩm nào được thêm
+                </p>
               </div>
 
               <div
@@ -560,13 +562,13 @@
   <div class="p-6">
     <h3 class="text-lg font-medium text-gray-900 dark:text-white">Xóa Nhóm Món?</h3>
     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-      Bạn có chắc chắn muốn xóa nhóm 
-      <strong class="font-medium text-gray-800 dark:text-gray-100">"{{ data?.slotName }}"</strong> không?
-      Hành động này không thể hoàn tác.
+      Bạn có chắc chắn muốn xóa nhóm
+      <strong class="font-medium text-gray-800 dark:text-gray-100">"{{ data?.slotName }}"</strong>
+      không? Hành động này không thể hoàn tác.
     </p>
     <div class="mt-6 flex justify-end gap-3">
       <app-button variant="outline" (btnClick)="dialog.close(false)"> Hủy </app-button>
       <app-button variant="primary" (btnClick)="dialog.close(true)"> Xóa </app-button>
-    </div>    
+    </div>
   </div>
 </ng-template>

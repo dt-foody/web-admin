@@ -7,12 +7,7 @@ import { UserDropdownComponent } from '../../components/header/user-dropdown/use
 
 @Component({
   selector: 'app-header',
-  imports: [
-    CommonModule,
-    RouterModule,
-    NotificationDropdownComponent,
-    UserDropdownComponent,
-  ],
+  imports: [CommonModule, RouterModule, NotificationDropdownComponent, UserDropdownComponent],
   templateUrl: './app-header.component.html',
 })
 export class AppHeaderComponent {

@@ -1,67 +1,101 @@
 @if (cart$ | async; as cart) {
-<div class="p-4 space-y-4 border-t border-gray-200 dark:border-gray-700">
+  <div class="p-4 space-y-4 border-t border-gray-200 dark:border-gray-700">
+    <div class="grid grid-cols-3 gap-3">
+      <div class="col-span-1">
+        <app-label for="discount-type">Giảm giá</app-label>
+        <ng-select
+          [items]="discountTypeOptions"
+          bindLabel="label"
+          bindValue="value"
+          [ngModel]="cart.discountType"
+          (ngModelChange)="onDiscountTypeChange($event)"
+          [searchable]="false"
+          [clearable]="false"
+          name="discountType"
+        >
+        </ng-select>
+      </div>
 
-  <div class="grid grid-cols-3 gap-3">
-    <div class="col-span-1">
-      <app-label for="discount-type">Giảm giá</app-label>
-      <ng-select [items]="discountTypeOptions" bindLabel="label" bindValue="value" [ngModel]="cart.discountType"
-        (ngModelChange)="onDiscountTypeChange($event)" [searchable]="false" [clearable]="false" name="discountType">
-      </ng-select>
+      <div class="col-span-2">
+        <app-label for="discount-value">Giá trị</app-label>
+        <app-input-field
+          id="discount-value"
+          type="number"
+          placeholder="0"
+          [value]="cart.discountValue"
+          (input)="onDiscountValueChange($event)"
+        ></app-input-field>
+      </div>
     </div>
 
-    <div class="col-span-2">
-      <app-label for="discount-value">Giá trị</app-label>
-      <app-input-field id="discount-value" type="number" placeholder="0" [value]="cart.discountValue"
-        (input)="onDiscountValueChange($event)"></app-input-field>
+    @if (cart.orderType === 'Delivery') {
+      <div>
+        <app-label for="shipping-fee">Phí vận chuyển</app-label>
+        <app-input-field
+          id="shipping-fee"
+          type="number"
+          placeholder="0"
+          [value]="cart.shippingFee"
+          (input)="onShippingFeeChange($event)"
+        ></app-input-field>
+      </div>
+    }
+
+    <div class="space-y-2 pt-2 text-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-gray-600 dark:text-gray-400">Tổng tiền hàng:</span>
+        <span class="font-medium text-gray-800 dark:text-white"
+          >{{ cart.totalAmount | number: '1.0-0' }}đ</span
+        >
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-gray-600 dark:text-gray-400">Giảm giá:</span>
+        <span class="font-medium text-gray-800 dark:text-white">
+          -{{ cart.totalAmount - cart.grandTotal + cart.shippingFee | number: '1.0-0' }}đ
+        </span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-gray-600 dark:text-gray-400">Phí vận chuyển:</span>
+        <span class="font-medium text-gray-800 dark:text-white"
+          >{{ cart.shippingFee | number: '1.0-0' }}đ</span
+        >
+      </div>
+      <div
+        class="flex items-center justify-between text-xl font-bold text-brand-600 dark:text-brand-400 pt-1 border-t dark:border-gray-600"
+      >
+        <span>Tổng cộng:</span>
+        <span>{{ cart.grandTotal | number: '1.0-0' }}đ</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div class="col-span-2">
+        <app-label for="payment-method">Phương thức</app-label>
+        <ng-select
+          [items]="paymentMethods"
+          bindLabel="label"
+          bindValue="value"
+          [ngModel]="cart.payment.method"
+          (ngModelChange)="onPaymentMethodChange($event)"
+          [searchable]="false"
+          [clearable]="false"
+          name="paymentMethod"
+        >
+        </ng-select>
+      </div>
+
+      <app-button variant="outline" className="w-full" size="lg" (btnClick)="posState.resetCart()">
+        Hủy
+      </app-button>
+      <app-button
+        variant="primary"
+        className="w-full"
+        size="lg"
+        (btnClick)="submitOrder()"
+        [disabled]="isSubmitting || cart.items.length === 0"
+      >
+        {{ isSubmitting ? 'Đang xử lý...' : 'Thanh Toán' }}
+      </app-button>
     </div>
   </div>
-
-  @if(cart.orderType === 'Delivery') {
-  <div>
-    <app-label for="shipping-fee">Phí vận chuyển</app-label>
-    <app-input-field id="shipping-fee" type="number" placeholder="0" [value]="cart.shippingFee"
-      (input)="onShippingFeeChange($event)"></app-input-field>
-  </div>
-  }
-
-  <div class="space-y-2 pt-2 text-sm">
-    <div class="flex items-center justify-between">
-      <span class="text-gray-600 dark:text-gray-400">Tổng tiền hàng:</span>
-      <span class="font-medium text-gray-800 dark:text-white">{{ cart.totalAmount | number: '1.0-0' }}đ</span>
-    </div>
-    <div class="flex items-center justify-between">
-      <span class="text-gray-600 dark:text-gray-400">Giảm giá:</span>
-      <span class="font-medium text-gray-800 dark:text-white">
-        -{{ (cart.totalAmount - cart.grandTotal + cart.shippingFee) | number: '1.0-0' }}đ
-      </span>
-    </div>
-    <div class="flex items-center justify-between">
-      <span class="text-gray-600 dark:text-gray-400">Phí vận chuyển:</span>
-      <span class="font-medium text-gray-800 dark:text-white">{{ cart.shippingFee | number: '1.0-0' }}đ</span>
-    </div>
-    <div
-      class="flex items-center justify-between text-xl font-bold text-brand-600 dark:text-brand-400 pt-1 border-t dark:border-gray-600">
-      <span>Tổng cộng:</span>
-      <span>{{ cart.grandTotal | number: '1.0-0' }}đ</span>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-2 gap-3">
-    <div class="col-span-2">
-      <app-label for="payment-method">Phương thức</app-label>
-      <ng-select [items]="paymentMethods" bindLabel="label" bindValue="value" [ngModel]="cart.payment.method"
-        (ngModelChange)="onPaymentMethodChange($event)" [searchable]="false" [clearable]="false" name="paymentMethod">
-      </ng-select>
-    </div>
-
-    <app-button variant="outline" className="w-full" size="lg" (btnClick)="posState.resetCart()">
-      Hủy
-    </app-button>
-    <app-button variant="primary" className="w-full" size="lg" (btnClick)="submitOrder()"
-      [disabled]="isSubmitting || cart.items.length === 0">
-      {{ isSubmitting ? 'Đang xử lý...' : 'Thanh Toán' }}
-    </app-button>
-  </div>
-
-</div>
 }

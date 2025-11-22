@@ -202,6 +202,15 @@
               </div>
             </td>
           </tr>
+        } @empty {
+          <tr>
+            <td colspan="12" class="py-10 text-center text-gray-500 dark:text-gray-400">
+              <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
+                Không tìm thấy quyền
+              </h3>
+              <p class="mt-1 text-sm">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
+            </td>
+          </tr>
         }
       </tbody>
     </table>
@@ -244,8 +253,8 @@
     </div>
     <p class="mb-6 text-gray-600 dark:text-gray-400">
       Bạn có chắc chắn muốn xóa vai trò
-      <strong class="text-gray-900 dark:text-gray-100">{{ itemToDelete?.name }}</strong
-      > không? Hành động này không thể hoàn tác.
+      <strong class="text-gray-900 dark:text-gray-100">{{ itemToDelete?.name }}</strong> không? Hành
+      động này không thể hoàn tác.
     </p>
     <div class="flex justify-end gap-3">
       <button
