@@ -90,12 +90,6 @@
             Địa chỉ
           </th>
 
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
-            Trạng thái
-          </th>
-
           <th>
             <app-sort-header
               label="Ngày tạo"
@@ -222,28 +216,6 @@
               } @else {
                 <span class="text-xs text-gray-400 dark:text-gray-500">Không có địa chỉ</span>
               }
-            </td>
-
-            <!-- Trạng thái -->
-            <td class="px-5 py-4 whitespace-nowrap">
-              <button
-                (click)="handleToggleActive(customer)"
-                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
-                [ngClass]="{
-                  'bg-brand-500': customer.isActive,
-                  'bg-gray-200 dark:bg-gray-700': !customer.isActive,
-                }"
-              >
-                <span class="sr-only">Chuyển trạng thái</span>
-                <span
-                  class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
-                  [ngClass]="{
-                    'translate-x-6': customer.isActive,
-                    'translate-x-1': !customer.isActive,
-                  }"
-                >
-                </span>
-              </button>
             </td>
 
             <!-- Ngày tạo -->

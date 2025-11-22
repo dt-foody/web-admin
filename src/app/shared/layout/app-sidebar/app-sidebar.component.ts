@@ -95,7 +95,8 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
       permission: ['user.read', 'role.read'],
       subItems: [
         { name: 'Người dùng', path: '/user', permission: 'user.read' },
-        { name: 'Phân quyền', path: '/role', permission: 'role.read' },
+        { name: 'Nhân viên', path: '/employee', permission: 'employee.read' },
+        { name: 'Vai trò', path: '/role', permission: 'role.read' },
       ],
     },
   ];

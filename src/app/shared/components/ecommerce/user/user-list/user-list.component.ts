@@ -184,11 +184,15 @@ export class UserListComponent extends BaseListComponent<User> implements OnInit
     return labels[role] || role;
   }
 
-  getCustomRolesText(user: User): string {
-    if (!user.rolesCustom || user.rolesCustom.length === 0) {
-      return 'No custom roles';
-    }
-    const names = user.rolesCustom.map((r: any) => r.name || r).join(', ');
-    return names.length > 30 ? names.substring(0, 30) + '...' : names;
+  handleToggleActive(user: User): void {
+    this.userService.update(user.id, { isActive: !user.isActive }).subscribe({
+      next: () => {
+        user.isActive = !user.isActive;
+        this.toastr.success('Update successfully!', 'User');
+      },
+      error: () => {
+        this.toastr.error('Update failed!', 'User');
+      },
+    });
   }
 }

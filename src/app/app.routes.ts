@@ -37,8 +37,6 @@ import { EditCategoryPageComponent } from './pages/category/edit/edit.component'
 import { AddRolePageComponent } from './pages/role/add/add.component';
 import { RoleListPageComponent } from './pages/role/list/list.component';
 import { EditRolePageComponent } from './pages/role/edit/edit.component';
-import { AddUserPageComponent } from './pages/user/add/add.component';
-import { EditUserPageComponent } from './pages/user/edit/edit.component';
 import { UserListPageComponent } from './pages/user/list/list.component';
 import { PermissionGuard } from './shared/guards/permission.guard';
 import { ForbiddenComponent } from './pages/other-page/forbidden/forbidden.component';
@@ -67,6 +65,10 @@ import { AddBlogCategoryPageComponent } from './pages/blog-category/add/add.comp
 import { EditBlogCategoryPageComponent } from './pages/blog-category/edit/edit.component';
 import { DetailBlogPostPageComponent } from './pages/blog-post/detail/detail.component';
 import { PosTerminalComponent } from './shared/components/ecommerce/pos/pos-terminal/pos-terminal.component';
+import { AddEmployeePageComponent } from './pages/employee/add/add.component';
+import { DetailEmployeePageComponent } from './pages/employee/detail/detail.component';
+import { EditEmployeePageComponent } from './pages/employee/edit/edit.component';
+import { EmployeeListPageComponent } from './pages/employee/list/list.component';
 
 export const routes: Routes = [
   {
@@ -265,21 +267,6 @@ export const routes: Routes = [
             canActivate: [PermissionGuard],
             data: { permissions: ['user.read'] },
           },
-          {
-            path: 'add',
-            component: AddUserPageComponent,
-            pathMatch: 'full',
-            title: 'Thêm Người dùng',
-            canActivate: [PermissionGuard],
-            data: { permissions: ['user.update'] },
-          },
-          {
-            path: 'edit/:id',
-            component: EditUserPageComponent,
-            title: 'Chỉnh sửa Người dùng',
-            canActivate: [PermissionGuard],
-            data: { permissions: ['user.update'] },
-          },
         ],
       },
       {
@@ -314,6 +301,41 @@ export const routes: Routes = [
             title: 'Chi tiết Khách hàng',
             canActivate: [PermissionGuard],
             data: { permissions: ['customer.read'] },
+          },
+        ],
+      },
+      {
+        path: 'employee',
+        children: [
+          {
+            path: '',
+            component: EmployeeListPageComponent,
+            pathMatch: 'full',
+            title: 'Quản lý nhân viên',
+            canActivate: [PermissionGuard],
+            data: { permissions: ['employee.read'] },
+          },
+          {
+            path: 'add',
+            component: AddEmployeePageComponent,
+            pathMatch: 'full',
+            title: 'Thêm nhân viên',
+            canActivate: [PermissionGuard],
+            data: { permissions: ['employee.update'] },
+          },
+          {
+            path: 'edit/:id',
+            component: EditEmployeePageComponent,
+            title: 'Chỉnh sửa nhân viên',
+            canActivate: [PermissionGuard],
+            data: { permissions: ['employee.update'] },
+          },
+          {
+            path: 'detail/:id',
+            component: DetailEmployeePageComponent,
+            title: 'Chi tiết nhân viên',
+            canActivate: [PermissionGuard],
+            data: { permissions: ['employee.read'] },
           },
         ],
       },

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Customer } from '../../../../models/customer.model';
-import { CustomerService } from '../../../../services/api/customer.service';
+import { Employee } from '../../../../models/employee.model';
+import { EmployeeService } from '../../../../services/api/employee.service';
 import { DialogService } from '@ngneat/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +14,7 @@ import { HasPermissionDirective } from '../../../../directives/has-permission.di
 import { CheckboxComponent } from '../../../form/input/checkbox.component';
 
 @Component({
-  selector: 'app-customer-list',
+  selector: 'app-employee-list',
   imports: [
     CommonModule,
     FormsModule,
@@ -25,16 +25,16 @@ import { CheckboxComponent } from '../../../form/input/checkbox.component';
     CheckboxComponent,
     HasPermissionDirective,
   ],
-  templateUrl: './customer-list.component.html',
+  templateUrl: './employee-list.component.html',
   styles: ``,
 })
-export class CustomerListComponent extends BaseListComponent<Customer> implements OnInit {
+export class EmployeeListComponent extends BaseListComponent<Employee> implements OnInit {
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
 
-  itemToDelete: Customer | null = null;
+  itemToDelete: Employee | null = null;
 
   constructor(
-    private customerService: CustomerService,
+    private employeeService: EmployeeService,
     private router: Router,
     private dialog: DialogService,
     private toastr: ToastrService,
@@ -43,7 +43,7 @@ export class CustomerListComponent extends BaseListComponent<Customer> implement
   }
 
   override ngOnInit(): void {
-    console.log('CustomerListComponent init logic');
+    console.log('EmployeeListComponent init logic');
     super.ngOnInit();
   }
 
@@ -59,7 +59,7 @@ export class CustomerListComponent extends BaseListComponent<Customer> implement
       params.name = this.query.search.trim();
     }
 
-    this.customerService.getAll(params).subscribe((data) => {
+    this.employeeService.getAll(params).subscribe((data) => {
       this.dataSources = data.results;
       this.totalPages = data.totalPages;
       this.totalResults = data.totalResults;
@@ -86,26 +86,26 @@ export class CustomerListComponent extends BaseListComponent<Customer> implement
       : 'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400';
   }
 
-  getDefaultAddress(customer: Customer): string {
-    const defaultAddr = customer.addresses?.find((addr) => addr.isDefault);
+  getDefaultAddress(employee: Employee): string {
+    const defaultAddr = employee.addresses?.find((addr) => addr.isDefault);
     if (defaultAddr) {
       return `${defaultAddr.street}, ${defaultAddr.ward}, ${defaultAddr.district}, ${defaultAddr.city}`;
     }
-    return customer.addresses && customer.addresses.length > 0
-      ? `${customer.addresses[0].street}, ${customer.addresses[0].ward}, ${customer.addresses[0].district}, ${customer.addresses[0].city}`
+    return employee.addresses && employee.addresses.length > 0
+      ? `${employee.addresses[0].street}, ${employee.addresses[0].ward}, ${employee.addresses[0].district}, ${employee.addresses[0].city}`
       : '-';
   }
 
-  getAddressCount(customer: Customer): number {
-    return customer.addresses?.length || 0;
+  getAddressCount(employee: Employee): number {
+    return employee.addresses?.length || 0;
   }
 
-  handleEdit(customer: Customer): void {
-    this.router.navigate(['/customer/edit', customer.id]);
+  handleEdit(employee: Employee): void {
+    this.router.navigate(['/employee/edit', employee.id]);
   }
 
-  handleDelete(customer: Customer): void {
-    this.itemToDelete = customer;
+  handleDelete(employee: Employee): void {
+    this.itemToDelete = employee;
 
     const dialogRef = this.dialog.open(this.confirmDeleteTpl, {
       data: {},
@@ -113,13 +113,13 @@ export class CustomerListComponent extends BaseListComponent<Customer> implement
 
     dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
       if (confirmed && this.itemToDelete) {
-        this.customerService.delete(this.itemToDelete.id).subscribe({
+        this.employeeService.delete(this.itemToDelete.id).subscribe({
           next: () => {
-            this.toastr.success('Delete successfully!', 'Customer');
+            this.toastr.success('Delete successfully!', 'Employee');
             this.fetchData();
           },
           error: (err) => {
-            this.toastr.error(err?.error?.message || 'Delete failed!', 'Customer');
+            this.toastr.error(err?.error?.message || 'Delete failed!', 'Employee');
           },
         });
       }
@@ -127,8 +127,8 @@ export class CustomerListComponent extends BaseListComponent<Customer> implement
     });
   }
 
-  handleViewDetail(customer: Customer): void {
+  handleViewDetail(employee: Employee): void {
     // You can implement view detail modal or navigate to detail page
-    this.router.navigate(['/customer/detail', customer.id]);
+    this.router.navigate(['/employee/detail', employee.id]);
   }
 }

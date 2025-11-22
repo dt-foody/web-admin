@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Customer, CustomerEmail, CustomerPhone } from '../../../../models/customer.model'; // Import thêm
-import { CustomerService } from '../../../../services/api/customer.service';
+import { Employee, EmployeeEmail, EmployeePhone } from '../../../../models/employee.model'; // Import thêm
+import { EmployeeService } from '../../../../services/api/employee.service';
 import { ToastrService } from 'ngx-toastr';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
 
@@ -32,19 +32,19 @@ interface Activity {
 // --- (HẾT PHẦN GIỮ NGUYÊN) ---
 
 @Component({
-  selector: 'app-customer-detail',
+  selector: 'app-employee-detail',
   imports: [CommonModule, RouterModule, HasPermissionDirective],
-  templateUrl: './customer-detail.component.html',
+  templateUrl: './employee-detail.component.html',
   styles: ``,
 })
-export class CustomerDetailComponent implements OnInit {
-  customer: Customer | null = null;
+export class EmployeeDetailComponent implements OnInit {
+  employee: Employee | null = null;
   loading = true;
   activeTab: 'overview' | 'orders' | 'loyalty' | 'activity' = 'overview';
 
   // THÊM MỚI: Thuộc tính để hiển thị email/phone chính
-  displayEmail: CustomerEmail | null = null;
-  displayPhone: CustomerPhone | null = null;
+  displayEmail: EmployeeEmail | null = null;
+  displayPhone: EmployeePhone | null = null;
 
   // --- (GIỮ NGUYÊN MOCK DATA VÀ STATS) ---
   orderHistory: OrderHistory[] = [];
@@ -61,24 +61,24 @@ export class CustomerDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private customerService: CustomerService,
+    private employeeService: EmployeeService,
     private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.loadCustomerDetail(id);
+      this.loadEmployeeDetail(id);
       this.loadOrderHistory(id); // (Bạn sẽ thay bằng API thật)
       this.loadLoyaltyPoints(id); // (Bạn sẽ thay bằng API thật)
       this.loadActivities(id); // (Bạn sẽ thay bằng API thật)
     }
   }
 
-  loadCustomerDetail(id: string): void {
-    this.customerService.getById(id).subscribe({
+  loadEmployeeDetail(id: string): void {
+    this.employeeService.getById(id).subscribe({
       next: (data) => {
-        this.customer = data;
+        this.employee = data;
 
         // CẬP NHẬT: Logic tìm email/phone chính
         if (data.emails) {
@@ -92,15 +92,15 @@ export class CustomerDetailComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.toastr.error('Failed to load customer details', 'Error');
+        this.toastr.error('Failed to load employee details', 'Error');
         this.loading = false;
-        this.router.navigate(['/customer/list']); // Sửa lại /list
+        this.router.navigate(['/employee/list']); // Sửa lại /list
       },
     });
   }
 
   // --- (GIỮ NGUYÊN CÁC HÀM loadOrderHistory, loadLoyaltyPoints, loadActivities) ---
-  loadOrderHistory(customerId: string): void {
+  loadOrderHistory(employeeId: string): void {
     this.orderHistory = [
       {
         id: '1',
@@ -125,7 +125,7 @@ export class CustomerDetailComponent implements OnInit {
       this.stats.totalSpent > 0 ? this.stats.totalSpent / this.stats.totalOrders : 0;
   }
 
-  loadLoyaltyPoints(customerId: string): void {
+  loadLoyaltyPoints(employeeId: string): void {
     this.loyaltyPoints = [
       {
         id: '1',
@@ -146,7 +146,7 @@ export class CustomerDetailComponent implements OnInit {
     this.stats.loyaltyPoints = this.loyaltyPoints.reduce((sum, point) => sum + point.points, 0);
   }
 
-  loadActivities(customerId: string): void {
+  loadActivities(employeeId: string): void {
     this.activities = [
       {
         id: '1',
@@ -242,12 +242,12 @@ export class CustomerDetailComponent implements OnInit {
   }
 
   handleEdit(): void {
-    if (this.customer) {
-      this.router.navigate(['/customer/edit', this.customer.id]);
+    if (this.employee) {
+      this.router.navigate(['/employee/edit', this.employee.id]);
     }
   }
 
   goBack(): void {
-    this.router.navigate(['/customer/list']); // Sửa lại /list
+    this.router.navigate(['/employee/list']); // Sửa lại /list
   }
 }

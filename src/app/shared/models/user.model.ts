@@ -7,12 +7,18 @@ export interface User {
 
   role: string; // Vai trò hệ thống (vd: "admin", "staff", "guest")
 
-  rolesCustom?: any[]; // Danh sách ID Role custom mà user được gán
-  extraPermissions?: any[]; // Các quyền bổ sung riêng của user
-  excludePermissions?: any[]; // Các quyền bị loại trừ
-
+  isActive?: boolean; // Đã xác thực email hay chưa
   isEmailVerified?: boolean; // Đã xác thực email hay chưa
 
   createdAt?: string | Date; // Thời điểm tạo
   updatedAt?: string | Date; // Thời điểm cập nhật
+}
+
+export interface UserFormData {
+  name: string;
+  email: string;
+  password?: string;
+  role: string;
+  isActive: boolean;
+  isEmailVerified: boolean;
 }

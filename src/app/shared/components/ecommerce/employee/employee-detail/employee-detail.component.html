@@ -6,12 +6,12 @@
   </div>
   }
 
-  @if (!loading && customer) {
+  @if (!loading && employee) {
   <!-- Phần đầu -->
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-    <!-- Cột trái - Thông tin khách hàng -->
+    <!-- Cột trái - Thông tin nhân viên -->
     <div class="lg:col-span-1 space-y-4">
-      <!-- Thẻ khách hàng -->
+      <!-- Thẻ nhân viên -->
       <div
         class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden shadow-sm">
         <!-- Phần đầu thẻ -->
@@ -19,17 +19,17 @@
           <div class="flex items-center gap-4">
             <div
               class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 text-white font-bold text-sm shadow-md flex-shrink-0">
-              {{ customer.name.charAt(0).toUpperCase() }}
+              {{ employee.name.charAt(0).toUpperCase() }}
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between gap-3 mb-1">
                 <h2 class="text-md font-bold text-gray-900 dark:text-white truncate">
-                  {{ customer.name }}
+                  {{ employee.name }}
                 </h2>
               </div>
-              @if (customer.customerId) {
+              @if (employee.employeeId) {
               <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                ID: {{ customer.customerId }}
+                ID: {{ employee.employeeId }}
               </p>
               }
             </div>
@@ -43,7 +43,7 @@
               <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Thông tin liên hệ
               </h3>
-              <button *appHasPermission="'customer.update'" (click)="handleEdit()"
+              <button *appHasPermission="'employee.update'" (click)="handleEdit()"
                 class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded" title="Chỉnh sửa">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-5">
@@ -91,7 +91,7 @@
               </div>
             </div>
 
-            @if (customer.birthDate) {
+            @if (employee.birthDate) {
             <div class="flex items-start gap-3 group">
               <div
                 class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-500/10 group-hover:bg-purple-100 dark:group-hover:bg-purple-500/20 transition-colors">
@@ -106,7 +106,7 @@
                   Ngày sinh
                 </p>
                 <p class="text-sm text-gray-900 dark:text-gray-100 font-medium">
-                  {{ formatDate(customer.birthDate) }}
+                  {{ formatDate(employee.birthDate) }}
                 </p>
               </div>
             </div>
@@ -126,7 +126,7 @@
                   Giới tính
                 </p>
                 <p class="text-sm text-gray-900 dark:text-gray-100 font-medium">
-                  {{ getGenderLabel(customer.gender) }}
+                  {{ getGenderLabel(employee.gender) }}
                 </p>
               </div>
             </div>
@@ -145,7 +145,7 @@
                   Thành viên từ
                 </p>
                 <p class="text-sm text-gray-900 dark:text-gray-100 font-medium">
-                  {{ formatDate(customer.createdAt) }}
+                  {{ formatDate(employee.createdAt) }}
                 </p>
               </div>
             </div>
@@ -154,7 +154,7 @@
       </div>
 
       <!-- Thẻ địa chỉ -->
-      @if (customer.addresses && customer.addresses.length > 0) {
+      @if (employee.addresses && employee.addresses.length > 0) {
       <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] p-4 shadow-sm">
         <div class="flex items-center gap-2 mb-5">
           <div class="p-2 rounded-lg bg-brand-50 dark:bg-brand-500/10">
@@ -169,7 +169,7 @@
           <h3 class="text-lg font-bold text-gray-900 dark:text-white">Địa chỉ giao hàng</h3>
         </div>
         <div class="space-y-3">
-          @for (address of customer.addresses; track $index) {
+          @for (address of employee.addresses; track $index) {
           <div
             class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-gray-900/50 dark:to-gray-800/30 hover:border-brand-300 dark:hover:border-brand-700 transition-all group">
             @if (address.isDefault) {

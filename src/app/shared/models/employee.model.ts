@@ -1,14 +1,14 @@
-export interface CustomerEmail {
+export interface EmployeeEmail {
   type?: 'Home' | 'Company' | 'Other';
   value: string;
 }
 
-export interface CustomerPhone {
+export interface EmployeePhone {
   type?: 'Home' | 'Company' | 'Other';
   value: string;
 }
 
-export interface CustomerAddress {
+export interface EmployeeAddress {
   label?: string;
   recipientName: string;
   recipientPhone: string;
@@ -24,10 +24,10 @@ export interface CustomerAddress {
   isDefault?: boolean;
 }
 
-export interface Customer {
+export interface Employee {
   id: string; // _id từ MongoDB (thường được map bởi plugin toJSON)
 
-  customerId?: number; // ID tăng tự động
+  employeeId?: number; // ID tăng tự động
   user?: string; // ID của tài khoản User (auth) liên kết
 
   name: string; // Tên đầy đủ
@@ -35,11 +35,15 @@ export interface Customer {
   gender?: 'male' | 'female' | 'other'; // Giới tính
   birthDate?: string | Date; // Ngày sinh
 
-  emails?: CustomerEmail[];
-  phones?: CustomerPhone[];
+  emails?: EmployeeEmail[];
+  phones?: EmployeePhone[];
 
   // --- ĐỊA CHỈ ---
-  addresses?: CustomerAddress[];
+  addresses?: EmployeeAddress[];
+
+  roles?: any[]; // Danh sách ID Role custom mà user được gán
+  extraPermissions?: any[]; // Các quyền bổ sung riêng của user
+  excludePermissions?: any[]; // Các quyền bị loại trừ
 
   // --- METADATA ---
   lastOrderDate?: string | Date; // Thêm trường này (có trong schema)
@@ -54,17 +58,25 @@ export interface Customer {
   updatedAt?: string | Date; // Thời điểm cập nhật
 }
 
-export interface CustomerFormData {
+export interface EmployeeFormData {
   // --- THÔNG TIN CƠ BẢN ---
   name: string;
   gender?: 'male' | 'female' | 'other';
   birthDate?: string | Date;
 
+  isActive: boolean;
+  isEmailVerified: boolean;
+
   // --- THÔNG TIN LIÊN HỆ (DẠNG MẢNG) ---
-  // Sử dụng lại interface CustomerEmail và CustomerPhone đã định nghĩa
-  emails: CustomerEmail[];
-  phones: CustomerPhone[];
+  // Sử dụng lại interface EmployeeEmail và EmployeePhone đã định nghĩa
+  emails: EmployeeEmail[];
+  phones: EmployeePhone[];
+
+  role: string;
+  roles: string[];
+  extraPermissions: string[];
+  excludePermissions: string[];
 
   // --- ĐỊA CHỈ GIAO HÀNG ---
-  addresses: CustomerAddress[];
+  addresses: EmployeeAddress[];
 }

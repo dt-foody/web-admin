@@ -18,7 +18,6 @@ const DEFAULT_FORM: CustomerFormData = {
   phones: [],
   gender: undefined,
   birthDate: '',
-  isActive: true,
   addresses: [],
 };
 
@@ -185,11 +184,7 @@ export class CustomerAddComponent implements OnInit {
   }
 
   handleSelectChange(field: keyof CustomerFormData, value: string) {
-    if (field === 'isActive') {
-      this.customerData[field] = value === 'true';
-    } else {
-      (this.customerData as any)[field] = value || undefined;
-    }
+    (this.customerData as any)[field] = value || undefined;
   }
 
   // --- Validate form ---
