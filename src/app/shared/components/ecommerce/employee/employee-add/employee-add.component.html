@@ -1,6 +1,5 @@
 <div>
-  <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
-
+  <div class="rounded-xl border border-gray-200 bg-white p-5 pt-1 dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
       <nav class="-mb-px flex space-x-8" aria-label="Tabs">
         <button (click)="setTab('profile')"
@@ -21,13 +20,9 @@
       </nav>
     </div>
 
-    <div *ngIf="currentTab === 'profile'" class="space-y-8">
+    <div *ngIf="currentTab === 'profile'" class="space-y-6">
 
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div class="lg:col-span-2">
-          <h3 class="mb-4 text-lg font-semibold text-gray-800 dark:text-white/90">Thông tin cơ bản</h3>
-        </div>
-
         <div class="lg:col-span-2">
           <app-label for="emp-name" className="required">Họ và tên</app-label>
           <app-input-field id="emp-name" [(value)]="employeeData.name"
@@ -47,7 +42,6 @@
       </div>
 
       <div>
-        <h3 class="mb-4 text-lg font-semibold text-gray-800 dark:text-white/90">Thông tin liên hệ</h3>
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
           <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
