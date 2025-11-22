@@ -3,15 +3,16 @@
     (click)="toggleDropdown()"
     class="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
   >
-    <span class="mr-3 overflow-hidden rounded-full h-8 w-8">
+    <span class="mr-3 overflow-hidden rounded-full h-8 w-8 xl:mr-3">
       <img src="/images/user/owner.png" alt="User" />
     </span>
-    <span class="block mr-1 font-medium text-theme-sm">{{ user.name }}</span>
+    <span class="hidden xl:block mr-1 font-medium text-theme-sm">{{ user.name }}</span>
     <svg
       [ngClass]="{
         'stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200': true,
         'rotate-180': isOpen,
       }"
+      class="hidden xl:block"
       width="18"
       height="20"
       viewBox="0 0 18 20"
