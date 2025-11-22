@@ -203,7 +203,7 @@
           <div>
             <app-label>Vai trò</app-label>
             <ng-select [items]="roles" bindLabel="name" bindValue="id" [multiple]="true"
-              [(ngModel)]="employeeData.roles" (change)="onCustomRolesChange($event)" class="custom-ng-select">
+              [(ngModel)]="employeeData.roles" (change)="onCustomRolesChange()" class="custom-ng-select">
             </ng-select>
           </div>
 

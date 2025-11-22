@@ -269,11 +269,7 @@ export class EmployeeAddComponent implements OnInit {
     });
   }
 
-  onRoleChange() {
-    this.calculateEffectivePermissions();
-  } // System role change logic (if any)
-  onCustomRolesChange(roleIds: string[]) {
-    this.employeeData.roles = roleIds;
+  onCustomRolesChange() {
     this.calculateEffectivePermissions();
   }
 
