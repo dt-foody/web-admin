@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ToastrService } from 'ngx-toastr';
 
-// Import các component UI của bạn
+// Import UI Components
 import { LabelComponent } from '../../../form/label/label.component';
 import { InputFieldComponent } from '../../../form/input/input-field.component';
 import { SelectComponent } from '../../../form/select/select.component';
@@ -14,12 +14,7 @@ import { ButtonComponent } from '../../../ui/button/button.component';
 // Import Models & Services
 import { Permission } from '../../../../models/permission.model';
 import { Role } from '../../../../models/role.model';
-import {
-  EmployeeFormData,
-  EmployeeAddress,
-  EmployeeEmail,
-  EmployeePhone,
-} from '../../../../models/employee.model';
+import { EmployeeFormData } from '../../../../models/employee.model'; // Interface mới cập nhật
 import { PermissionService } from '../../../../services/api/permission.service';
 import { RoleService } from '../../../../services/api/role.service';
 import { EmployeeService } from '../../../../services/api/employee.service';
@@ -46,47 +41,44 @@ interface PermissionGroup {
 export class EmployeeAddComponent implements OnInit {
   employeeId: string | null = null;
   isEditMode: boolean = false;
-
-  // Trong class EmployeeAddComponent
   currentTab: 'profile' | 'account' = 'profile';
 
   setTab(tab: 'profile' | 'account') {
     this.currentTab = tab;
   }
 
-  // Khởi tạo data mặc định
+  // [CẬP NHẬT] Khởi tạo data theo cấu trúc Nested
   employeeData: EmployeeFormData = {
-    // Basic
+    // Employee Info
     name: '',
     gender: 'male',
     birthDate: '',
-
-    // Contact Lists
-    emails: [{ value: '', type: 'Company' }], // Mặc định có 1 dòng
+    emails: [{ value: '', type: 'Company' }],
     phones: [{ value: '', type: 'Mobile' as any }],
-
-    // Address List
     addresses: [],
 
-    // Account / Auth
-    role: 'staff',
-    roles: [], // Custom roles IDs
-    isActive: true,
-    isEmailVerified: false,
-    // Password (optional for edit)
-    // email (account email) -> thường lấy từ emails[0] hoặc field riêng, ở đây ta dùng field riêng trong form
-  } as any; // Cast any để xử lý linh hoạt password field
+    // User Info (Nested Object)
+    user: {
+      email: '',
+      password: '',
+      role: 'staff',
+      roles: [],
+      isActive: true,
+      isEmailVerified: false,
+      extraPermissions: [],
+      excludePermissions: [],
+    },
+  };
 
-  // Field riêng cho Account Email (đăng nhập)
-  accountEmail: string = '';
-  accountPassword: string = '';
+  // UI Helpers
+  showPassword: boolean = false;
 
-  // Data lists
+  // Data Sources
   roles: Role[] = [];
   allPermissions: Permission[] = [];
   permissionGroups: PermissionGroup[] = [];
 
-  // Options
+  // Options cho Select Box
   systemRoles = [
     { value: 'admin', label: 'Admin' },
     { value: 'staff', label: 'Staff' },
@@ -105,14 +97,19 @@ export class EmployeeAddComponent implements OnInit {
     { value: 'Other', label: 'Khác' },
   ];
 
-  // Computed permissions
+  phoneTypes = [
+    { value: 'Mobile', label: 'Di động' },
+    { value: 'Work', label: 'Cơ quan' },
+    { value: 'Home', label: 'Nhà riêng' },
+    { value: 'Fax', label: 'Fax' },
+    { value: 'Other', label: 'Khác' },
+  ];
+
+  // Computed State
   effectivePermissions: Set<string> = new Set();
   rolePermissions: Set<string> = new Set();
   customRolePermissions: Set<string> = new Set();
-
-  // UI state
   expandedGroups: Set<string> = new Set();
-  showPassword: boolean = false;
 
   constructor(
     private router: Router,
@@ -121,11 +118,7 @@ export class EmployeeAddComponent implements OnInit {
     private employeeService: EmployeeService,
     private roleService: RoleService,
     private permissionService: PermissionService,
-  ) {
-    // Init permission arrays
-    this.employeeData.extraPermissions = [];
-    this.employeeData.excludePermissions = [];
-  }
+  ) {}
 
   ngOnInit() {
     this.loadRoles();
@@ -144,33 +137,40 @@ export class EmployeeAddComponent implements OnInit {
   // --- LOAD DATA ---
 
   loadEmployee(id: string) {
-    this.employeeService.getById(id).subscribe({
-      next: (data) => {
-        // Map data từ API vào Form
-        this.employeeData = {
-          name: data.name,
-          gender: data.gender || 'male',
-          birthDate: data.birthDate ? new Date(data.birthDate).toISOString().split('T')[0] : '',
+    this.employeeService.getById(id, { populate: 'user' }).subscribe({
+      next: (data: any) => {
+        // 1. Map thông tin Employee cơ bản
+        this.employeeData.name = data.name;
+        this.employeeData.gender = data.gender || 'male';
+        this.employeeData.birthDate = data.birthDate
+          ? new Date(data.birthDate).toISOString().split('T')[0]
+          : '';
+        this.employeeData.emails = data.emails || [];
+        this.employeeData.phones = data.phones || [];
+        this.employeeData.addresses = data.addresses || [];
 
-          emails: data.emails && data.emails.length > 0 ? data.emails : [],
-          phones: data.phones && data.phones.length > 0 ? data.phones : [],
-          addresses: data.addresses || [],
+        // 2. Map thông tin User (Xử lý populate)
+        // Kiểm tra xem backend trả về object user lồng nhau hay phẳng
+        const userInfo = data.user || {};
 
-          // Auth info (giả sử API trả về flattened hoặc nested trong user)
-          role: (data as any).role || 'staff', // Check structure thực tế
-          roles: data.roles?.map((r: any) => r.id || r) || [],
-          extraPermissions: data.extraPermissions?.map((p: any) => p.id || p) || [],
-          excludePermissions: data.excludePermissions?.map((p: any) => p.id || p) || [],
-        } as any;
+        this.employeeData.user = {
+          email: userInfo.email || '', // Fallback nếu API cũ
+          role: userInfo.role || 'staff',
+          roles: userInfo.roles?.map((r: any) => r.id || r) || [],
+          isActive: userInfo.isActive ?? true,
+          isEmailVerified: userInfo.isEmailVerified ?? false,
+          // Giữ password rỗng khi edit
+          password: '',
 
-        // Set account specific info
-        this.accountEmail = (data as any).email || ''; // Email dùng để login
-        this.employeeData.isActive = (data as any).isActive;
-        this.employeeData.isEmailVerified = (data as any).isEmailVerified;
+          // Map permissions
+          extraPermissions: userInfo.extraPermissions?.map((p: any) => p.id || p) || [],
+          excludePermissions: userInfo.excludePermissions?.map((p: any) => p.id || p) || [],
+        };
 
         this.calculateEffectivePermissions();
       },
       error: (err) => {
+        console.error(err);
         this.toastr.error('Không thể tải thông tin nhân viên', 'Lỗi');
       },
     });
@@ -193,7 +193,7 @@ export class EmployeeAddComponent implements OnInit {
     });
   }
 
-  // --- DYNAMIC LIST HANDLERS (EMAILS, PHONES, ADDRESSES) ---
+  // --- DYNAMIC LIST HANDLERS ---
 
   addEmail() {
     this.employeeData.emails.push({ value: '', type: 'Company' });
@@ -203,7 +203,7 @@ export class EmployeeAddComponent implements OnInit {
   }
 
   addPhone() {
-    this.employeeData.phones.push({ value: '', type: 'Company' });
+    this.employeeData.phones.push({ value: '', type: 'Mobile' as any });
   }
   removePhone(index: number) {
     this.employeeData.phones.splice(index, 1);
@@ -225,7 +225,7 @@ export class EmployeeAddComponent implements OnInit {
     this.employeeData.addresses.splice(index, 1);
   }
 
-  // --- PERMISSION LOGIC (Giữ nguyên logic tốt của bạn) ---
+  // --- PERMISSION LOGIC (Updated for Nested User) ---
 
   groupPermissionsByResource() {
     const grouped = new Map<string, Permission[]>();
@@ -244,8 +244,8 @@ export class EmployeeAddComponent implements OnInit {
     this.customRolePermissions.clear();
     this.effectivePermissions.clear();
 
-    // Logic tính toán custom roles
-    this.employeeData.roles.forEach((roleId) => {
+    // [CẬP NHẬT] Truy cập roles từ user object
+    this.employeeData.user?.roles.forEach((roleId) => {
       const role = this.roles.find((r) => r.id === roleId);
       if (role?.permissions) {
         role.permissions.forEach((perm: any) => {
@@ -255,15 +255,15 @@ export class EmployeeAddComponent implements OnInit {
       }
     });
 
-    // Combine
+    // Combine base permissions
     const basePermissions = new Set([...this.rolePermissions, ...this.customRolePermissions]);
 
-    // Add Extra
-    this.employeeData.extraPermissions.forEach((permId) => basePermissions.add(permId));
+    // [CẬP NHẬT] Add Extra từ user object
+    this.employeeData.user?.extraPermissions.forEach((permId) => basePermissions.add(permId));
 
-    // Remove Exclude
+    // [CẬP NHẬT] Remove Exclude từ user object
     basePermissions.forEach((permId) => {
-      if (!this.employeeData.excludePermissions.includes(permId)) {
+      if (!this.employeeData.user?.excludePermissions.includes(permId)) {
         this.effectivePermissions.add(permId);
       }
     });
@@ -274,10 +274,15 @@ export class EmployeeAddComponent implements OnInit {
   }
 
   togglePermission(permissionId: string, type: 'extra' | 'exclude') {
+    // [CẬP NHẬT] Trỏ vào user object
     const targetArray =
-      type === 'extra' ? this.employeeData.extraPermissions : this.employeeData.excludePermissions;
+      (type === 'extra'
+        ? this.employeeData.user?.extraPermissions
+        : this.employeeData.user?.excludePermissions) || [];
     const oppositeArray =
-      type === 'extra' ? this.employeeData.excludePermissions : this.employeeData.extraPermissions;
+      (type === 'extra'
+        ? this.employeeData.user?.excludePermissions
+        : this.employeeData.user?.extraPermissions) || [];
 
     const index = targetArray.indexOf(permissionId);
     if (index > -1) {
@@ -290,15 +295,15 @@ export class EmployeeAddComponent implements OnInit {
     this.calculateEffectivePermissions();
   }
 
-  // Helper functions for template
+  // Helpers
   isPermissionInRoles(id: string) {
     return this.rolePermissions.has(id) || this.customRolePermissions.has(id);
   }
   isPermissionExtra(id: string) {
-    return this.employeeData.extraPermissions.includes(id);
+    return this.employeeData.user?.extraPermissions.includes(id);
   }
   isPermissionExcluded(id: string) {
-    return this.employeeData.excludePermissions.includes(id);
+    return this.employeeData.user?.excludePermissions.includes(id);
   }
   isPermissionEffective(id: string) {
     return this.effectivePermissions.has(id);
@@ -306,16 +311,6 @@ export class EmployeeAddComponent implements OnInit {
 
   countPermissionInRoles(group: PermissionGroup) {
     return group.permissions.filter((p) => this.isPermissionInRoles(p.id)).length;
-  }
-  countPermissionEffective(group: PermissionGroup) {
-    return group.permissions.filter((p) => this.isPermissionEffective(p.id)).length;
-  }
-
-  getPermissionStatus(id: string) {
-    if (this.isPermissionExcluded(id)) return 'excluded';
-    if (this.isPermissionExtra(id)) return 'extra';
-    if (this.isPermissionInRoles(id)) return 'role';
-    return 'none';
   }
 
   toggleGroup(resource: string) {
@@ -335,25 +330,25 @@ export class EmployeeAddComponent implements OnInit {
       this.toastr.error('Họ tên là bắt buộc');
       return false;
     }
-    if (!this.accountEmail.trim()) {
-      this.toastr.error('Email đăng nhập là bắt buộc');
-      return false;
-    }
-    // Validate account email format
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.accountEmail)) {
-      this.toastr.error('Email không hợp lệ');
-      return false;
-    }
+    // [CẬP NHẬT] Validate email user
+    // if (!this.employeeData.user.email.trim()) {
+    //   this.toastr.error('Email đăng nhập là bắt buộc');
+    //   return false;
+    // }
+    // if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.employeeData.user.email)) {
+    //   this.toastr.error('Email không hợp lệ');
+    //   return false;
+    // }
 
-    // Password check
-    if (!this.isEditMode && !this.accountPassword) {
-      this.toastr.error('Mật khẩu là bắt buộc cho tài khoản mới');
-      return false;
-    }
-    if (this.accountPassword && this.accountPassword.length < 6) {
-      this.toastr.error('Mật khẩu quá ngắn');
-      return false;
-    }
+    // [CẬP NHẬT] Password check
+    // if (!this.isEditMode && !this.employeeData.user.password) {
+    //   this.toastr.error('Mật khẩu là bắt buộc cho tài khoản mới');
+    //   return false;
+    // }
+    // if (this.employeeData.user.password && this.employeeData.user.password.length < 6) {
+    //   this.toastr.error('Mật khẩu quá ngắn');
+    //   return false;
+    // }
 
     return true;
   }
@@ -361,15 +356,19 @@ export class EmployeeAddComponent implements OnInit {
   onSubmit() {
     if (!this.validateForm()) return;
 
-    // Chuẩn bị payload kết hợp Employee và User Info
-    const payload = {
+    // Chuẩn bị Payload
+    const payload: EmployeeFormData = {
       ...this.employeeData,
-      email: this.accountEmail, // Email đăng nhập chính
-      password: this.accountPassword || undefined, // Chỉ gửi nếu có nhập
-
-      // Ensure arrays are clean
+      // Clean arrays
       emails: this.employeeData.emails.filter((e) => e.value),
       phones: this.employeeData.phones.filter((p) => p.value),
+      // Xử lý User: nếu password rỗng thì xóa khỏi payload (để không override khi edit)
+      user: this.employeeData.user?.email
+        ? {
+            ...this.employeeData.user,
+            password: this.employeeData.user?.password || undefined,
+          }
+        : undefined,
     };
 
     const obs =

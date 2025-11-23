@@ -56,7 +56,7 @@ export class EmployeeListComponent extends BaseListComponent<Employee> implement
 
     // Add search query
     if (this.query && this.query.search && this.query.search.trim()) {
-      params.name = this.query.search.trim();
+      params.search = this.query.search.trim();
     }
 
     this.employeeService.getAll(params).subscribe((data) => {
@@ -67,10 +67,10 @@ export class EmployeeListComponent extends BaseListComponent<Employee> implement
   }
 
   getGenderLabel(gender?: string): string {
-    const labels: any = {
-      male: 'Male',
-      female: 'Female',
-      other: 'Other',
+    const labels: Record<string, string> = {
+      male: 'Nam',
+      female: 'Nữ',
+      other: 'Khác',
     };
     return gender ? labels[gender] || '-' : '-';
   }

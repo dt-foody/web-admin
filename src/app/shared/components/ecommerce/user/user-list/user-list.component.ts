@@ -177,9 +177,10 @@ export class UserListComponent extends BaseListComponent<User> implements OnInit
 
   getRoleLabel(role: string): string {
     const labels: Record<string, string> = {
-      admin: 'Admin',
-      user: 'User',
-      guest: 'Guest',
+      admin: 'Quản trị viên',
+      staff: 'Nhân viên',
+      customer: 'Khách hàng',
+      guest: 'Khách vãng lai', // Hoặc dùng "Khách ghé thăm"
     };
     return labels[role] || role;
   }

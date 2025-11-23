@@ -118,11 +118,13 @@ export abstract class BaseListComponent<T extends { id: string }> implements OnI
 
   getInitials(name: string): string {
     return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2);
+      ? name
+          .split(' ')
+          .map((n) => n[0])
+          .join('')
+          .toUpperCase()
+          .substring(0, 2)
+      : 'A';
   }
 
   getFormattedPrice(price: number | string): string {
