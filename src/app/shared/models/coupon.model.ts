@@ -8,7 +8,7 @@ export interface BasicUser {
 
 // ===== Enums / Types (Khớp với Backend Model) =====
 export type CouponType = 'discount_code' | 'freeship' | 'gift';
-export type ValueType = 'fixed' | 'percentage';
+export type ValueType = 'fixed_amount' | 'percentage';
 export type CouponStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'EXPIRED';
 
 // ===== Interface chính (Coupon) =====

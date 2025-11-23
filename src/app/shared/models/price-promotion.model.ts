@@ -9,8 +9,8 @@ export interface PricePromotion {
   product?: string | null; // ObjectId của Product
   combo?: string | null; // ObjectId của Combo
 
-  // Loại giảm giá: percentage (%) hoặc fixed (tiền cố định)
-  discountType: 'percentage' | 'fixed';
+  // Loại giảm giá: percentage (%) hoặc fixed_amount (tiền cố định)
+  discountType: 'percentage' | 'fixed_amount';
   discountValue: number;
 
   // Thời gian hiệu lực
@@ -45,7 +45,7 @@ export interface PricePromotionFormData {
   description: string;
   product?: string | null;
   combo?: string | null;
-  discountType: 'percentage' | 'fixed';
+  discountType: 'percentage' | 'fixed_amount';
   discountValue: number;
   startDate: string | Date | any;
   endDate: string | Date | any;

@@ -124,7 +124,7 @@ export class OrderAddComponent implements OnInit {
   ];
 
   discountTypeOptions = [
-    { value: 'fixed', label: 'Fixed Amount (đ)' },
+    { value: 'fixed_amount', label: 'Fixed Amount (đ)' },
     { value: 'percentage', label: 'Percentage (%)' },
   ];
 
@@ -208,7 +208,7 @@ export class OrderAddComponent implements OnInit {
           ...DEFAULT_FORM,
           ...(data as any),
           items: normalizedItems,
-          discountType: 'fixed',
+          discountType: 'fixed_amount',
           discountValue: data.discountAmount || 0,
         };
 

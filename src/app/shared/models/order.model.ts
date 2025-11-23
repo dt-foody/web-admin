@@ -145,7 +145,7 @@ export interface OrderFormData {
   note: string;
 
   // UI discount
-  discountType: 'fixed' | 'percentage';
+  discountType: 'fixed_amount' | 'percentage';
   discountValue: number;
 }
 
@@ -165,7 +165,7 @@ export const DEFAULT_FORM: OrderFormData = {
   channel: 'AdminPanel',
   items: [],
   totalAmount: 0,
-  discountType: 'fixed',
+  discountType: 'fixed_amount',
   discountValue: 0,
   shippingFee: 0,
   grandTotal: 0,

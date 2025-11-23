@@ -99,7 +99,7 @@ export class CouponAddComponent implements OnInit {
 
   valueTypeOptions = [
     { value: 'percentage', label: 'Phần trăm (%)' },
-    { value: 'fixed', label: 'Số tiền cố định' },
+    { value: 'fixed_amount', label: 'Số tiền cố định' },
   ];
 
   typeOptions = [
@@ -359,7 +359,7 @@ export class CouponAddComponent implements OnInit {
     const validKeys = Object.keys(DEFAULT_FORM) as (keyof CouponFormData)[];
     const sanitized = sanitizeFormData<CouponFormData>(this.couponData, validKeys);
 
-    if (sanitized.valueType === 'fixed') {
+    if (sanitized.valueType === 'fixed_amount') {
       sanitized.maxDiscountAmount = 0;
     }
     if (sanitized.maxDiscountAmount == null) {

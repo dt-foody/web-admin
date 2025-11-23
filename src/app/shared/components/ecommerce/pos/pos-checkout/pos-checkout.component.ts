@@ -41,7 +41,7 @@ export class PosCheckoutComponent implements OnInit {
 
   // Dùng cho UI
   discountTypeOptions = [
-    { value: 'fixed', label: 'Số tiền (đ)' },
+    { value: 'fixed_amount', label: 'Số tiền (đ)' },
     { value: 'percentage', label: 'Phần trăm (%)' },
   ];
   paymentMethods = [
@@ -57,7 +57,7 @@ export class PosCheckoutComponent implements OnInit {
     console.log('init checkout');
   }
 
-  onDiscountTypeChange(type: 'fixed' | 'percentage') {
+  onDiscountTypeChange(type: 'fixed_amount' | 'percentage') {
     this.posState.setDiscountType(type);
   }
 

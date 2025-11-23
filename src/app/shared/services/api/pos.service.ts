@@ -37,7 +37,7 @@ const initialState: OrderFormData = {
   profile: null,
   profileType: null,
   items: [],
-  discountType: 'fixed',
+  discountType: 'fixed_amount',
   discountValue: 0,
   shippingFee: 0,
   totalAmount: 0,
@@ -213,7 +213,7 @@ export class PosStateService {
     this.updateState({ ...state, discountValue: value || 0 });
   }
 
-  public setDiscountType(type: 'fixed' | 'percentage') {
+  public setDiscountType(type: 'fixed_amount' | 'percentage') {
     const state = this.getCurrentCart();
     this.updateState({ ...state, discountType: type });
   }

@@ -21,7 +21,7 @@ export interface BasicCouponInfo {
 
 export type VoucherStatus = 'UNUSED' | 'USED' | 'EXPIRED' | 'REVOKED';
 export type IssueMode = 'CLAIM' | 'ADMIN' | 'AUTO' | 'REFERRAL';
-export type DiscountSnapshotType = 'fixed' | 'percentage';
+export type DiscountSnapshotType = 'fixed_amount' | 'percentage';
 
 /**
  * Snapshot (bản ghi) các quy tắc giảm giá tại thời điểm

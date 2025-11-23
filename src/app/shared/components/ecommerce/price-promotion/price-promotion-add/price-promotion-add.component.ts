@@ -59,7 +59,7 @@ export class PricePromotionAddComponent implements OnInit {
 
   discountTypeOptions = [
     { value: 'percentage', label: 'Percentage (%)' },
-    { value: 'fixed', label: 'Fixed Amount' },
+    { value: 'fixed_amount', label: 'Fixed Amount' },
   ];
 
   applicableToOptions = [
