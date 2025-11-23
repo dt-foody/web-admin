@@ -39,9 +39,11 @@ export class UserListComponent extends BaseListComponent<User> implements OnInit
   itemToDelete: User | null = null;
 
   roleOptions = [
-    { value: '', label: 'All Roles' },
-    { value: 'admin', label: 'Admin' },
-    { value: 'user', label: 'User' },
+    { value: '', label: 'Tất cả' }, // Hoặc đơn giản là "Tất cả"
+    { value: 'admin', label: 'Quản trị viên' },
+    { value: 'staff', label: 'Nhân viên' },
+    { value: 'customer', label: 'Khách hàng' },
+    { value: 'guest', label: 'Khách vãng lai' },
   ];
 
   constructor(
