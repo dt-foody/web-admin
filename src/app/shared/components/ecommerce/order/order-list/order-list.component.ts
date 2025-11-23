@@ -38,6 +38,10 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
   viewMode: 'table' | 'kanban' = 'table';
   itemToDelete: Order | null = null;
 
+  get kanbanColumns() {
+    return this.orderStatuses.filter((s) => s.value !== '');
+  }
+
   orderStatuses = [
     { value: '', label: 'Tất cả trạng thái' },
     { value: 'pending', label: 'Chờ xác nhận' },
@@ -47,10 +51,6 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     { value: 'completed', label: 'Hoàn thành' },
     { value: 'canceled', label: 'Đã hủy' },
   ];
-
-  get kanbanColumns() {
-    return this.orderStatuses.filter((s) => s.value !== '');
-  }
 
   paymentStatuses = [
     { value: '', label: 'Tất cả thanh toán' },
@@ -158,6 +158,42 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
         this.toastr.error('Cập nhật trạng thái thất bại', 'Lỗi');
       },
     });
+  }
+
+  getPaymentStatusLabel(status?: string): string {
+    const map: Record<string, string> = {
+      pending: 'Chờ thanh toán',
+      paid: 'Đã thanh toán',
+      failed: 'Thanh toán thất bại',
+    };
+    return map[status || ''] || 'đang chờ';
+  }
+
+  getOrderStatusLabel(status: string): string {
+    const map: Record<string, string> = {
+      pending: 'Chờ xác nhận',
+      confirmed: 'Đã xác nhận',
+      preparing: 'Đang chuẩn bị',
+      delivering: 'Đang giao hàng',
+      completed: 'Hoàn thành',
+      canceled: 'Đã hủy',
+    };
+    return map[status] || 'Không rõ';
+  }
+
+
+  getShippingStatusLabel(status?: string, orderType?: string): string {
+    const map: Record<string, string> = {
+      pending: 'Chờ vận chuyển',
+      delivering: 'Đang giao hàng',
+      delivered: 'Đã giao hàng',
+      failed: 'Giao hàng thất bại',
+    };
+
+    // Nếu pickup thì shipping = n/a
+    if (!status && orderType !== 'Delivery') return 'n/a';
+
+    return map[status || ''] || 'đang chờ';
   }
 
   // [Cite: 1] Hàm lấy màu đậm cho chấm tròn (Dot)
