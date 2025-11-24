@@ -217,20 +217,38 @@ export class BlogPostAddComponent implements OnInit {
       this.toastr.error('Title is required', 'Validation');
       return false;
     }
-
+  
     if (!this.postData.content.trim()) {
       this.toastr.error('Content is required', 'Validation');
       return false;
     }
-
-    if (this.postData.status === 'published' && !this.postData.publishedAt) {
-      this.toastr.error('Published date is required for published posts', 'Validation');
-      return false;
+  
+    // Check publishedAt
+    if (this.postData.status === 'published') {
+      if (!this.postData.publishedAt) {
+        this.toastr.error('Published date is required for published posts', 'Validation');
+        return false;
+      }
+  
+      const now = new Date();
+      const pub = new Date(this.postData.publishedAt);
+  
+      const sameDate =
+        pub.getDate() === now.getDate() &&
+        pub.getMonth() === now.getMonth() &&
+        pub.getFullYear() === now.getFullYear();
+  
+      if (sameDate) {
+        this.postData.publishedAt = now;
+      } else if (pub.getTime() < now.getTime()) {
+        this.toastr.error('Published date must be greater than or equal to now', 'Validation');
+        return false;
+      }
     }
-
+  
     return true;
   }
-
+  
   // Submit handlers
   onSave() {
     if (!this.validateForm()) return;
