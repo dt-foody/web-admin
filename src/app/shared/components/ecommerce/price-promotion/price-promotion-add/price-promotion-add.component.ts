@@ -23,6 +23,7 @@ const DEFAULT_FORM: PricePromotionFormData = {
   combo: null,
   discountType: 'percentage',
   discountValue: 0,
+  maxDiscountAmount: 0,
   startDate: '',
   endDate: '',
   maxQuantity: 0,
@@ -207,6 +208,14 @@ export class PricePromotionAddComponent implements OnInit {
       this.promotionData.discountValue > 100
     ) {
       this.toastr.error('Percentage discount cannot exceed 100%', 'Validation Error');
+      return false;
+    }
+
+    if (
+      this.promotionData.discountType === 'percentage' &&
+      this.promotionData.maxDiscountAmount < 0
+    ) {
+      this.toastr.error('Maximum discount amount cannot be negative', 'Validation Error');
       return false;
     }
 
