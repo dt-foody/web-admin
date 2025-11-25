@@ -12,6 +12,7 @@ export interface PricePromotion {
   // Loại giảm giá: percentage (%) hoặc fixed_amount (tiền cố định)
   discountType: 'percentage' | 'fixed_amount';
   discountValue: number;
+  maxDiscountAmount: number;
 
   // Thời gian hiệu lực
   startDate: string | Date | any;
@@ -47,6 +48,7 @@ export interface PricePromotionFormData {
   combo?: string | null;
   discountType: 'percentage' | 'fixed_amount';
   discountValue: number;
+  maxDiscountAmount: number;
   startDate: string | Date | any;
   endDate: string | Date | any;
   maxQuantity: number;

@@ -59,8 +59,8 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
         { name: 'Danh mục', path: '/category', permission: 'category.read' },
         { name: 'Sản phẩm', path: '/product', permission: 'product.read' },
         { name: 'Combo', path: '/combo', permission: 'combo.read' },
-        { name: 'Mã giảm giá', path: '/coupon', permission: 'coupon.read' },
         { name: 'Khuyến mãi', path: '/price-promotion', permission: 'pricePromotion.read' },
+        { name: 'Mã giảm giá', path: '/coupon', permission: 'coupon.read' },
       ],
     },
     {
