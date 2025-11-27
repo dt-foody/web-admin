@@ -1,91 +1,90 @@
-// Giả định bạn có một file định nghĩa các interface cơ bản
-// (Ví dụ: 'src/app/core/models/common.model.ts')
-export interface BasicUser {
-  id: string;
-  name: string;
-}
+// src/app/core/models/voucher.model.ts (hoặc common.model.ts tùy project)
 
-export interface BasicCustomer {
-  id: string;
-  name: string;
-  // email?: string;
-}
+import { Coupon } from "./coupon.model";
+import { Customer } from "./customer.model";
+import { Employee } from "./employee.model";
+import { User } from "./user.model";
 
-export interface BasicCouponInfo {
-  id: string;
-  name: string;
-  code?: string; // Mã code công khai của coupon gốc
-}
-
-// ===== Enums / Types (Khớp với Backend Model) =====
+// ===== Enums / Types =====
 
 export type VoucherStatus = 'UNUSED' | 'USED' | 'EXPIRED' | 'REVOKED';
 export type IssueMode = 'CLAIM' | 'ADMIN' | 'AUTO' | 'REFERRAL';
 export type DiscountSnapshotType = 'fixed_amount' | 'percentage';
+export type VoucherProfileType = 'Customer' | 'Employee' | null; // 🔥 Type mới
 
 /**
- * Snapshot (bản ghi) các quy tắc giảm giá tại thời điểm
- * voucher được phát hành.
- * Khớp với DiscountSnapshotSchema trong model backend.
+ * Snapshot quy tắc giảm giá tại thời điểm phát hành.
  */
 export interface DiscountSnapshot {
   type: DiscountSnapshotType;
   value: number;
   maxDiscount: number;
+  minOrderAmount?: number; // 🔥 Bổ sung field này để khớp logic validate ở FE/BE
 }
 
 // ===== Interface chính (Voucher Instance) =====
 
 /**
- * Đại diện cho một phiếu giảm giá cụ thể đã được cấp
- * cho một khách hàng.
+ * Đại diện cho Voucher đã cấp phát
  */
 export interface Voucher {
-  id: string; // Do plugin toJSON tự động map từ _id
+  id: string;
 
-  // --- Liên kết ---
-  // Các trường này có thể là string (ID) hoặc object (nếu populate)
-  customer: any;
-  coupon: string | BasicCouponInfo;
-  order?: string; // ID của đơn hàng đã sử dụng
+  // --- [UPDATED] Dynamic Profile Link ---
+  // Thay thế cho field `customer` cũ
+  profileType: VoucherProfileType;
+  
+  // Dữ liệu profile đã populate (có thể là Customer hoặc Employee)
+  profile: Customer | Employee | string | null; 
 
-  // --- Mã voucher (duy nhất cho user này) ---
+  // --- Liên kết khác ---
+  coupon: string | Coupon;
+  orders?: string[]; // Backend mới hỗ trợ mảng orders (nếu dùng nhiều lần)
+  // order?: string; // Giữ lại nếu backend chưa migration xong mảng
+
+  // --- Mã voucher ---
   code: string;
 
   // --- Nguồn phát hành ---
   issueMode: IssueMode;
 
-  // --- Trạng thái sử dụng ---
+  // --- Trạng thái ---
   status: VoucherStatus;
 
   // --- Vòng đời ---
   issuedAt: string | Date;
-  usedAt?: string | Date | null;
+  usedAt?: string | Date | null; // Lần dùng gần nhất
   expiredAt: string | Date;
   revokeAt?: string | Date | null;
-  revokedBy?: string | BasicUser | null;
+  revokedBy?: string | User | null;
 
-  // --- Thống kê (nếu 1 voucher dùng được nhiều lần) ---
+  // --- Thống kê ---
   usageCount: number;
   usageLimit: number;
 
-  // --- Snapshot rule (Bắt buộc) ---
+  // --- Snapshot Rule ---
   discountSnapshot: DiscountSnapshot;
 
   // --- Audit ---
-  createdBy?: string | BasicUser | null;
+  createdBy?: string | User | null;
   createdAt: string | Date;
   updatedAt: string | Date;
 }
 
-// ===== Interface cho Form (Vd: Admin cấp phát voucher) =====
+// ===== Interface cho Form (Create/Update) =====
+
 export interface VoucherFormData {
-  customer: string; // ID khách hàng
-  coupon: string; // ID của Coupon gốc (để hệ thống tự tạo snapshot)
-  code: string; // Mã code (có thể để trống để hệ thống tự sinh)
-  expiredAt: string | Date | any; // Ngày hết hạn
+  // --- [UPDATED] Chọn đối tượng nhận ---
+  profile: string | null; // ID của Customer hoặc Employee
+  profileType: VoucherProfileType; // Loại đối tượng
+
+  coupon: string; // ID Coupon gốc
+  code?: string; // Optional (nếu để trống BE tự sinh)
+  
+  expiredAt: string | Date;
   usageLimit: number;
   issueMode: IssueMode;
-
-  // discountSnapshot sẽ được backend tạo dựa trên couponId
+  
+  // Status thường mặc định là UNUSED khi tạo mới
+  status?: VoucherStatus;
 }

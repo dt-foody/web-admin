@@ -105,7 +105,7 @@ export class CouponAddComponent implements OnInit {
   typeOptions = [
     { value: 'discount_code', label: 'Mã giảm giá' },
     { value: 'freeship', label: 'Miễn phí vận chuyển' },
-    { value: 'gift', label: 'Quà tặng' },
+    // { value: 'gift', label: 'Quà tặng' },
   ];
 
   statusOptions = [
