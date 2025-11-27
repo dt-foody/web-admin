@@ -18,7 +18,7 @@ import { SwitchComponent } from '../../../form/input/switch.component';
 
 // Models
 import { Coupon, CouponFormData } from '../../../../models/coupon.model';
-import { Voucher, BasicCustomer } from '../../../../models/voucher.model';
+import { Voucher } from '../../../../models/voucher.model';
 import { ConditionGroup, Field, Operator } from '../../../../models/conditions.model';
 
 // Services
@@ -31,6 +31,7 @@ import { ComboService } from '../../../../services/api/combo.service';
 
 // Utils
 import { sanitizeFormData, createFormData } from '../../../../utils/form-data.utils';
+import { Customer } from '../../../../models/customer.model';
 
 // ========= Defaults =========
 const DEFAULT_FORM: CouponFormData = {
@@ -88,7 +89,7 @@ export class CouponAddComponent implements OnInit {
 
   currentTab: 'details' | 'vouchers' = 'details';
 
-  allCustomers: BasicCustomer[] = [];
+  allCustomers: Customer[] = [];
   issuedVouchers: Voucher[] = [];
   voucherIssueForm: VoucherIssueFormData = {
     customerIds: [],
@@ -455,5 +456,10 @@ export class CouponAddComponent implements OnInit {
     //     this.toastr.error(err?.error?.message || 'Failed to revoke voucher', 'Error');
     //   },
     // });
+  }
+
+  profileName(voucher: Voucher): string {
+    const p = voucher?.profile;
+    return typeof p === 'string' ? p : (p?.name ?? '');
   }
 }
