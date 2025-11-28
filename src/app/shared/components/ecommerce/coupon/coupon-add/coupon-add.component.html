@@ -1,34 +1,21 @@
 <div *ngIf="isEditMode" class="border-b border-gray-200 dark:border-gray-800 mb-6">
   <nav class="flex -mb-px space-x-6" aria-label="Tabs">
-    <a
-      href="javascript:void(0)"
-      (click)="currentTab = 'details'"
-      [class.border-brand-500]="currentTab === 'details'"
-      [class.text-brand-600]="currentTab === 'details'"
-      [class.text-gray-500]="currentTab !== 'details'"
-      [class.hover:text-gray-700]="currentTab !== 'details'"
-      [class.dark:text-gray-400]="currentTab !== 'details'"
+    <a href="javascript:void(0)" (click)="currentTab = 'details'" [class.border-brand-500]="currentTab === 'details'"
+      [class.text-brand-600]="currentTab === 'details'" [class.text-gray-500]="currentTab !== 'details'"
+      [class.hover:text-gray-700]="currentTab !== 'details'" [class.dark:text-gray-400]="currentTab !== 'details'"
       [class.dark:hover:text-gray-200]="currentTab !== 'details'"
-      class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors"
-    >
+      class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
       Thông Tin Coupon
     </a>
 
-    <a
-      href="javascript:void(0)"
-      (click)="currentTab = 'vouchers'"
-      [class.border-brand-500]="currentTab === 'vouchers'"
-      [class.text-brand-600]="currentTab === 'vouchers'"
-      [class.text-gray-500]="currentTab !== 'vouchers'"
-      [class.hover:text-gray-700]="currentTab !== 'vouchers'"
-      [class.dark:text-gray-400]="currentTab !== 'vouchers'"
+    <a href="javascript:void(0)" (click)="currentTab = 'vouchers'" [class.border-brand-500]="currentTab === 'vouchers'"
+      [class.text-brand-600]="currentTab === 'vouchers'" [class.text-gray-500]="currentTab !== 'vouchers'"
+      [class.hover:text-gray-700]="currentTab !== 'vouchers'" [class.dark:text-gray-400]="currentTab !== 'vouchers'"
       [class.dark:hover:text-gray-200]="currentTab !== 'vouchers'"
-      class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors"
-    >
+      class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
       Quản Lý Voucher
       <span
-        class="ml-1.5 rounded-full bg-gray-200 dark:bg-gray-700 px-2 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-300"
-      >
+        class="ml-1.5 rounded-full bg-gray-200 dark:bg-gray-700 px-2 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-300">
         {{ issuedVouchers.length }}
       </span>
     </a>
@@ -38,9 +25,7 @@
 <div *ngIf="currentTab === 'details'">
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
     <div class="lg:col-span-8 space-y-6">
-      <div
-        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-      >
+      <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
           <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thông Tin Coupon</h2>
         </div>
@@ -49,19 +34,13 @@
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div>
                 <app-label for="coupon-name" className="required">Tên Coupon</app-label>
-                <app-input-field
-                  id="coupon-name"
-                  placeholder="Nhập tên coupon"
-                  [(value)]="couponData.name"
-                ></app-input-field>
+                <app-input-field id="coupon-name" placeholder="Nhập tên coupon"
+                  [(value)]="couponData.name"></app-input-field>
               </div>
               <div>
                 <app-label for="coupon-code">Mã Coupon</app-label>
-                <app-input-field
-                  id="coupon-code"
-                  placeholder="ví dụ: SUMMER2024 (để trống để tự tạo)"
-                  [(value)]="couponData.code"
-                ></app-input-field>
+                <app-input-field id="coupon-code" placeholder="ví dụ: SUMMER2024 (để trống để tự tạo)"
+                  [(value)]="couponData.code"></app-input-field>
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Mã công khai. Để trống nếu coupon này được phát hành dưới dạng voucher riêng tư.
                 </p>
@@ -71,59 +50,38 @@
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div>
                 <app-label for="coupon-type" className="required">Loại Coupon</app-label>
-                <app-select
-                  id="coupon-type"
-                  [options]="typeOptions"
-                  placeholder="Chọn loại coupon"
-                  [(value)]="couponData.type"
-                ></app-select>
+                <app-select id="coupon-type" [options]="typeOptions" placeholder="Chọn loại coupon"
+                  [(value)]="couponData.type"></app-select>
               </div>
               <div>
                 <app-label for="coupon-status" className="required">Trạng Thái</app-label>
-                <app-select
-                  id="coupon-status"
-                  [options]="statusOptions"
-                  placeholder="Chọn trạng thái"
-                  [(value)]="couponData.status"
-                ></app-select>
+                <app-select id="coupon-status" [options]="statusOptions" placeholder="Chọn trạng thái"
+                  [(value)]="couponData.status"></app-select>
               </div>
             </div>
 
             <div>
               <app-label for="description">Mô Tả</app-label>
-              <app-text-area
-                id="description"
-                [rows]="3"
-                placeholder="Nhập mô tả coupon"
-                [(value)]="couponData.description"
-              ></app-text-area>
+              <app-text-area id="description" [rows]="3" placeholder="Nhập mô tả coupon"
+                [(value)]="couponData.description"></app-text-area>
             </div>
 
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div>
                 <app-label for="start-date" className="required">Ngày Bắt Đầu</app-label>
-                <app-input-field
-                  id="start-date"
-                  type="datetime-local"
-                  [(value)]="couponData.startDate"
-                ></app-input-field>
+                <app-input-field id="start-date" type="datetime-local"
+                  [(value)]="couponData.startDate"></app-input-field>
               </div>
               <div>
                 <app-label for="end-date" className="required">Ngày Kết Thúc</app-label>
-                <app-input-field
-                  id="end-date"
-                  type="datetime-local"
-                  [(value)]="couponData.endDate"
-                ></app-input-field>
+                <app-input-field id="end-date" type="datetime-local" [(value)]="couponData.endDate"></app-input-field>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div
-        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-      >
+      <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
           <h2 class="text-lg font-medium text-gray-800 dark:text-white">Chi Tiết Giảm Giá</h2>
         </div>
@@ -132,30 +90,18 @@
             <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
               <div>
                 <app-label for="value-type" className="required">Loại Giá Trị</app-label>
-                <app-select
-                  id="value-type"
-                  [options]="valueTypeOptions"
-                  placeholder="Chọn loại giá trị"
-                  [(value)]="couponData.valueType"
-                ></app-select>
+                <app-select id="value-type" [options]="valueTypeOptions" placeholder="Chọn loại giá trị"
+                  [(value)]="couponData.valueType"></app-select>
               </div>
               <div>
                 <app-label for="value" className="required">Giá Trị Giảm Giá</app-label>
-                <app-input-field
-                  id="value"
-                  type="number"
-                  placeholder="0"
-                  [(value)]="couponData.value"
-                ></app-input-field>
+                <app-input-field id="value" type="number" placeholder="0"
+                  [(value)]="couponData.value"></app-input-field>
               </div>
               <div>
                 <app-label for="max-discount">Giới Hạn Giảm Giá</app-label>
-                <app-input-field
-                  id="max-discount"
-                  type="number"
-                  placeholder="0"
-                  [(value)]="couponData.maxDiscountAmount"
-                ></app-input-field>
+                <app-input-field id="max-discount" type="number" placeholder="0"
+                  [(value)]="couponData.maxDiscountAmount"></app-input-field>
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Bắt buộc với phần trăm. 0 = không giới hạn.
                 </p>
@@ -164,12 +110,8 @@
 
             <div>
               <app-label for="min-order">Giá Trị Đơn Hàng Tối Thiểu</app-label>
-              <app-input-field
-                id="min-order"
-                type="number"
-                placeholder="0"
-                [(value)]="couponData.minOrderAmount"
-              ></app-input-field>
+              <app-input-field id="min-order" type="number" placeholder="0"
+                [(value)]="couponData.minOrderAmount"></app-input-field>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">0 = không yêu cầu.</p>
             </div>
           </div>
@@ -178,9 +120,7 @@
     </div>
 
     <div class="lg:col-span-4 space-y-6">
-      <div
-        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-      >
+      <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
           <h2 class="text-lg font-medium text-gray-800 dark:text-white">Cài Đặt</h2>
         </div>
@@ -202,14 +142,6 @@
             Cho phép người dùng lưu coupon này vào ví của họ (chỉ khi 'Công Khai' bật).
           </p>
 
-          <!-- <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-700 dark:text-gray-300">Tự Áp Dụng</span>
-            <app-switch [(value)]="couponData.autoApply"></app-switch>
-          </div>
-          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Tự động áp dụng coupon này khi thanh toán nếu điều kiện được đáp ứng.
-          </p> -->
-
           <div class="flex items-center justify-between">
             <span class="text-sm text-gray-700 dark:text-gray-300">Có Thể Kết Hợp</span>
             <app-switch [(value)]="couponData.stackable"></app-switch>
@@ -220,9 +152,7 @@
         </div>
       </div>
 
-      <div
-        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-      >
+      <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
           <h2 class="text-lg font-medium text-gray-800 dark:text-white">Giới Hạn Sử Dụng</h2>
         </div>
@@ -230,24 +160,14 @@
           <div class="grid grid-cols-1 gap-5">
             <div>
               <app-label for="max-uses">Số Lần Sử Dụng Tối Đa</app-label>
-              <app-input-field
-                id="max-uses"
-                type="number"
-                placeholder="0"
-                [(value)]="couponData.maxUses"
-              ></app-input-field>
+              <app-input-field id="max-uses" type="number" placeholder="0"
+                [(value)]="couponData.maxUses"></app-input-field>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">0 = không giới hạn</p>
             </div>
             <div>
-              <app-label for="max-uses-user" className="required"
-                >Số Lần Sử Dụng Tối Đa / Người Dùng</app-label
-              >
-              <app-input-field
-                id="max-uses-user"
-                type="number"
-                placeholder="1"
-                [(value)]="couponData.maxUsesPerUser"
-              ></app-input-field>
+              <app-label for="max-uses-user" className="required">Số Lần Sử Dụng Tối Đa / Người Dùng</app-label>
+              <app-input-field id="max-uses-user" type="number" placeholder="1"
+                [(value)]="couponData.maxUsesPerUser"></app-input-field>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Phải ≥ 1.</p>
             </div>
           </div>
@@ -256,9 +176,7 @@
     </div>
 
     <div class="lg:col-span-12">
-      <div
-        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-      >
+      <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
           <h2 class="text-lg font-medium text-gray-800 dark:text-white">Điều Kiện Áp Dụng</h2>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -289,50 +207,42 @@
 </div>
 
 <div *ngIf="currentTab === 'vouchers'" class="space-y-6">
-  <div
-    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-  >
+  <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
       <h2 class="text-lg font-medium text-gray-800 dark:text-white">Phát Hành Voucher Mới</h2>
       <p class="text-sm text-gray-500 dark:text-gray-400">
-        Phát hành voucher dựa trên mẫu này ({{ couponData.name }}) cho khách hàng cụ thể.
+        Phát hành voucher dựa trên mẫu này ({{ couponData.name }}) cho khách hàng hoặc nhân viên cụ thể.
       </p>
     </div>
     <div class="p-4 sm:p-6 space-y-4">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <app-label className="required">Loại Đối Tượng</app-label>
+          <app-select [options]="profileTypeOptions" [(value)]="voucherIssueForm.profileType"
+            (valueChange)="onProfileTypeChange($event)"></app-select>
+        </div>
+      </div>
+
       <div>
-        <app-label className="required">Khách Hàng</app-label>
-        <ng-select
-          [items]="allCustomers"
-          bindLabel="name"
-          bindValue="id"
-          placeholder="Chọn một hoặc nhiều khách hàng"
-          [(ngModel)]="voucherIssueForm.customerIds"
-          [multiple]="true"
-          [searchable]="true"
-          [closeOnSelect]="false"
-          [loading]="isLoadingVoucherData"
-        >
+        <app-label className="required">Người Nhận</app-label>
+        <ng-select [items]="profilesList" bindLabel="label" bindValue="id" placeholder="Tìm kiếm và chọn người nhận..."
+          [(ngModel)]="voucherIssueForm.profileIds" [multiple]="true" [searchable]="true" [closeOnSelect]="false"
+          [loading]="isLoadingVoucherData">
         </ng-select>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <app-label>Giới Hạn Sử Dụng (mỗi voucher)</app-label>
-          <app-input-field
-            type="number"
-            [(ngModel)]="voucherIssueForm.usageLimit"
-            placeholder="1"
-          ></app-input-field>
+          <app-input-field type="number" [(ngModel)]="voucherIssueForm.usageLimit" placeholder="1"></app-input-field>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Mặc định: 1. Số lần voucher này có thể được sử dụng.
           </p>
         </div>
         <div>
           <app-label>Ngày Hết Hạn</app-label>
-          <app-input-field
-            type="datetime-local"
-            [(ngModel)]="voucherIssueForm.expiredAt"
-          ></app-input-field>
+          <app-input-field type="datetime-local" [(ngModel)]="voucherIssueForm.expiredAt"></app-input-field>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Tùy chọn. Nếu để trống, sử dụng ngày kết thúc của coupon.
           </p>
@@ -340,21 +250,16 @@
       </div>
 
       <div>
-        <app-button
-          (click)="onIssueVouchers()"
-          [disabled]="voucherIssueForm.customerIds.length === 0"
-        >
-          Phát Hành
-          {{ voucherIssueForm.customerIds.length > 0 ? voucherIssueForm.customerIds.length : '' }}
+        <app-button (click)="onIssueVouchers()" [disabled]="voucherIssueForm.profileIds.length === 0 || isIssuing">
+          {{ isIssuing ? 'Đang xử lý...' : 'Phát Hành' }}
+          {{ voucherIssueForm.profileIds.length > 0 ? voucherIssueForm.profileIds.length : '' }}
           Voucher
         </app-button>
       </div>
     </div>
   </div>
 
-  <div
-    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
-  >
+  <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
       <h2 class="text-lg font-medium text-gray-800 dark:text-white">Voucher Đã Phát Hành</h2>
     </div>
@@ -363,7 +268,7 @@
         <thead>
           <tr class="border-b border-gray-200 dark:divide-gray-800 dark:border-gray-800">
             <th class="px-5 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-              Khách Hàng
+              Người Nhận
             </th>
             <th class="px-5 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
               Mã Voucher
@@ -387,19 +292,16 @@
         </thead>
         <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
           @for (voucher of issuedVouchers; track voucher.id) {
-            <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
-              <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                {{ profileName(voucher) }}
-              </td>
-              <td
-                class="px-5 py-4 whitespace-nowrap text-sm font-mono text-gray-700 dark:text-gray-300"
-              >
-                {{ voucher.code }}
-              </td>
-              <td class="px-5 py-4 whitespace-nowrap">
-                <span
-                  class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium capitalize"
-                  [ngClass]="{
+          <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
+            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+              {{ profileName(voucher) }}
+            </td>
+            <td class="px-5 py-4 whitespace-nowrap text-sm font-mono text-gray-700 dark:text-gray-300">
+              {{ voucher.code }}
+            </td>
+            <td class="px-5 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium capitalize"
+                [ngClass]="{
                     'bg-green-100 dark:bg-green-700 text-green-800 dark:text-green-300':
                       voucher.status === 'UNUSED',
                     'bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-300':
@@ -408,51 +310,43 @@
                       voucher.status === 'EXPIRED',
                     'bg-red-100 dark:bg-red-700 text-red-800 dark:text-red-300':
                       voucher.status === 'REVOKED',
-                  }"
-                >
-                  {{ voucher.status | lowercase }}
-                </span>
-              </td>
-              <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                {{ voucher.expiredAt | date: 'dd/MM/yyyy HH:mm' }}
-              </td>
-              <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                {{ voucher.usedAt ? (voucher.usedAt | date: 'dd/MM/yyyy HH:mm') : 'Không áp dụng' }}
-              </td>
-              <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                {{ voucher.issuedAt | date: 'dd/MM/yyyy HH:mm' }}
-              </td>
-              <td class="px-5 py-4 whitespace-nowrap">
-                <button
-                  *ngIf="voucher.status === 'UNUSED'"
-                  (click)="onRevokeVoucher(voucher)"
-                  class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded text-sm font-medium"
-                >
-                  Thu Hồi
-                </button>
-                <span
-                  *ngIf="voucher.status !== 'UNUSED'"
-                  class="text-xs text-gray-500 dark:text-gray-400"
-                  >—</span
-                >
-              </td>
-            </tr>
+                  }">
+                {{ voucher.status | lowercase }}
+              </span>
+            </td>
+            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+              {{ voucher.expiredAt | date: 'dd/MM/yyyy HH:mm' }}
+            </td>
+            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+              {{ voucher.usedAt ? (voucher.usedAt | date: 'dd/MM/yyyy HH:mm') : 'Không áp dụng' }}
+            </td>
+            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+              {{ voucher.issuedAt | date: 'dd/MM/yyyy HH:mm' }}
+            </td>
+            <td class="px-5 py-4 whitespace-nowrap">
+              <button *ngIf="voucher.status === 'UNUSED'" (click)="onRevokeVoucher(voucher)"
+                class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded text-sm font-medium">
+                Thu Hồi
+              </button>
+              <span *ngIf="voucher.status !== 'UNUSED'" class="text-xs text-gray-500 dark:text-gray-400">—</span>
+            </td>
+          </tr>
           } @empty {
-            <tr>
-              <td colspan="7" class="py-10 text-center text-gray-500 dark:text-gray-400">
-                <div *ngIf="isLoadingVoucherData; else noVouchers">
-                  <p>Đang tải voucher...</p>
-                </div>
-                <ng-template #noVouchers>
-                  <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
-                    Chưa Có Voucher Nào Được Phát Hành
-                  </h3>
-                  <p class="mt-1 text-sm">
-                    Sử dụng biểu mẫu phía trên để phát hành voucher cho coupon này.
-                  </p>
-                </ng-template>
-              </td>
-            </tr>
+          <tr>
+            <td colspan="7" class="py-10 text-center text-gray-500 dark:text-gray-400">
+              <div *ngIf="isLoadingVoucherData; else noVouchers">
+                <p>Đang tải voucher...</p>
+              </div>
+              <ng-template #noVouchers>
+                <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
+                  Chưa Có Voucher Nào Được Phát Hành
+                </h3>
+                <p class="mt-1 text-sm">
+                  Sử dụng biểu mẫu phía trên để phát hành voucher cho coupon này.
+                </p>
+              </ng-template>
+            </td>
+          </tr>
           }
         </tbody>
       </table>

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 
 import { ConditionsBuilderComponent } from '../../../form/conditions-builder/conditions-builder.component';
 
@@ -18,20 +18,20 @@ import { SwitchComponent } from '../../../form/input/switch.component';
 
 // Models
 import { Coupon, CouponFormData } from '../../../../models/coupon.model';
-import { Voucher } from '../../../../models/voucher.model';
+import { Voucher, VoucherProfileType } from '../../../../models/voucher.model';
 import { ConditionGroup, Field, Operator } from '../../../../models/conditions.model';
 
 // Services
 import { CouponService } from '../../../../services/api/coupon.service';
 import { VoucherService } from '../../../../services/api/voucher.service';
 import { CustomerService } from '../../../../services/api/customer.service';
+import { EmployeeService } from '../../../../services/api/employee.service'; // [NEW]
 import { CategoryService } from '../../../../services/api/category.service';
 import { ProductService } from '../../../../services/api/product.service';
 import { ComboService } from '../../../../services/api/combo.service';
 
 // Utils
 import { sanitizeFormData, createFormData } from '../../../../utils/form-data.utils';
-import { Customer } from '../../../../models/customer.model';
 
 // ========= Defaults =========
 const DEFAULT_FORM: CouponFormData = {
@@ -55,9 +55,10 @@ const DEFAULT_FORM: CouponFormData = {
   status: 'DRAFT',
 };
 
-// Form phát hành voucher
+// Form phát hành voucher (Updated)
 interface VoucherIssueFormData {
-  customerIds: string[];
+  profileType: VoucherProfileType; // [NEW] Loại đối tượng
+  profileIds: string[]; // [RENAMED] Thay vì customerIds
   usageLimit: number;
   expiredAt: string | null;
 }
@@ -89,14 +90,25 @@ export class CouponAddComponent implements OnInit {
 
   currentTab: 'details' | 'vouchers' = 'details';
 
-  allCustomers: Customer[] = [];
+  // [UPDATED] Data sources cho voucher
+  profilesList: any[] = []; // List dynamic (Customer hoặc Employee)
   issuedVouchers: Voucher[] = [];
+
   voucherIssueForm: VoucherIssueFormData = {
-    customerIds: [],
+    profileType: 'Customer', // Mặc định là khách
+    profileIds: [],
     usageLimit: 1,
     expiredAt: null,
   };
+
   isLoadingVoucherData = false;
+  isIssuing = false; // Loading state cho nút phát hành
+
+  // Options
+  profileTypeOptions = [
+    { value: 'Customer', label: 'Khách hàng' },
+    { value: 'Employee', label: 'Nhân viên' },
+  ];
 
   valueTypeOptions = [
     { value: 'percentage', label: 'Phần trăm (%)' },
@@ -145,42 +157,6 @@ export class CouponAddComponent implements OnInit {
       type: 'boolean',
       operators: [Operator.EQUALS, Operator.NOT_EQUALS],
     },
-    // {
-    //   id: 'product_id',
-    //   group: 'Sản phẩm',
-    //   name: 'Sản phẩm',
-    //   type: 'multi-select',
-    //   operators: [Operator.IN, Operator.NOT_IN],
-    //   source: {
-    //     valueField: 'id',
-    //     labelField: 'name',
-    //     optionsLoader: (params) => this.productService.getAll({ ...params }),
-    //   },
-    // },
-    // {
-    //   id: 'combo_id',
-    //   group: 'Combo',
-    //   name: 'Combo',
-    //   type: 'multi-select',
-    //   operators: [Operator.IN, Operator.NOT_IN],
-    //   source: {
-    //     valueField: 'id',
-    //     labelField: 'name',
-    //     optionsLoader: (params) => this.comboService.getAll({ ...params }),
-    //   },
-    // },
-    // {
-    //   id: 'category_id',
-    //   group: 'Danh mục',
-    //   name: 'Danh mục',
-    //   type: 'multi-select',
-    //   operators: [Operator.IN, Operator.NOT_IN],
-    //   source: {
-    //     valueField: 'id',
-    //     labelField: 'name',
-    //     optionsLoader: (params) => this.categoryService.getAll({ ...params }),
-    //   },
-    // },
     {
       id: 'order_count',
       group: 'Đơn hàng',
@@ -215,6 +191,7 @@ export class CouponAddComponent implements OnInit {
     private couponService: CouponService,
     private voucherService: VoucherService,
     private customerService: CustomerService,
+    private employeeService: EmployeeService, // [NEW]
     private categoryService: CategoryService,
     private productService: ProductService,
     private toastr: ToastrService,
@@ -230,7 +207,9 @@ export class CouponAddComponent implements OnInit {
         this.isEditMode = true;
         this.couponId = id;
         this.loadCoupon(id);
-        this.loadVoucherData(id);
+        // Load dữ liệu cho tab Voucher
+        this.loadIssuedVouchers(id);
+        this.loadProfiles('Customer'); // Mặc định load khách
       } else {
         const now = new Date();
         const endDate = new Date();
@@ -267,28 +246,56 @@ export class CouponAddComponent implements OnInit {
     });
   }
 
-  loadVoucherData(couponId: string) {
-    this.isLoadingVoucherData = true;
-    forkJoin({
-      customers: this.customerService.getAll({ limit: 2000 }),
-      vouchers: this.voucherService.getAll({
+  // [UPDATED] Load danh sách voucher đã phát hành
+  loadIssuedVouchers(couponId: string) {
+    this.voucherService
+      .getAll({
         coupon: couponId,
         limit: 1000,
-        populate: 'customer',
+        populate: 'profile', // Populate dynamic path
         sortBy: 'createdAt:desc',
-      }),
-    }).subscribe({
-      next: ({ customers, vouchers }) => {
-        this.allCustomers = customers.results || [];
-        this.issuedVouchers = vouchers.results || [];
+      })
+      .subscribe({
+        next: (res) => {
+          this.issuedVouchers = res.results || [];
+        },
+        error: (err) => console.error('Error loading vouchers:', err),
+      });
+  }
+
+  // [NEW] Load danh sách Profile (Khách hoặc Nhân viên) để chọn
+  loadProfiles(type: VoucherProfileType) {
+    this.isLoadingVoucherData = true;
+    this.profilesList = []; // Clear danh sách cũ
+
+    const obs: Observable<any> =
+      type === 'Employee'
+        ? this.employeeService.getAll({ limit: 2000 })
+        : this.customerService.getAll({ limit: 2000 });
+
+    obs.subscribe({
+      next: (res: any) => {
+        // Map dữ liệu về chuẩn chung để ng-select hiển thị
+        this.profilesList = (res.results || []).map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          label: `${item.name} (${item.phone || item.email || 'No contact'})`,
+        }));
         this.isLoadingVoucherData = false;
       },
-      error: (err) => {
-        console.error('Error loading voucher data:', err);
-        this.toastr.error('Could not load customer or voucher list', 'Error');
+      error: (err: any) => {
+        console.error('Error loading profiles:', err);
+        this.toastr.error('Lỗi tải danh sách người dùng', 'Error');
         this.isLoadingVoucherData = false;
       },
     });
+  }
+
+  // [NEW] Sự kiện khi đổi loại đối tượng nhận voucher
+  onProfileTypeChange(type: any) {
+    if (!type) return;
+    this.voucherIssueForm.profileIds = []; // Reset selection
+    this.loadProfiles(type);
   }
 
   formatDateTimeLocal(date: Date): string {
@@ -410,56 +417,83 @@ export class CouponAddComponent implements OnInit {
     this.router.navigateByUrl('/coupon');
   }
 
+  // [UPDATED] Logic phát hành voucher (Bulk Issue)
   onIssueVouchers() {
     if (!this.couponId) return;
-    if (!this.voucherIssueForm.customerIds || this.voucherIssueForm.customerIds.length === 0) {
-      this.toastr.error('Please select at least one customer', 'Error');
+    if (!this.voucherIssueForm.profileIds || this.voucherIssueForm.profileIds.length === 0) {
+      this.toastr.error('Vui lòng chọn ít nhất một người nhận', 'Error');
       return;
     }
-    // const payload = {
-    //   coupon: this.couponId,
-    //   customers: this.voucherIssueForm.customerIds,
-    //   issueMode: 'ADMIN',
-    //   usageLimit: this.voucherIssueForm.usageLimit || 1,
-    //   expiredAt: this.voucherIssueForm.expiredAt || undefined,
-    // };
-    // this.voucherService.bulkIssue(payload).subscribe({
-    //   next: (result: any) => {
-    //     this.toastr.success(`Successfully issued ${result.createdCount || 0} vouchers!`, 'Success');
-    //     this.voucherIssueForm.customerIds = [];
-    //     this.loadVoucherData(this.couponId!);
-    //   },
-    //   error: (err) => {
-    //     console.error('Error issuing vouchers:', err);
-    //     this.toastr.error(err?.error?.message || 'Failed to issue vouchers', 'Error');
-    //   },
-    // });
+
+    this.isIssuing = true;
+
+    // Tạo mảng request để gửi song song (Giả lập bulk create nếu API chưa support)
+    const requests = this.voucherIssueForm.profileIds.map((profileId) => {
+      const payload = {
+        coupon: this.couponId,
+        profile: profileId,
+        profileType: this.voucherIssueForm.profileType,
+        issueMode: 'ADMIN',
+        usageLimit: this.voucherIssueForm.usageLimit || 1,
+        // Nếu không chọn ngày hết hạn riêng, lấy ngày hết hạn của coupon
+        expiredAt: this.voucherIssueForm.expiredAt || this.couponData.endDate,
+      };
+      // Gọi create của voucher service
+      return this.voucherService.create(payload as any);
+    });
+
+    forkJoin(requests).subscribe({
+      next: (results) => {
+        this.toastr.success(`Đã phát hành thành công ${results.length} voucher!`, 'Success');
+        this.voucherIssueForm.profileIds = []; // Clear form
+        this.isIssuing = false;
+        this.loadIssuedVouchers(this.couponId!); // Reload list
+      },
+      error: (err) => {
+        console.error('Error issuing vouchers:', err);
+        this.toastr.error(err?.error?.message || 'Có lỗi khi phát hành voucher', 'Error');
+        this.isIssuing = false;
+      },
+    });
   }
 
+  // [UPDATED] Logic Thu Hồi
   onRevokeVoucher(voucher: Voucher) {
     if (
-      !confirm(`Are you sure you want to revoke voucher ${voucher.code}? This cannot be undone.`)
+      !confirm(
+        `Bạn có chắc muốn thu hồi mã ${voucher.code}? Khách hàng sẽ không thể sử dụng mã này nữa.`,
+      )
     ) {
       return;
     }
-    // this.voucherService.revoke(voucher.id).subscribe({
-    //   next: () => {
-    //     this.toastr.success(`Voucher ${voucher.code} has been revoked.`, 'Success');
-    //     const index = this.issuedVouchers.findIndex((v) => v.id === voucher.id);
-    //     if (index > -1) {
-    //       this.issuedVouchers[index].status = 'REVOKED';
-    //       this.issuedVouchers[index].revokeAt = new Date();
-    //     }
-    //   },
-    //   error: (err: any) => {
-    //     console.error('Error revoking voucher:', err);
-    //     this.toastr.error(err?.error?.message || 'Failed to revoke voucher', 'Error');
-    //   },
-    // });
+
+    this.voucherService.revoke(voucher.id).subscribe({
+      next: () => {
+        this.toastr.success(`Đã thu hồi voucher ${voucher.code}.`, 'Success');
+        // Cập nhật UI local
+        const index = this.issuedVouchers.findIndex((v) => v.id === voucher.id);
+        if (index > -1) {
+          this.issuedVouchers[index].status = 'REVOKED';
+          this.issuedVouchers[index].revokeAt = new Date();
+        }
+      },
+      error: (err: any) => {
+        console.error('Error revoking voucher:', err);
+        this.toastr.error(err?.error?.message || 'Failed to revoke voucher', 'Error');
+      },
+    });
   }
 
+  // [UPDATED] Helper hiển thị tên Profile
   profileName(voucher: Voucher): string {
-    const p = voucher?.profile;
-    return typeof p === 'string' ? p : (p?.name ?? '');
+    const p: any = voucher?.profile;
+    if (!p) return 'N/A';
+
+    // Nếu profile là object (đã populate)
+    if (typeof p === 'object' && p.name) {
+      const typeLabel = voucher.profileType === 'Employee' ? '(NV)' : '';
+      return `${p.name} ${typeLabel}`;
+    }
+    return 'ID: ' + p;
   }
 }
