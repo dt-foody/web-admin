@@ -235,14 +235,14 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <app-label>Giới Hạn Sử Dụng (mỗi voucher)</app-label>
-          <app-input-field type="number" [(ngModel)]="voucherIssueForm.usageLimit" placeholder="1"></app-input-field>
+          <app-input-field type="number" [(value)]="voucherIssueForm.usageLimit" placeholder="1"></app-input-field>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Mặc định: 1. Số lần voucher này có thể được sử dụng.
           </p>
         </div>
         <div>
           <app-label>Ngày Hết Hạn</app-label>
-          <app-input-field type="datetime-local" [(ngModel)]="voucherIssueForm.expiredAt"></app-input-field>
+          <app-input-field type="datetime-local" [(value)]="voucherIssueForm.expiredAt"></app-input-field>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Tùy chọn. Nếu để trống, sử dụng ngày kết thúc của coupon.
           </p>

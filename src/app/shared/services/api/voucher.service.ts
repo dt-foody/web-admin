@@ -18,6 +18,6 @@ export class VoucherService extends BaseService<Voucher> {
    */
   revoke(id: string): Observable<Voucher> {
     // Sử dụng hàm update của BaseService để đổi status
-    return this.update(id, { status: 'REVOKED', revokeAt: new Date() } as any);
+    return this.update(id, { status: 'REVOKED' } as any);
   }
 }
