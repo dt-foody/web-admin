@@ -151,13 +151,6 @@ export class CouponAddComponent implements OnInit {
       operators: [Operator.EQUALS, Operator.GREATER_THAN, Operator.LESS_THAN],
     },
     {
-      id: 'customer_is_new',
-      group: 'Khách hàng',
-      name: 'Khách hàng mới',
-      type: 'boolean',
-      operators: [Operator.EQUALS, Operator.NOT_EQUALS],
-    },
-    {
       id: 'order_count',
       group: 'Đơn hàng',
       name: 'Số lượng đơn hàng',
@@ -165,14 +158,7 @@ export class CouponAddComponent implements OnInit {
       operators: [Operator.EQUALS, Operator.GREATER_THAN, Operator.LESS_THAN],
     },
     {
-      id: 'order_date',
-      group: 'Đơn hàng',
-      name: 'Ngày đặt hàng',
-      type: 'date',
-      operators: [Operator.BEFORE, Operator.AFTER, Operator.BETWEEN],
-    },
-    {
-      id: 'order_contains_product_count',
+      id: 'order_total_items',
       group: 'Đơn hàng',
       name: 'Số lượng sản phẩm trong đơn',
       type: 'number',
