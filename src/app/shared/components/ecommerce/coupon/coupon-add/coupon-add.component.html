@@ -315,13 +315,13 @@
               </span>
             </td>
             <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-              {{ voucher.expiredAt | date: 'dd/MM/yyyy HH:mm' }}
+              {{ voucher.expiredAt ? (voucher.expiredAt | date: 'dd/MM/yyyy HH:mm') : '---' }}
             </td>
             <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-              {{ voucher.usedAt ? (voucher.usedAt | date: 'dd/MM/yyyy HH:mm') : 'Không áp dụng' }}
+              {{ voucher.usedAt ? (voucher.usedAt | date: 'dd/MM/yyyy HH:mm') : '---' }}
             </td>
             <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-              {{ voucher.issuedAt | date: 'dd/MM/yyyy HH:mm' }}
+              {{ voucher.issuedAt ? (voucher.issuedAt | date: 'dd/MM/yyyy HH:mm') : '---' }}
             </td>
             <td class="px-5 py-4 whitespace-nowrap">
               <button *ngIf="voucher.status === 'UNUSED'" (click)="onRevokeVoucher(voucher)"
