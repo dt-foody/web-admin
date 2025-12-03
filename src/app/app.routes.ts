@@ -76,12 +76,12 @@ export const routes: Routes = [
     component: AppLayoutComponent,
     canActivate: [authGuard], // <--- bảo vệ toàn bộ bố cục ứng dụng
     children: [
-      {
-        path: '',
-        component: EcommerceComponent,
-        pathMatch: 'full',
-        title: 'Tổng quan',
-      },
+      // {
+      //   path: '',
+      //   component: EcommerceComponent,
+      //   pathMatch: 'full',
+      //   title: 'Tổng quan',
+      // },
       {
         path: 'category',
         children: [
