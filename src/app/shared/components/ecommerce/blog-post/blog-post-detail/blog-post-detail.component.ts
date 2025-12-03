@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BlogPostService } from '../../../../services/api/blog-post.service';
 import { SafeHtmlPipe } from '../../../../pipe/safe-html.pipe';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
   selector: 'app-blog-post-detail',
@@ -47,9 +48,12 @@ export class BlogPostDetailComponent implements OnInit {
       })
       .subscribe({
         next: (data) => {
-          this.post = data;
           this.isLoading = false;
-          console.log('Post data loaded:', this.post);
+
+          if (data) {
+            this.post = data;
+            this.post.coverImage = `${environment.urlBaseImage}/${data.coverImage}`;
+          }
         },
         error: (err) => {
           console.error(err);
