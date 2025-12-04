@@ -101,10 +101,10 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
       params.status = this.query.status;
     }
     if (this.query.paymentStatus) {
-      params['payment.status'] = this.query.paymentStatus;
+      params.paymentStatus = this.query.paymentStatus;
     }
     if (this.query.shippingStatus) {
-      params['shipping.status'] = this.query.shippingStatus;
+      params.shippingStatus = this.query.shippingStatus;
     }
 
     this.orderService.getAll(params).subscribe({
@@ -180,7 +180,6 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     };
     return map[status] || 'Không rõ';
   }
-
 
   getShippingStatusLabel(status?: string, orderType?: string): string {
     const map: Record<string, string> = {
