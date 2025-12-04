@@ -86,6 +86,7 @@ export class OrderService extends BaseService<Order> {
     base.totalAmount = totalAmount;
     base.grandTotal = grandTotal;
     base.discountAmount = discount;
+    base.status = "confirmed";
 
     delete base.discountType;
     delete base.discountValue;
@@ -94,8 +95,8 @@ export class OrderService extends BaseService<Order> {
     if (base.profile) base.profileType = 'Customer';
     else base.profileType = null;
 
-    // appliedCoupons
-    if (!base.appliedCoupons) base.appliedCoupons = [];
+    // coupons
+    if (!base.coupons) base.coupons = [];
 
     return base;
   }
