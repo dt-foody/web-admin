@@ -240,7 +240,7 @@ export class BlogPostAddComponent implements OnInit {
   
       if (sameDate) {
         this.postData.publishedAt = now;
-      } else if (pub.getTime() < now.getTime()) {
+      } else if (!this.isEditMode && pub.getTime() < now.getTime()) {
         this.toastr.error('Published date must be greater than or equal to now', 'Validation');
         return false;
       }
