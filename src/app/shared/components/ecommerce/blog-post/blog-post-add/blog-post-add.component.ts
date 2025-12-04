@@ -20,6 +20,7 @@ import { BlogTag } from '../../../../models/blog-tag.model';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ImageUploadComponent } from '../../../_core/image-upload/image-upload.component';
 import { SafeHtmlPipe } from '../../../../pipe/safe-html.pipe';
+import { environment } from '../../../../../../environments/environment';
 
 interface BlogPostFormData {
   title: string;
@@ -163,8 +164,9 @@ export class BlogPostAddComponent implements OnInit {
           categories: data.categories || [],
           tags: data.tags || [],
         };
-
-        console.log('data', data);
+        if (data.coverImage) {
+          this.imagePreview = `${environment.urlBaseImage}${data.coverImage}`;
+        }
       },
       error: (err) => {
         console.error(err);

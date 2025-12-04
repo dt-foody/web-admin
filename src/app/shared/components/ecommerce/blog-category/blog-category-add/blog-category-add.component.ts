@@ -18,6 +18,7 @@ import { createFormData, deepSanitize } from '../../../../utils/form-data.utils'
 import { ImageUploadComponent } from '../../../_core/image-upload/image-upload.component';
 import { FileService } from '../../../../services/api/file.service';
 import { SwitchComponent } from '../../../form/input/switch.component';
+import { environment } from '../../../../../../environments/environment';
 
 interface BlogCategoryFormData {
   name: string;
@@ -93,6 +94,9 @@ export class BlogCategoryAddComponent implements OnInit {
           textColor: data.textColor || DEFAULT_FORM.textColor,
           isActive: data.isActive !== undefined ? data.isActive : true,
         };
+        if (data.coverImage) {
+          this.imagePreview = `${environment.urlBaseImage}${data.coverImage}`;
+        }
       },
       error: (err) => {
         this.toastr.error('Cannot load category data', 'Error');

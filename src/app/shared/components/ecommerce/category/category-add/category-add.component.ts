@@ -99,7 +99,9 @@ export class CategoryAddComponent implements OnInit {
           isActive: data.isActive,
           parent: data.parent || null,
         };
-        if (data.image) this.imagePreview = `${environment.urlBaseImage}${data.image}`;
+        if (data.image) {
+          this.imagePreview = `${environment.urlBaseImage}${data.image}`;
+        }
       },
       error: (err) => {
         console.error(err);
