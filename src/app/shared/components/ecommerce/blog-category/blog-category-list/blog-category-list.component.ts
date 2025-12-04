@@ -16,6 +16,7 @@ import { HasPermissionDirective } from '../../../../directives/has-permission.di
 import { BlogCategory } from '../../../../models/blog-category.model';
 import { BlogCategoryService } from '../../../../services/api/blog-category.service';
 import { CheckboxComponent } from '../../../form/input/checkbox.component';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
   selector: 'app-blog-category-list',
@@ -67,6 +68,10 @@ export class BlogCategoryListComponent extends BaseListComponent<BlogCategory> i
       this.dataSources = data.results;
       this.totalPages = data.totalPages;
       this.totalResults = data.totalResults;
+
+      this.dataSources.forEach((el: BlogCategory) => {
+        el.coverImage = el.coverImage ? `${environment.urlBaseImage}${el.coverImage}` : '';
+      });
     });
   }
 
