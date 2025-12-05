@@ -8,6 +8,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 
 import { ToastrService } from 'ngx-toastr';
 import { OrderService } from '../../../../services/api/order.service';
+import { ImageUrlPipe } from '../../../../pipe/image-url.pipe';
 
 @Component({
   selector: 'app-order-detail',
@@ -19,12 +20,14 @@ import { OrderService } from '../../../../services/api/order.service';
     NgSelectModule,
     StatusTimelineComponent,
     ButtonComponent,
+    ImageUrlPipe,
   ],
   templateUrl: './order-detail.component.html',
   styles: ``,
 })
 export class OrderDetailComponent implements OnInit {
   public order: any = null;
+  public orderId: any = "";
   public isLoading: boolean = true;
   public profileData: any = null;
 
@@ -65,45 +68,21 @@ export class OrderDetailComponent implements OnInit {
 
     // Lấy orderId từ route params
     this.route.params.subscribe((params) => {
-      const orderId = params['id'];
-      if (orderId) {
-        this.loadOrderDetail(orderId);
-      } else {
-        this.toastr.error('Không tìm thấy mã đơn hàng');
-        this.isLoading = false;
-      }
+      this.orderId = params['id'];
+      this.loadOrderDetail();
     });
   }
 
   // Load chi tiết đơn hàng từ API
-  private loadOrderDetail(orderId: string) {
+  private loadOrderDetail() {
     this.isLoading = true;
 
-    this.orderService.getById(orderId).subscribe({
+    this.orderService.getById(this.orderId).subscribe({
       next: (response) => {
-        // Lấy data từ response
-        const orderData = response;
-
-        // Debug: Log raw data để kiểm tra
-        console.log('Raw order data:', orderData);
-        console.log('orderCode:', orderData.orderCode);
-        console.log('orderId:', orderData.orderId);
-        console.log('id:', orderData.id);
-
-        // Transform data để phù hợp với template
-        this.order = this.transformOrderData(orderData);
-
-        // Debug: Log transformed data
-        console.log('Transformed order:', this.order);
-        console.log('Final orderId:', this.order.orderId);
+        this.order = response;
 
         this.updateOrderStatusIndex();
         this.isLoading = false;
-
-        // Load profile data nếu cần
-        if (orderData.profile && typeof orderData.profile === 'string') {
-          this.loadProfileData(orderData.profile);
-        }
       },
       error: (error) => {
         this.toastr.error('Không thể tải thông tin đơn hàng');
@@ -111,147 +90,6 @@ export class OrderDetailComponent implements OnInit {
         this.isLoading = false;
       },
     });
-  }
-
-  // Transform order data từ API sang format của template
-  private transformOrderData(apiOrder: any): any {
-    // Kiểm tra apiOrder có tồn tại không
-    if (!apiOrder) {
-      console.error('API Order is null or undefined');
-      return null;
-    }
-
-    // Lấy orderId ưu tiên: orderCode > orderId > _id > id
-    const displayOrderId =
-      apiOrder.orderCode || apiOrder.orderId || apiOrder._id || apiOrder.id || 'N/A';
-
-    console.log('Display Order ID:', displayOrderId);
-
-    // Transform profile - xử lý cả object và string ID
-    let profileData: any = {
-      id: '',
-      name: 'Khách hàng',
-      email: '',
-      phone: '',
-    };
-
-    if (apiOrder.profile) {
-      if (typeof apiOrder.profile === 'object') {
-        // Profile là object
-        profileData = {
-          id: apiOrder.profile.id || apiOrder.profile._id || '',
-          name:
-            apiOrder.profile.name ||
-            apiOrder.profile.fullName ||
-            apiOrder.profile.username ||
-            apiOrder.shipping?.address?.recipientName ||
-            'Khách hàng',
-          email: apiOrder.profile.email || '',
-          phone:
-            apiOrder.profile.phone ||
-            apiOrder.profile.phoneNumber ||
-            apiOrder.shipping?.address?.recipientPhone ||
-            '',
-        };
-      } else {
-        // Profile là string ID
-        profileData = {
-          id: apiOrder.profile,
-          name: apiOrder.shipping?.address?.recipientName || 'Khách hàng',
-          email: '',
-          phone: apiOrder.shipping?.address?.recipientPhone || '',
-        };
-      }
-    }
-
-    return {
-      // ID fields - Format giống mock data
-      id: apiOrder.id || apiOrder._id,
-      orderId: displayOrderId,
-
-      // Status
-      status: apiOrder.status || 'pending',
-
-      // Timestamps
-      createdAt: apiOrder.createdAt || apiOrder.created_at || new Date().toISOString(),
-      updatedAt: apiOrder.updatedAt || apiOrder.updated_at || new Date().toISOString(),
-
-      // Note
-      note: apiOrder.note || '',
-
-      // Items - transform để match format mock
-      items: (apiOrder.items || []).map((item: any, index: number) => ({
-        id: item.item || item.id || item._id || index,
-        name: item.name || 'Sản phẩm',
-        price: item.price || item.basePrice || 0,
-        originalPrice: item.originalBasePrice || item.originalPrice || item.price || 0,
-        quantity: item.quantity || 1,
-        note: item.note || null,
-        options: item.options || [],
-        comboSelections: item.comboSelections || [],
-        promotion: item.promotion || null,
-      })),
-
-      // Profile - format giống mock data
-      profile: {
-        name: profileData.name,
-        email: profileData.email,
-        phone: profileData.phone,
-      },
-
-      // Shipping - format giống mock data
-      shipping: {
-        status: apiOrder.shipping?.status || 'pending',
-        address: {
-          recipientName: apiOrder.shipping?.address?.recipientName || profileData.name,
-          recipientPhone: apiOrder.shipping?.address?.recipientPhone || profileData.phone,
-          street: apiOrder.shipping?.address?.street || '',
-          ward: apiOrder.shipping?.address?.ward || '',
-          district: apiOrder.shipping?.address?.district || '',
-          city: apiOrder.shipping?.address?.city || '',
-          label: apiOrder.shipping?.address?.label || 'Địa chỉ',
-          location: apiOrder.shipping?.address?.location || null,
-        },
-      },
-
-      // Payment - format giống mock data
-      payment: {
-        method: apiOrder.payment?.method || 'cash',
-        status: apiOrder.payment?.status || 'pending',
-        transactionId: apiOrder.payment?.transactionId || null,
-      },
-
-      // Financial - format giống mock data
-      totalAmount: apiOrder.totalAmount || 0,
-      discountAmount: apiOrder.discountAmount || 0,
-      shippingFee: apiOrder.shippingFee || 0,
-      grandTotal: apiOrder.grandTotal || 0,
-
-      // Additional fields
-      orderType: apiOrder.orderType || '',
-      profileType: apiOrder.profileType || 'Customer',
-      deliveryTime: apiOrder.deliveryTime || null,
-      appliedCoupons: apiOrder.appliedCoupons || [],
-      createdBy: apiOrder.createdBy || null,
-    };
-  }
-
-  // Load profile data riêng nếu cần
-  private loadProfileData(profileId: string) {
-    // Nếu có API để lấy profile detail
-    // this.profileService.getProfileById(profileId).subscribe({
-    //   next: (profile) => {
-    //     if (this.order) {
-    //       this.order.profile = {
-    //         id: profile.id,
-    //         name: profile.name,
-    //         email: profile.email,
-    //         phone: profile.phone
-    //       };
-    //     }
-    //   },
-    //   error: (err) => console.error('Load profile error:', err)
-    // });
   }
 
   // Cập nhật chỉ số trạng thái hiện tại
@@ -292,8 +130,6 @@ export class OrderDetailComponent implements OnInit {
 
   // Gọi API cập nhật trạng thái
   private updateOrderStatus(statusKey: string) {
-    const oldStatus = this.order.status;
-
     // Cập nhật UI optimistic
     this.order.status = statusKey;
     this.updateOrderStatusIndex();
@@ -303,19 +139,11 @@ export class OrderDetailComponent implements OnInit {
       next: (response) => {
         this.toastr.success('Cập nhật trạng thái đơn hàng thành công');
 
-        // Cập nhật lại toàn bộ order từ response nếu có
-        if (response.data) {
-          this.order = this.transformOrderData(response.data);
-          this.updateOrderStatusIndex();
-        }
+        this.loadOrderDetail();
       },
       error: (error) => {
         this.toastr.error('Cập nhật trạng thái thất bại');
         console.error('Update status error:', error);
-
-        // Revert lại trạng thái cũ nếu lỗi
-        this.order.status = oldStatus;
-        this.updateOrderStatusIndex();
       },
     });
   }
@@ -356,14 +184,5 @@ export class OrderDetailComponent implements OnInit {
   public getItemOptionsText(options: any[]): string {
     if (!options || options.length === 0) return '';
     return options.map((opt) => `${opt.groupName}: ${opt.optionName}`).join(' • ');
-  }
-
-  // TrackBy cho performance
-  public trackByStatusKey(index: number, status: any): string {
-    return status.key;
-  }
-
-  public trackByItemId(index: number, item: any): string {
-    return item.id;
   }
 }
