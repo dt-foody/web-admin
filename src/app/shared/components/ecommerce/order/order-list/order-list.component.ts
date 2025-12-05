@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, TemplateRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, TemplateRef, ViewChild, ElementRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Order } from '../../../../models/order.model';
 import { OrderService } from '../../../../services/api/order.service';
@@ -12,8 +12,8 @@ import { BaseListComponent } from '../../../../core/base-list.component';
 import { SortHeaderComponent } from '../../../_core/sort-header/sort-header.component';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
 import { CheckboxComponent } from '../../../form/input/checkbox.component';
-// [Cite: 1] Import DndModule và các type cần thiết
 import { DndModule, DndDropEvent } from 'ngx-drag-drop';
+import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-order-list',
@@ -27,23 +27,37 @@ import { DndModule, DndDropEvent } from 'ngx-drag-drop';
     SortHeaderComponent,
     CheckboxComponent,
     HasPermissionDirective,
-    DndModule, // [Cite: 1] Thêm DndModule vào imports
+    DndModule,
   ],
   templateUrl: './order-list.component.html',
 })
-export class OrderListComponent extends BaseListComponent<Order> implements OnInit {
+export class OrderListComponent extends BaseListComponent<Order> implements OnInit, OnDestroy {
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
   @ViewChild('filterRef') filterRef!: ElementRef;
 
   viewMode: 'table' | 'kanban' = 'table';
   itemToDelete: Order | null = null;
+  
+  private refreshSubscription: Subscription | null = null;
+
+  sortOptions = [
+    { label: 'Mới nhất', value: 'createdAt:desc' },
+    { label: 'Cũ nhất', value: 'createdAt:asc' },
+    { label: 'Vừa cập nhật', value: 'updatedAt:desc' },
+    { label: 'Ưu tiên cao nhất (Gấp)', value: 'priorityTime:asc' }, 
+    { label: 'Ưu tiên thấp nhất', value: 'priorityTime:desc' },
+  ];
+  
+  currentSortValue: string = 'createdAt:desc';
 
   get kanbanColumns() {
-    return this.orderStatuses.filter((s) => s.value !== '');
+    // Loại trừ 'unfinished' khỏi các cột Kanban để tránh hiển thị cột tổng hợp thừa
+    return this.orderStatuses.filter((s) => s.value !== '' && s.value !== 'unfinished');
   }
 
   orderStatuses = [
     { value: '', label: 'Tất cả trạng thái' },
+    { value: 'unfinished', label: 'Chưa hoàn tất' }, // [MỚI] Thêm trạng thái chưa hoàn tất
     { value: 'pending', label: 'Chờ xác nhận' },
     { value: 'confirmed', label: 'Đã xác nhận' },
     { value: 'preparing', label: 'Đang chuẩn bị' },
@@ -81,9 +95,47 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     this.query.status = '';
     this.query.paymentStatus = '';
     this.query.shippingStatus = '';
+    
+    this.query.sort = { key: 'createdAt', asc: false };
 
     const savedMode = localStorage.getItem('orderViewMode');
-    if (savedMode === 'kanban') this.viewMode = 'kanban';
+    if (savedMode === 'kanban') {
+      this.viewMode = 'kanban';
+    }
+    
+    this.manageAutoRefresh();
+  }
+
+  ngOnDestroy(): void {
+    this.stopAutoRefresh();
+  }
+
+  manageAutoRefresh() {
+    this.stopAutoRefresh(); 
+    
+    if (this.viewMode === 'kanban') {
+      this.refreshSubscription = interval(30000).subscribe(() => {
+        this.fetchData();
+      });
+    }
+  }
+
+  stopAutoRefresh() {
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+      this.refreshSubscription = null;
+    }
+  }
+
+  onSortOptionChange() {
+    if (this.currentSortValue) {
+      const [key, direction] = this.currentSortValue.split(':');
+      this.query.sort = {
+        key: key,
+        asc: direction === 'asc'
+      };
+      this.onFilterChange();
+    }
   }
 
   fetchData() {
@@ -97,9 +149,18 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     if (this.query && this.query.search && this.query.search.trim()) {
       params.search = this.query.search.trim();
     }
+
+    // [MỚI] Xử lý logic lọc trạng thái
     if (this.query.status) {
-      params.status = this.query.status;
+      if (this.query.status === 'unfinished') {
+        // Nếu chọn "Chưa hoàn tất", gửi danh sách các trạng thái đang active
+        params.status = ['pending', 'confirmed', 'preparing', 'delivering'];
+      } else {
+        // Các trường hợp khác gửi giá trị đơn lẻ
+        params.status = this.query.status;
+      }
     }
+
     if (this.query.paymentStatus) {
       params.paymentStatus = this.query.paymentStatus;
     }
@@ -114,7 +175,6 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
         this.totalResults = data.totalResults;
       },
       error: (error) => {
-        this.toastr.error('Failed to fetch data!', 'Order');
       },
     });
   }
@@ -123,6 +183,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     this.viewMode = mode;
     localStorage.setItem('orderViewMode', mode);
     this.query.page = 1;
+    this.manageAutoRefresh();
     this.fetchData();
   }
 
@@ -130,28 +191,21 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     return this.dataSources.filter((order) => order.status === status);
   }
 
-  // [Cite: 1] Hàm xử lý sự kiện Drop
   onDrop(event: DndDropEvent, targetStatus: string) {
     const order = event.data as Order;
-    // Nếu không có data hoặc trạng thái không đổi thì bỏ qua
     if (!order || order.status === targetStatus) return;
 
     const oldStatus = order.status;
-
-    // Optimistic Update: Cập nhật giao diện ngay lập tức
-    // Lưu ý: Vì getOrdersByStatus filter từ dataSources nên ta cần update trực tiếp object trong dataSources
     const targetOrder = this.dataSources.find((o) => o.id === order.id);
     if (targetOrder) {
       targetOrder.status = targetStatus as any;
     }
 
-    // Gọi API cập nhật
     this.orderService.adminUpdateOrder(order.id, { status: targetStatus }).subscribe({
       next: () => {
         this.toastr.success(`Đã cập nhật trạng thái thành công`, 'Thành công');
       },
       error: (err) => {
-        // Revert nếu lỗi
         if (targetOrder) {
           targetOrder.status = oldStatus;
         }
@@ -188,14 +242,10 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
       delivered: 'Đã giao hàng',
       failed: 'Giao hàng thất bại',
     };
-
-    // Nếu pickup thì shipping = n/a
     if (!status && orderType !== 'Delivery') return 'n/a';
-
     return map[status || ''] || 'đang chờ';
   }
 
-  // [Cite: 1] Hàm lấy màu đậm cho chấm tròn (Dot)
   getStatusDotColor(status: string): string {
     const colors: { [key: string]: string } = {
       pending: 'bg-yellow-500',
@@ -222,23 +272,14 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
 
   getStatusColor(status: string): string {
     const colors: { [key: string]: string } = {
-      pending:
-        'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-700',
-      confirmed:
-        'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-700',
-      preparing:
-        'bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-700',
-      delivering:
-        'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-700',
-      completed:
-        'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400 border-green-200 dark:border-green-700',
-      canceled:
-        'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400 border-red-200 dark:border-red-700',
+      pending: 'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-700',
+      confirmed: 'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-700',
+      preparing: 'bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-700',
+      delivering: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-700',
+      completed: 'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400 border-green-200 dark:border-green-700',
+      canceled: 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400 border-red-200 dark:border-red-700',
     };
-    return (
-      colors[status] ||
-      'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400 border-gray-200'
-    );
+    return colors[status] || 'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400 border-gray-200';
   }
 
   getPaymentStatusColor(status: string): string {

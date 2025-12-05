@@ -98,7 +98,7 @@
               class="flex items-start gap-6 py-4 border-b border-gray-100 dark:border-gray-700 last:border-0">
 
               <div>
-                <img [src]="item.item.image | imageUrl" alt="" class="w-24 h-20 rounded-lg object-cover"
+                <img [src]="item.item?.image | imageUrl" alt="" class="w-24 h-20 rounded-lg object-cover"
                   appImageFallback="/images/error/no-image.png">
               </div>
 
@@ -200,25 +200,6 @@
                   }}</span>
               </div>
             </div>
-
-            <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 mb-4">
-              <div class="flex justify-between text-sm mb-2">
-                <span class="text-gray-600 dark:text-gray-400">Đã thanh toán bởi khách hàng</span>
-                <span class="text-gray-900 dark:text-white font-medium">{{
-                  formatCurrency(0)
-                  }}</span>
-              </div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">
-                Thanh toán khi nhận hóa đơn
-              </div>
-              <button class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 mt-2 font-medium">
-                Chỉnh sửa
-              </button>
-            </div>
-
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
-              Xem lại đơn hàng của bạn trong trang Tổng quan đơn hàng.
-            </p>
 
             <div class="flex justify-end gap-2">
               <button *ngIf="order?.payment?.status === 'pending'" (click)="handlePayment()"
