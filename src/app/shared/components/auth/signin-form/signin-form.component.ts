@@ -45,7 +45,7 @@ export class SigninFormComponent {
       next: (data) => {
         if (data) {
           // Thành công -> chuyển hướng đến dashboard hoặc trang chính
-          this.router.navigate(['/']); // thay '/dashboard' theo route của bạn
+          this.router.navigate(['/order']); // thay '/dashboard' theo route của bạn
         }
       },
       error: (err) => {
