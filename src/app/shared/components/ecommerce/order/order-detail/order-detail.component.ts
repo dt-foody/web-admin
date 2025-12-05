@@ -9,6 +9,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ToastrService } from 'ngx-toastr';
 import { OrderService } from '../../../../services/api/order.service';
 import { ImageUrlPipe } from '../../../../pipe/image-url.pipe';
+import { ImageFallbackDirective } from '../../../../directives/app-image-fallback.directive';
 
 @Component({
   selector: 'app-order-detail',
@@ -21,6 +22,7 @@ import { ImageUrlPipe } from '../../../../pipe/image-url.pipe';
     StatusTimelineComponent,
     ButtonComponent,
     ImageUrlPipe,
+    ImageFallbackDirective
   ],
   templateUrl: './order-detail.component.html',
   styles: ``,
