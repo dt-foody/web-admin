@@ -101,7 +101,8 @@
               class="flex items-start gap-6 py-4 border-b border-gray-100 dark:border-gray-700 last:border-0">
 
               <div>
-                <img [src]="item.item.image | imageUrl" alt="" class="w-24 h-20 rounded-lg object-cover" appImageFallback="/images/error/no-image.png">
+                <img [src]="item.item.image | imageUrl" alt="" class="w-24 h-20 rounded-lg object-cover"
+                  appImageFallback="/images/error/no-image.png">
               </div>
 
               <div class="flex-1 min-w-0">
@@ -139,9 +140,14 @@
             </div>
 
             <div class="flex items-center justify-end mt-4 pt-4">
-              <button
-                class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2">
+              <button *ngIf="order?.status === 'preparing'" (click)="handleCompletePreparation()"
+                class="text-sm text-white bg-indigo-600 hover:bg-indigo-700 border border-transparent rounded-lg px-4 py-2 shadow-sm transition-colors">
                 Hoàn tất chuẩn bị
+              </button>
+
+              <button *ngIf="order?.status !== 'preparing'" disabled
+                class="text-sm text-gray-400 bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 cursor-not-allowed">
+                {{ order?.status === 'pending' || order?.status === 'confirmed' ? 'Chưa sẵn sàng' : 'Đã hoàn tất' }}
               </button>
             </div>
           </div>
@@ -158,9 +164,21 @@
           </button>
 
           <div class="p-6">
-            <span
-              class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 mb-4">
-              Chưa thanh toán
+            <span class="inline-flex items-center px-3 py-1 mb-6 rounded-full text-xs font-medium" [ngClass]="{
+                'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300':
+                  order?.payment?.status === 'pending',
+                'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300':
+                  order?.payment?.status === 'paid',
+                'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300':
+                  order?.payment?.status === 'refunded',
+              }">
+              {{
+              order?.payment?.status === 'pending'
+              ? 'Chưa thanh toán'
+              : order?.payment?.status === 'paid'
+              ? 'Đã thanh toán'
+              : 'Đã hoàn tiền'
+              }}
             </span>
             <div class="space-y-3 mb-6">
               <div class="flex justify-between text-sm">
@@ -207,8 +225,14 @@
             </p>
 
             <div class="flex justify-end gap-2">
-              <button class="flex-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-4 py-2 font-medium">
+              <button *ngIf="order?.payment?.status === 'pending'" (click)="handlePayment()"
+                class="flex-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-4 py-2 font-medium transition-colors">
                 Thanh toán
+              </button>
+
+              <button *ngIf="order?.payment?.status === 'paid'" disabled
+                class="flex-1 text-sm text-green-700 bg-green-100 border border-green-200 rounded-lg px-4 py-2 font-medium cursor-default">
+                Đã thanh toán
               </button>
             </div>
           </div>

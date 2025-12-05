@@ -187,4 +187,40 @@ export class OrderDetailComponent implements OnInit {
     if (!options || options.length === 0) return '';
     return options.map((opt) => `${opt.groupName}: ${opt.optionName}`).join(' • ');
   }
+
+  public handleCompletePreparation() {
+    if (!this.order) return;
+    
+    // Logic: Nếu đang "preparing" -> chuyển sang "delivering" (Đang giao)
+    // Tận dụng hàm handleStatusUpdate có sẵn để cập nhật trạng thái
+    this.handleStatusUpdate('delivering'); 
+  }
+
+  // --- THÊM MỚI: Xử lý Thanh toán ---
+  public handlePayment() {
+    if (!this.order) return;
+
+    // Tạo object payment mới với trạng thái 'paid'
+    const updatedPayment = {
+      ...this.order.payment,
+      status: 'paid'
+    };
+
+    delete updatedPayment.qrCode;
+
+    // Gọi API cập nhật (patch) thông tin payment
+    this.isLoading = true; // Có thể bật loading nếu muốn chặn thao tác
+    this.orderService.adminUpdateOrder(this.order.id, { payment: updatedPayment }).subscribe({
+      next: (response) => {
+        this.toastr.success('Xác nhận thanh toán thành công');
+        // Reload lại dữ liệu để cập nhật UI đồng bộ
+        this.loadOrderDetail(); 
+      },
+      error: (error) => {
+        this.toastr.error('Lỗi khi cập nhật thanh toán');
+        console.error('Payment update error:', error);
+        this.isLoading = false;
+      }
+    });
+  }
 }
