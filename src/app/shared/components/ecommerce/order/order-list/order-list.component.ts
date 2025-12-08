@@ -48,7 +48,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     { label: 'Ưu tiên thấp nhất', value: 'priorityTime:desc' },
   ];
   
-  currentSortValue: string = 'createdAt:desc';
+  currentSortValue: string = 'priorityTime:asc';
 
   get kanbanColumns() {
     // Loại trừ 'unfinished' khỏi các cột Kanban để tránh hiển thị cột tổng hợp thừa
@@ -96,7 +96,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     this.query.paymentStatus = '';
     this.query.shippingStatus = '';
     
-    this.query.sort = { key: 'createdAt', asc: false };
+    this.query.sort = { key: 'priorityTime', asc: true };
 
     const savedMode = localStorage.getItem('orderViewMode');
     if (savedMode === 'kanban') {

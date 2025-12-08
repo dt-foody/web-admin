@@ -1,3 +1,5 @@
+// src/app/shared/components/auth/signin-form/signin-form.component.ts
+
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { LabelComponent } from '../../form/label/label.component';
@@ -25,9 +27,10 @@ export class SigninFormComponent {
   showPassword = false;
   isChecked = false;
 
-  email = '';
+  // Đổi email -> username
+  username = ''; 
   password = '';
-  errorMessage = ''; // dùng hiển thị thông báo lỗi
+  errorMessage = '';
 
   constructor(
     private authService: AuthService,
@@ -40,12 +43,12 @@ export class SigninFormComponent {
   }
 
   onSignIn() {
-    this.errorMessage = ''; // reset thông báo lỗi
-    this.authService.login(this.email, this.password).subscribe({
+    this.errorMessage = '';
+    // Gọi API với username và password
+    this.authService.login(this.username, this.password).subscribe({
       next: (data) => {
         if (data) {
-          // Thành công -> chuyển hướng đến dashboard hoặc trang chính
-          this.router.navigate(['/order']); // thay '/dashboard' theo route của bạn
+          this.router.navigate(['/order']);
         }
       },
       error: (err) => {

@@ -59,9 +59,9 @@ export class AuthService {
   /**
    * Đăng nhập và lưu trữ thông tin
    */
-  login(email: string, password: string): Observable<AuthResponse> {
+  login(username: string, password: string): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${this.API_URL}/auth/login`, { email, password })
+      .post<AuthResponse>(`${this.API_URL}/auth/login`, { username, password })
       .pipe(tap((res) => this.handleAuthSuccess(res)));
   }
 
