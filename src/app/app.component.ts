@@ -10,15 +10,20 @@ import { AuthService } from './shared/services/api/auth.service';
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
-  title = 'Foody Order Admin';
+  title = 'Lưu Chi - Cà phê chi rứa?';
   authService = inject(AuthService);
   router = inject(Router);
 
   ngOnInit() {
-    // Chỉ gọi getMe nếu cần, bắt lỗi để không block app
+    // Gọi API lấy thông tin user
     this.authService.getMe().subscribe({
-      next: (user) => {
-        console.log('User info:', user);
+      next: (data) => {
+        console.log('User info:', data);
+        // Kiểm tra role của user trong dữ liệu trả về
+        if (data?.user?.role === 'customer') {
+          // Nếu là customer, chuyển hướng đến trang 403 (forbidden)
+          this.router.navigate(['/forbidden']);
+        }
       },
       error: (err) => {
         console.warn('Chưa login, redirect sang login');
