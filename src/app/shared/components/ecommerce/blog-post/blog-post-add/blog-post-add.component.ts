@@ -21,6 +21,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ImageUploadComponent } from '../../../_core/image-upload/image-upload.component';
 import { SafeHtmlPipe } from '../../../../pipe/safe-html.pipe';
 import { environment } from '../../../../../../environments/environment';
+import { OembedTransformPipe } from '../../../../pipe/oembed-transform.pipe';
 
 interface BlogPostFormData {
   title: string;
@@ -67,6 +68,7 @@ const DEFAULT_FORM: BlogPostFormData = {
     ButtonComponent,
     ImageUploadComponent,
     SafeHtmlPipe,
+    OembedTransformPipe,
   ],
   templateUrl: './blog-post-add.component.html',
   styles: ``,

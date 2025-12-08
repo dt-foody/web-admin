@@ -195,7 +195,7 @@
             <article
               *ngIf="postData.content"
               class="prose prose-lg dark:prose-invert max-w-none"
-              [innerHTML]="postData.content | safeHtml"
+              [innerHTML]="postData.content | oembedTransform | safeHtml"
             ></article>
             <div
               *ngIf="!postData.content"
