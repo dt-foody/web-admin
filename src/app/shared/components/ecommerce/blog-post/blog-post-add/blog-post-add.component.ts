@@ -87,9 +87,9 @@ export class BlogPostAddComponent implements OnInit {
   postData = createFormData(DEFAULT_FORM);
 
   statusOptions = [
-    { value: 'draft', label: 'Draft' },
-    { value: 'published', label: 'Published' },
-    { value: 'archived', label: 'Archived' },
+    { value: 'draft', label: 'Nháp' },
+    { value: 'published', label: 'Xuất bản' },
+    { value: 'archived', label: 'Lưu trữ' },
   ];
 
   // UI state - Expandable sections

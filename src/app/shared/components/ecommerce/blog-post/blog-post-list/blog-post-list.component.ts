@@ -69,9 +69,9 @@ export class BlogPostListComponent extends BaseListComponent<BlogPost> implement
 
   getStatusLabel(status: string): string {
     const labels: any = {
-      draft: 'Draft',
-      published: 'Published',
-      archived: 'Archived',
+      draft: 'Nháp',
+      published: 'Xuất bản',
+      archived: 'Lưu trữ',
     };
     return labels[status] || status;
   }
