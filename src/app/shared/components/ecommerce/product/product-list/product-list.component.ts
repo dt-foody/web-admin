@@ -13,6 +13,7 @@ import { BaseListComponent } from '../../../../core/base-list.component';
 import { SortHeaderComponent } from '../../../_core/sort-header/sort-header.component';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
 import { CheckboxComponent } from '../../../form/input/checkbox.component';
+import { ImageUrlPipe } from '../../../../pipe/image-url.pipe';
 
 @Component({
   selector: 'app-product-list',
@@ -25,6 +26,7 @@ import { CheckboxComponent } from '../../../form/input/checkbox.component';
     SortHeaderComponent,
     CheckboxComponent,
     HasPermissionDirective,
+    ImageUrlPipe,
   ],
   templateUrl: './product-list.component.html',
   styles: ``,

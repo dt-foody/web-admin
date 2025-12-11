@@ -125,7 +125,7 @@
               <div class="flex items-center gap-3">
                 <div class="h-12 w-12">
                   <img
-                    [src]="combo.image || '/images/placeholder.jpg'"
+                    [src]="combo.image | imageUrl"
                     class="h-12 w-12 rounded-md object-cover"
                     alt=""
                   />
