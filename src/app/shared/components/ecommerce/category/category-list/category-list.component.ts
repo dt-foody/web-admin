@@ -30,6 +30,7 @@ interface CategoryTree extends Category {
   ],
   templateUrl: './category-list.component.html',
   styles: `
+    /* 1. CSS bắt buộc của CDK để giữ form hàng khi kéo */
     .cdk-drag-preview {
       box-sizing: border-box;
       border-radius: 4px;
@@ -38,25 +39,40 @@ interface CategoryTree extends Category {
         0 8px 10px 1px rgba(0, 0, 0, 0.14),
         0 3px 14px 2px rgba(0, 0, 0, 0.12);
       background-color: white;
-      display: table;
+      display: table; /* Giữ layout bảng */
     }
+
+    /* 2. Khoảng trống nơi sẽ thả xuống */
     .cdk-drag-placeholder {
       opacity: 0;
     }
+
+    /* 3. QUAN TRỌNG NHẤT: Chỉ animate khi sắp xếp lại, KHÔNG animate khi đang kéo */
     .cdk-drag-animating {
       transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
     }
+
+    /* Các hàng khác trượt ra chỗ khác mượt mà */
     .cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
       transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
     }
-    /* Style cho handle kéo thả */
-    .drag-handle {
-      cursor: grab;
-      color: #9ca3af;
+
+    /* 4. FIX LAG: Tắt transition của Tailwind khi đang kéo */
+    .cdk-drag-preview,
+    .cdk-drag-placeholder {
+      transition: none !important;
     }
-    .drag-handle:active {
-      cursor: grabbing;
-      color: #4b5563;
+
+    /* Nếu thẻ tr của bạn có class 'transition' của tailwind, 
+     CDK drag sẽ bị xung đột. Đoạn này fix đè lên */
+    .cdk-drag {
+      transition: none; /* Tắt transition mặc định để chuột dính chặt vào element */
+    }
+
+    /* Chỉ bật lại transition cho màu nền (hover) nếu cần, tránh dính vào transform */
+    tr.transition {
+      transition-property: background-color, color, border-color !important;
+      transition-duration: 150ms;
     }
   `,
 })
