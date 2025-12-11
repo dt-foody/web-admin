@@ -36,6 +36,8 @@ export class ComboListComponent extends BaseListComponent<Combo> implements OnIn
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
   @ViewChild('filterRef') filterRef!: ElementRef;
 
+  @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
+
   itemToDelete: Combo | null = null;
 
   // Khai báo enum để dùng trong template (nếu cần, nhưng logic đã đưa vào TS)
@@ -184,6 +186,32 @@ export class ComboListComponent extends BaseListComponent<Combo> implements OnIn
       error: () => {
         this.toastr.error('Update failed!', 'Combo');
       },
+    });
+  }
+
+  handleDeleteMany() {
+    if (this.selected.length === 0) return;
+
+    // Mở dialog xác nhận
+    const dialogRef = this.dialog.open(this.confirmDeleteManyTpl, {
+      data: { count: this.selected.length }, // Truyền số lượng để hiển thị
+    });
+
+    dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        // Gọi service deleteMany
+        this.comboService.deleteMany(this.selected).subscribe({
+          next: () => {
+            this.toastr.success(`Đã xóa thành công ${this.selected.length} combo!`, 'Thành công');
+            this.selected = []; // Reset danh sách chọn
+            this.fetchData();   // Tải lại dữ liệu bảng
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Có lỗi xảy ra khi xóa combo.', 'Lỗi');
+          },
+        });
+      }
     });
   }
 }
