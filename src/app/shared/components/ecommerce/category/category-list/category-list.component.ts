@@ -74,6 +74,15 @@ interface CategoryTree extends Category {
       transition-property: background-color, color, border-color !important;
       transition-duration: 150ms;
     }
+
+    .drag-handle {
+      cursor: grab;
+      color: #9ca3af;
+    }
+    .drag-handle:active {
+      cursor: grabbing;
+      color: #4b5563;
+    }
   `,
 })
 export class CategoryListComponent implements OnInit {
