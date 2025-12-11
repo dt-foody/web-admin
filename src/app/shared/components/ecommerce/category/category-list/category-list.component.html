@@ -1,230 +1,178 @@
-<div
-  class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
->
-  <!-- Header -->
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
   <div
-    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
-  >
+    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
     <div>
-      <!-- Search -->
       <div class="flex gap-3 sm:justify-between">
         <div class="relative flex-1 sm:flex-auto">
           <span class="absolute top-1/2 left-4 -translate-y-1/2 text-gray-500 dark:text-gray-400">
-            <svg
-              class="fill-current"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+            <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M3.04199 9.37336937363C3.04199 5.87693 5.87735 3.04199 9.37533 3.04199C12.8733 3.04199 15.7087 5.87693 15.7087 9.37363C15.7087 12.8703 12.8733 15.7053 9.37533 15.7053C5.87735 15.7053 3.04199 12.8703 3.04199 9.37363ZM9.37533 1.54199C5.04926 1.54199 1.54199 5.04817 1.54199 9.37363C1.54199 13.6991 5.04926 17.2053 9.37533 17.2053C11.2676 17.2053 13.0032 16.5344 14.3572 15.4176L17.1773 18.238C17.4702 18.5309 17.945 18.5309 18.2379 18.238C18.5308 17.9451 18.5309 17.4703 18.238 17.1773L15.4182 14.3573C16.5367 13.0033 17.2087 11.2669 17.2087 9.37363C17.2087 5.04817 13.7014 1.54199 9.37533 1.54199Z"
-                fill=""
-              />
+                fill="" />
             </svg>
           </span>
-          <input
-            type="text"
-            placeholder="Tìm kiếm..."
-            class="shadow-sm focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-4 pl-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-none sm:w-[300px] sm:min-w-[300px] dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
-            (input)="onSearch($event)"
-          />
+          <input type="text" placeholder="Tìm kiếm..." [disabled]="isDragMode()" [value]="searchTerm"
+            class="shadow-sm focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-4 pl-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-none sm:w-[300px] sm:min-w-[300px] dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            (input)="onSearch($event)" />
         </div>
       </div>
     </div>
-    <div class="flex gap-3">
-      <a
-        *appHasPermission="'category.create'"
-        routerLink="/category/add"
-        class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-        >
-          <path
-            d="M5 10.0002H15.0006M10.0002 5V15.0006"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
+    <div class="flex gap-3 items-center">
+      <div *appHasPermission="'category.update'" class="flex items-center gap-2 mr-2">
+        <label class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" class="sr-only peer" [checked]="isDragMode()" (change)="toggleDragMode()">
+          <div
+            class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+          </div>
+          <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+            {{ isDragMode() ? 'Đang sắp xếp' : 'Sắp xếp' }}
+          </span>
+        </label>
+        @if(isSavingOrder) {
+        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+        }
+      </div>
+
+      <a *appHasPermission="'category.create'" routerLink="/category/add" [class.pointer-events-none]="isDragMode()"
+        [class.opacity-50]="isDragMode()"
+        class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 10.0002H15.0006M10.0002 5V15.0006" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
         </svg>
         Tạo mới
       </a>
     </div>
   </div>
 
-  <!-- Table -->
   <div class="overflow-x-auto custom-scrollbar">
     <table class="w-full">
       <thead>
         <tr class="border-b border-gray-200 dark:divide-gray-800 dark:border-gray-800">
           <th class="lg:w-14 px-5 py-4 text-left whitespace-nowrap">
+            @if(!isDragMode()) {
             <app-checkbox [checked]="isAllSelected()" (checkedChange)="toggleAll()"></app-checkbox>
+            } @else {
+            <span class="text-xs text-gray-400">#</span>
+            }
           </th>
-          <th
-            class="px-5 whitespace-nowrap py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 whitespace-nowrap py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
             Tên Danh mục
           </th>
-          <th
-            class="px-5 py-4 whitespace-nowrap text-left text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 whitespace-nowrap text-left text-xs font-medium text-gray-500 dark:text-gray-400">
             Mô tả
           </th>
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Trạng thái
           </th>
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Người tạo
           </th>
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Ngày tạo
           </th>
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Thao tác
           </th>
         </tr>
       </thead>
-      <tbody class="divide-x divide-y divide-gray-200 dark:divide-gray-800">
+      <tbody class="divide-x divide-y divide-gray-200 dark:divide-gray-800" cdkDropList
+        [cdkDropListDisabled]="!isDragMode()" (cdkDropListDropped)="drop($event)">
         @for (category of flattenedTree(); track category.id) {
-          <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer">
-            <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
-              <app-checkbox
-                type="checkbox"
-                [checked]="selected.includes(category.id)"
-                (checkedChange)="toggleSelect(category.id, $event)"
-              />
-            </td>
-            <td class="px-5 py-4 whitespace-nowrap">
-              <div
-                class="flex items-center gap-3"
-                [style.paddingLeft.px]="(category.level || 0) * 24"
-              >
-                @if (hasChildren(category)) {
-                  <button
-                    (click)="toggleExpand(category)"
-                    class="flex-shrink-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition"
-                  >
-                    <svg
-                      class="w-4 h-4 transition-transform"
-                      [class.rotate-90]="category.expanded"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                } @else {
-                  <span class="w-4"></span>
-                }
-                <div class="h-12 w-12">
-                  <img [src]="category.image" class="h-12 w-12 rounded-md object-cover" alt="" />
-                </div>
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-400">{{
-                  category.name
-                }}</span>
+        <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer bg-white dark:bg-gray-900" cdkDrag
+          [cdkDragData]="category">
+          <div *cdkDragPlaceholder class="opacity-0"></div>
+
+          <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
+            @if(isDragMode()) {
+            <div class="drag-handle" cdkDragHandle title="Kéo để sắp xếp">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            </div>
+            } @else {
+            <app-checkbox type="checkbox" [checked]="selected.includes(category.id)"
+              (checkedChange)="toggleSelect(category.id, $event)" />
+            }
+          </td>
+          <td class="px-5 py-4 whitespace-nowrap">
+            <div class="flex items-center gap-3" [style.paddingLeft.px]="(category.level || 0) * 24">
+              @if (hasChildren(category) && !isDragMode()) {
+              <button (click)="toggleExpand(category)"
+                class="flex-shrink-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition">
+                <svg class="w-4 h-4 transition-transform" [class.rotate-90]="category.expanded"
+                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                    clip-rule="evenodd" />
+                </svg>
+              </button>
+              } @else {
+              <span class="w-4"></span>
+              }
+              <div class="h-12 w-12">
+                <img [src]="category.image" class="h-12 w-12 rounded-md object-cover" alt="" />
               </div>
-            </td>
-            <td class="px-5 py-4">
-              <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                {{ category.description }}
-              </p>
-            </td>
-            <td class="px-5 py-4 whitespace-nowrap">
-              <span
-                class="text-xs rounded-full px-2 py-0.5 font-medium"
-                [ngClass]="{
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-400">{{
+                category.name
+                }}</span>
+            </div>
+          </td>
+          <td class="px-5 py-4">
+            <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
+              {{ category.description }}
+            </p>
+          </td>
+          <td class="px-5 py-4 whitespace-nowrap">
+            <span class="text-xs rounded-full px-2 py-0.5 font-medium" [ngClass]="{
                   'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-500':
                     category.isActive,
                   'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-500': !category.isActive,
-                }"
-              >
-                {{ category.isActive ? 'Hoạt động' : 'Không hoạt động' }}
-              </span>
-            </td>
-            <td class="px-5 py-4 whitespace-nowrap">
-              <p class="text-sm text-gray-700 dark:text-gray-400">
-                {{ category?.createdBy?.name }}
-              </p>
-            </td>
-            <td class="px-5 py-4 whitespace-nowrap">
-              <p class="text-sm text-gray-700 dark:text-gray-400">
-                {{ category.createdAt | date: 'HH:ss dd/MM/yyyy' }}
-              </p>
-            </td>
-            <td class="px-5 py-4 whitespace-nowrap">
-              <div class="flex gap-2">
-                <!-- Edit Icon -->
-                <button
-                  *appHasPermission="'category.update'"
-                  (click)="handleEdit(category)"
-                  class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="size-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                    />
-                  </svg>
-                </button>
-                <!-- Delete Icon -->
-                <button
-                  *appHasPermission="'category.delete'"
-                  (click)="handleDelete(category)"
-                  class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="size-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
+                }">
+              {{ category.isActive ? 'Hoạt động' : 'Không hoạt động' }}
+            </span>
+          </td>
+          <td class="px-5 py-4 whitespace-nowrap">
+            <p class="text-sm text-gray-700 dark:text-gray-400">
+              {{ category?.createdBy?.name }}
+            </p>
+          </td>
+          <td class="px-5 py-4 whitespace-nowrap">
+            <p class="text-sm text-gray-700 dark:text-gray-400">
+              {{ category.createdAt | date: 'HH:ss dd/MM/yyyy' }}
+            </p>
+          </td>
+          <td class="px-5 py-4 whitespace-nowrap">
+            <div class="flex gap-2" [class.opacity-50]="isDragMode()" [class.pointer-events-none]="isDragMode()">
+              <button *appHasPermission="'category.update'" (click)="handleEdit(category)"
+                class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="size-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>
+              </button>
+              <button *appHasPermission="'category.delete'" (click)="handleDelete(category)"
+                class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
         } @empty {
-          <tr>
-            <td colspan="12" class="py-10 text-center text-gray-500 dark:text-gray-400">
-              <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
-                Không tìm thấy danh mục
-              </h3>
-              <p class="mt-1 text-sm">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
-            </td>
-          </tr>
+        <tr>
+          <td colspan="12" class="py-10 text-center text-gray-500 dark:text-gray-400">
+            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
+              Không tìm thấy danh mục
+            </h3>
+            <p class="mt-1 text-sm">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
+          </td>
+        </tr>
         }
       </tbody>
     </table>

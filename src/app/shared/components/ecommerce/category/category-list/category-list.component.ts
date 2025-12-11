@@ -8,6 +8,8 @@ import { ToastrService } from 'ngx-toastr';
 import { DialogService } from '@ngneat/dialog';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
 import { CheckboxComponent } from '../../../form/input/checkbox.component';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { forkJoin } from 'rxjs';
 
 interface CategoryTree extends Category {
   children?: CategoryTree[];
@@ -19,9 +21,44 @@ interface CategoryTree extends Category {
 @Component({
   selector: 'app-category-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, HasPermissionDirective, CheckboxComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    HasPermissionDirective,
+    CheckboxComponent,
+    DragDropModule, // Import module DragDrop
+  ],
   templateUrl: './category-list.component.html',
-  styles: ``,
+  styles: `
+    .cdk-drag-preview {
+      box-sizing: border-box;
+      border-radius: 4px;
+      box-shadow:
+        0 5px 5px -3px rgba(0, 0, 0, 0.2),
+        0 8px 10px 1px rgba(0, 0, 0, 0.14),
+        0 3px 14px 2px rgba(0, 0, 0, 0.12);
+      background-color: white;
+      display: table;
+    }
+    .cdk-drag-placeholder {
+      opacity: 0;
+    }
+    .cdk-drag-animating {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+    .cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+    /* Style cho handle kéo thả */
+    .drag-handle {
+      cursor: grab;
+      color: #9ca3af;
+    }
+    .drag-handle:active {
+      cursor: grabbing;
+      color: #4b5563;
+    }
+  `,
 })
 export class CategoryListComponent implements OnInit {
   categories: Category[] = [];
@@ -29,6 +66,10 @@ export class CategoryListComponent implements OnInit {
   flattenedTree = signal<CategoryTree[]>([]);
   selected: string[] = [];
   searchTerm: string = '';
+
+  // State cho chế độ Drag Drop
+  isDragMode = signal<boolean>(false);
+  isSavingOrder = false;
 
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
   itemToDelete: Category | null = null;
@@ -82,25 +123,43 @@ export class CategoryListComponent implements OnInit {
         ...cat,
         children: [],
         level: 0,
-        expanded: true,
+        expanded: true, // Mặc định mở hết để dễ nhìn khi sort
         parent: cat.parent || null,
       };
       map.set(cat.id!, treeCat);
     });
+
     // 2️⃣ Gán children
     map.forEach((cat) => {
       if (cat.parent) {
         const parent = map.get(cat.parent);
-        if (parent) parent.children!.push(cat);
-        else tree.push(cat); // parent không tồn tại, coi là gốc
+        if (parent) {
+          parent.children!.push(cat);
+        } else {
+          tree.push(cat); // parent không tồn tại trong list load về, coi là gốc
+        }
       } else {
         tree.push(cat); // node gốc
       }
     });
+
+    // 3️⃣ Sắp xếp cây theo Priority (Quan trọng cho hiển thị đúng thứ tự)
+    const sortRecursive = (nodes: CategoryTree[]) => {
+      nodes.sort((a, b) => (a.priority || 0) - (b.priority || 0));
+      nodes.forEach((node) => {
+        if (node.children && node.children.length > 0) {
+          sortRecursive(node.children);
+        }
+      });
+    };
+    sortRecursive(tree);
+
     // 4️⃣ Propagate isActive từ parent xuống con
     tree.forEach((node) => this.propagateInactive(node));
+
     // 5️⃣ Set tree signal
     this.categoryTree.set(tree);
+
     // 6️⃣ Flatten để hiển thị bảng
     this.updateFlattenedTree();
   }
@@ -116,6 +175,7 @@ export class CategoryListComponent implements OnInit {
         if (!this.searchTerm || item.name.toLowerCase().includes(this.searchTerm.toLowerCase())) {
           flattened.push(item);
         }
+        // Nếu đang ở chế độ Drag, luôn hiển thị con (nếu expanded) để dễ kéo thả trong nhóm
         if (item.expanded && item.children && item.children.length > 0) {
           flatten(item.children, level + 1);
         }
@@ -128,6 +188,9 @@ export class CategoryListComponent implements OnInit {
 
   /** Toggle expand/collapse node */
   toggleExpand(category: CategoryTree): void {
+    // Không cho phép collapse khi đang ở chế độ Drag để tránh lỗi hiển thị
+    if (this.isDragMode()) return;
+
     category.expanded = !category.expanded;
     this.updateFlattenedTree();
   }
@@ -135,12 +198,10 @@ export class CategoryListComponent implements OnInit {
   // ===================== Select =====================
   toggleSelect(id: string, checked: boolean) {
     if (checked) {
-      // Thêm id nếu chưa có
       if (!this.selected.includes(id)) {
         this.selected.push(id);
       }
     } else {
-      // Loại bỏ id nếu unchecked
       this.selected = this.selected.filter((item) => item !== id);
     }
   }
@@ -173,11 +234,7 @@ export class CategoryListComponent implements OnInit {
 
   handleDelete(category: Category) {
     this.itemToDelete = category;
-
-    const dialogRef = this.dialog.open(this.confirmDeleteTpl, {
-      data: {},
-    });
-
+    const dialogRef = this.dialog.open(this.confirmDeleteTpl, { data: {} });
     dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
       if (confirmed && this.itemToDelete) {
         this.categoryService.delete(this.itemToDelete.id).subscribe(() => {
@@ -187,5 +244,65 @@ export class CategoryListComponent implements OnInit {
       }
       this.itemToDelete = null;
     });
+  }
+
+  // ===================== Drag & Drop Logic =====================
+
+  toggleDragMode() {
+    this.isDragMode.update((v) => !v);
+    if (this.isDragMode()) {
+      this.searchTerm = ''; // Xóa search để hiển thị đúng cấu trúc
+      // Mở rộng tất cả để dễ kéo thả
+      const expandAll = (nodes: CategoryTree[]) => {
+        nodes.forEach((node) => {
+          node.expanded = true;
+          if (node.children) expandAll(node.children);
+        });
+      };
+      expandAll(this.categoryTree());
+      this.updateFlattenedTree();
+    }
+  }
+
+  drop(event: CdkDragDrop<CategoryTree[]>) {
+    if (!this.isDragMode()) return;
+
+    // 1. Cập nhật vị trí trên giao diện (flattened array)
+    const prevIndex = event.previousIndex;
+    const currentIndex = event.currentIndex;
+
+    const items = [...this.flattenedTree()];
+    moveItemInArray(items, prevIndex, currentIndex);
+    this.flattenedTree.set(items);
+
+    // 2. Tính toán lại priority cho TẤT CẢ các item trong list
+    // Priority càng nhỏ thì càng lên đầu
+    const updateObservables = items
+      .map((item, index) => {
+        // Chỉ update nếu priority thay đổi để giảm tải server (hoặc update hết nếu muốn chắc chắn)
+        if (item.priority !== index) {
+          return this.categoryService.update(item.id!, { priority: index });
+        }
+        return null;
+      })
+      .filter((obs) => obs !== null);
+
+    if (updateObservables.length > 0) {
+      this.isSavingOrder = true;
+      forkJoin(updateObservables).subscribe({
+        next: () => {
+          this.toastr.success('Đã cập nhật thứ tự thành công!', 'Sắp xếp');
+          this.isSavingOrder = false;
+          // Load lại để đồng bộ chuẩn data từ server
+          this.loadCategories();
+        },
+        error: (err) => {
+          console.error(err);
+          this.toastr.error('Có lỗi xảy ra khi lưu thứ tự.', 'Lỗi');
+          this.isSavingOrder = false;
+          this.loadCategories(); // Revert lại
+        },
+      });
+    }
   }
 }
