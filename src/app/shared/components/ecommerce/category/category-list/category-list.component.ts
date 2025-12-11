@@ -10,6 +10,7 @@ import { HasPermissionDirective } from '../../../../directives/has-permission.di
 import { CheckboxComponent } from '../../../form/input/checkbox.component';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { forkJoin } from 'rxjs';
+import { ProductSortModalComponent } from '../product-sort-modal/product-sort-modal.component';
 
 interface CategoryTree extends Category {
   children?: CategoryTree[];
@@ -26,6 +27,7 @@ interface CategoryTree extends Category {
     RouterModule,
     HasPermissionDirective,
     CheckboxComponent,
+    ProductSortModalComponent,
     DragDropModule, // Import module DragDrop
   ],
   templateUrl: './category-list.component.html',
@@ -329,5 +331,21 @@ export class CategoryListComponent implements OnInit {
         },
       });
     }
+  }
+
+  openProductSort(category: CategoryTree) {
+    // Nếu category có con, có thể bạn muốn chặn hoặc cho phép. 
+    // Thông thường sản phẩm gắn vào node lá (leaf), nhưng tùy logic dự án.
+    
+    this.dialog.open(ProductSortModalComponent, {
+      data: {
+        categoryId: category.id,
+        categoryName: category.name
+      },
+      // Config dialog size
+      width: '90vw',     // Chiếm 90% chiều rộng màn hình
+      maxWidth: '95vw',  // Giới hạn tối đa không để tràn lề quá sát
+      closeButton: false, // Mình đã custom header có nút close
+    });
   }
 }
