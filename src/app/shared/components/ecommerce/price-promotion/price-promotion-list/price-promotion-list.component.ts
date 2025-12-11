@@ -35,6 +35,8 @@ export class PricePromotionListComponent
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
   @ViewChild('filterRef') filterRef!: ElementRef;
 
+  @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
+
   itemToDelete: PricePromotion | null = null;
 
   constructor(
@@ -145,5 +147,34 @@ export class PricePromotionListComponent
     if (promotion.product) return 'product';
     if (promotion.combo) return 'combo';
     return null;
+  }
+
+  handleDeleteMany() {
+    if (this.selected.length === 0) return;
+
+    // Mở dialog xác nhận
+    const dialogRef = this.dialog.open(this.confirmDeleteManyTpl, {
+      data: { count: this.selected.length }, // Truyền số lượng
+    });
+
+    dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        // Gọi service deleteMany
+        this.pricePromotionService.deleteMany(this.selected).subscribe({
+          next: () => {
+            this.toastr.success(
+              `Đã xóa thành công ${this.selected.length} khuyến mãi!`,
+              'Thành công',
+            );
+            this.selected = []; // Reset danh sách chọn
+            this.fetchData(); // Tải lại dữ liệu bảng
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Có lỗi xảy ra khi xóa khuyến mãi.', 'Lỗi');
+          },
+        });
+      }
+    });
   }
 }

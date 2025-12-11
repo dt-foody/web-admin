@@ -1,38 +1,29 @@
-<div
-  class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
->
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
   <!-- Header -->
   <div
-    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
-  >
+    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
     <!-- Search and Filter -->
     <div class="flex gap-3 sm:justify-between">
-      <app-search-input
-        placeholder="Tìm kiếm chương trình khuyến mãi"
-        (search)="onSearchChange($event)"
-      >
+      <app-search-input placeholder="Tìm kiếm chương trình khuyến mãi" (search)="onSearchChange($event)">
       </app-search-input>
     </div>
-    <div class="flex gap-3">
-      <a
-        routerLink="/price-promotion/add"
-        *appHasPermission="'pricePromotion.create'"
-        class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-        >
-          <path
-            d="M5 10.0002H15.0006M10.0002 5V15.0006"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+    <div class="flex gap-3 items-center">
+      @if (selected.length > 0) {
+      <button *appHasPermission="'pricePromotion.delete'" (click)="handleDeleteMany()"
+        class="bg-red-500 shadow-sm hover:bg-red-600 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+        </svg>
+        Xóa ({{ selected.length }})
+      </button>
+      }
+
+      <a routerLink="/price-promotion/add" *appHasPermission="'pricePromotion.create'"
+        class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 10.0002H15.0006M10.0002 5V15.0006" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+            strokeLinejoin="round" />
         </svg>
         Create
       </a>
@@ -49,416 +40,266 @@
           </th>
 
           <th>
-            <app-sort-header
-              label="Tên"
-              key="name"
-              [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false"
-              (sortChange)="onSortChange($event)"
-            >
+            <app-sort-header label="Tên" key="name" [activeKey]="query.sort?.key || ''" [asc]="query.sort?.asc || false"
+              (sortChange)="onSortChange($event)">
             </app-sort-header>
           </th>
 
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Áp dụng cho
           </th>
 
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Giảm giá
           </th>
 
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Lượt dùng
           </th>
 
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Thời hạn
           </th>
 
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Trạng thái
           </th>
 
           <th>
-            <app-sort-header
-              label="Ngày tạo"
-              key="createdAt"
-              [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false"
-              (sortChange)="onSortChange($event)"
-            >
+            <app-sort-header label="Ngày tạo" key="createdAt" [activeKey]="query.sort?.key || ''"
+              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)">
             </app-sort-header>
           </th>
 
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Thao tác
           </th>
         </tr>
       </thead>
       <tbody class="divide-x divide-y divide-gray-200 dark:divide-gray-800">
         @for (promotion of dataSources; track promotion.id) {
-          <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
-            <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
-              <app-checkbox
-                type="checkbox"
-                [checked]="selected.includes(promotion.id)"
-                (checkedChange)="toggleSelect(promotion.id, $event)"
-              />
-            </td>
+        <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
+          <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
+            <app-checkbox type="checkbox" [checked]="selected.includes(promotion.id)"
+              (checkedChange)="toggleSelect(promotion.id, $event)" />
+          </td>
 
-            <td class="px-5 py-4">
-              <div class="flex flex-col max-w-[250px]">
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
-                  promotion.name
+          <td class="px-5 py-4">
+            <div class="flex flex-col max-w-[250px]">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
+                promotion.name
                 }}</span>
-                @if (promotion.description) {
-                  <span class="text-xs text-gray-500 dark:text-gray-400 truncate">{{
-                    promotion.description
-                  }}</span>
-                }
-              </div>
-            </td>
+              @if (promotion.description) {
+              <span class="text-xs text-gray-500 dark:text-gray-400 truncate">{{
+                promotion.description
+                }}</span>
+              }
+            </div>
+          </td>
 
-            <td class="px-5 py-4 whitespace-nowrap">
-              <div class="flex items-center gap-2">
-                @if (getApplicableItemType(promotion) === 'product') {
-                  <span
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-purple-50 dark:bg-purple-500/15 px-3 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                      <line x1="3" y1="6" x2="21" y2="6" />
-                      <path d="M16 10a4 4 0 0 1-8 0" />
-                    </svg>
-                    {{ getApplicableItemName(promotion) }}
-                  </span>
-                } @else if (getApplicableItemType(promotion) === 'combo') {
-                  <span
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-orange-50 dark:bg-orange-500/15 px-3 py-1.5 text-xs font-medium text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-500/30"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <rect x="3" y="3" width="7" height="7" />
-                      <rect x="14" y="3" width="7" height="7" />
-                      <rect x="14" y="14" width="7" height="7" />
-                      <rect x="3" y="14" width="7" height="7" />
-                    </svg>
-                    {{ getApplicableItemName(promotion) }}
-                  </span>
-                } @else {
-                  <span class="text-xs text-gray-500 dark:text-gray-400">N/A</span>
-                }
-              </div>
-            </td>
-
-            <td class="px-5 py-4 whitespace-nowrap">
+          <td class="px-5 py-4 whitespace-nowrap">
+            <div class="flex items-center gap-2">
+              @if (getApplicableItemType(promotion) === 'product') {
               <span
-                class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium"
-                [ngClass]="
+                class="inline-flex items-center gap-1.5 rounded-lg bg-purple-50 dark:bg-purple-500/15 px-3 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+                {{ getApplicableItemName(promotion) }}
+              </span>
+              } @else if (getApplicableItemType(promotion) === 'combo') {
+              <span
+                class="inline-flex items-center gap-1.5 rounded-lg bg-orange-50 dark:bg-orange-500/15 px-3 py-1.5 text-xs font-medium text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="14" y="14" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
+                </svg>
+                {{ getApplicableItemName(promotion) }}
+              </span>
+              } @else {
+              <span class="text-xs text-gray-500 dark:text-gray-400">N/A</span>
+              }
+            </div>
+          </td>
+
+          <td class="px-5 py-4 whitespace-nowrap">
+            <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium" [ngClass]="
                   promotion.discountType === 'percentage'
                     ? 'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400'
                     : 'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400'
-                "
-              >
-                @if (promotion.discountType === 'percentage') {
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <line x1="19" y1="5" x2="5" y2="19" />
-                    <circle cx="6.5" cy="6.5" r="2.5" />
-                    <circle cx="17.5" cy="17.5" r="2.5" />
-                  </svg>
-                  {{ promotion.discountValue }}
-                } @else {
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <line x1="12" y1="2" x2="12" y2="22" />
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                  </svg>
-                  {{ getFormattedPrice(promotion.discountValue) }}
-                }
-              </span>
-            </td>
+                ">
+              @if (promotion.discountType === 'percentage') {
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="5" x2="5" y2="19" />
+                <circle cx="6.5" cy="6.5" r="2.5" />
+                <circle cx="17.5" cy="17.5" r="2.5" />
+              </svg>
+              {{ promotion.discountValue }}
+              } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="2" x2="12" y2="22" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+              {{ getFormattedPrice(promotion.discountValue) }}
+              }
+            </span>
+          </td>
 
-            <td class="px-5 py-4 whitespace-nowrap">
-              <div class="flex flex-col gap-1">
-                <div class="flex items-center gap-1.5">
-                  <span class="text-xs text-gray-500 dark:text-gray-400">Total:</span>
-                  <span class="text-xs font-medium text-gray-700 dark:text-gray-300">
-                    {{ promotion.usedQuantity || 0 }}
-                    @if (promotion.maxQuantity > 0) {
-                      /{{ promotion.maxQuantity }}
-                    } @else {
-                      <span class="text-gray-400">/∞</span>
-                    }
-                  </span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <span class="text-xs text-gray-500 dark:text-gray-400">Daily:</span>
-                  <span class="text-xs font-medium text-gray-700 dark:text-gray-300">
-                    {{ promotion.dailyUsedCount || 0 }}
-                    @if (promotion.dailyMaxUses > 0) {
-                      /{{ promotion.dailyMaxUses }}
-                    } @else {
-                      <span class="text-gray-400">/∞</span>
-                    }
-                  </span>
-                </div>
+          <td class="px-5 py-4 whitespace-nowrap">
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Total:</span>
+                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {{ promotion.usedQuantity || 0 }}
+                  @if (promotion.maxQuantity > 0) {
+                  /{{ promotion.maxQuantity }}
+                  } @else {
+                  <span class="text-gray-400">/∞</span>
+                  }
+                </span>
               </div>
-            </td>
-
-            <td class="px-5 py-4 whitespace-nowrap">
-              <div class="flex flex-col gap-1">
-                <div class="flex items-center gap-1.5 text-xs">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="text-green-500"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  <span class="text-gray-600 dark:text-gray-400">{{
-                    formatDate(promotion.startDate)
-                  }}</span>
-                </div>
-                <div class="flex items-center gap-1.5 text-xs">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="text-red-500"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  <span class="text-gray-600 dark:text-gray-400">{{
-                    formatDate(promotion.endDate)
-                  }}</span>
-                </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Daily:</span>
+                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {{ promotion.dailyUsedCount || 0 }}
+                  @if (promotion.dailyMaxUses > 0) {
+                  /{{ promotion.dailyMaxUses }}
+                  } @else {
+                  <span class="text-gray-400">/∞</span>
+                  }
+                </span>
               </div>
-            </td>
+            </div>
+          </td>
 
-            <td class="px-5 py-4 whitespace-nowrap">
-              <div class="flex flex-col gap-1.5">
-                <button
-                  (click)="handleToggleActive(promotion)"
-                  class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
-                  [ngClass]="{
+          <td class="px-5 py-4 whitespace-nowrap">
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center gap-1.5 text-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="text-green-500">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span class="text-gray-600 dark:text-gray-400">{{
+                  formatDate(promotion.startDate)
+                  }}</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="text-red-500">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span class="text-gray-600 dark:text-gray-400">{{
+                  formatDate(promotion.endDate)
+                  }}</span>
+              </div>
+            </div>
+          </td>
+
+          <td class="px-5 py-4 whitespace-nowrap">
+            <div class="flex flex-col gap-1.5">
+              <button (click)="handleToggleActive(promotion)"
+                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+                [ngClass]="{
                     'bg-brand-500': promotion.isActive,
                     'bg-gray-200 dark:bg-gray-700': !promotion.isActive,
-                  }"
-                >
-                  <span class="sr-only">Toggle status</span>
-                  <span
-                    class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
-                    [ngClass]="{
+                  }">
+                <span class="sr-only">Toggle status</span>
+                <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" [ngClass]="{
                       'translate-x-6': promotion.isActive,
                       'translate-x-1': !promotion.isActive,
-                    }"
-                  >
-                  </span>
-                </button>
-                @if (isExpired(promotion)) {
-                  <span
-                    class="inline-flex items-center gap-1 text-xs text-red-600 dark:text-red-400"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="15" y1="9" x2="9" y2="15" />
-                      <line x1="9" y1="9" x2="15" y2="15" />
-                    </svg>
-                    Expired
-                  </span>
-                } @else if (isFullyUsed(promotion)) {
-                  <span
-                    class="inline-flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path
-                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
-                      />
-                      <line x1="12" y1="9" x2="12" y2="13" />
-                      <line x1="12" y1="17" x2="12.01" y2="17" />
-                    </svg>
-                    Sold out
-                  </span>
-                } @else if (isDailyLimitReached(promotion)) {
-                  <span
-                    class="inline-flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    Daily limit
-                  </span>
-                }
-              </div>
-            </td>
+                    }">
+                </span>
+              </button>
+              @if (isExpired(promotion)) {
+              <span class="inline-flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="15" y1="9" x2="9" y2="15" />
+                  <line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
+                Expired
+              </span>
+              } @else if (isFullyUsed(promotion)) {
+              <span class="inline-flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                Sold out
+              </span>
+              } @else if (isDailyLimitReached(promotion)) {
+              <span class="inline-flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                Daily limit
+              </span>
+              }
+            </div>
+          </td>
 
-            <td class="px-5 py-4 whitespace-nowrap">
-              <p class="text-sm text-gray-600 dark:text-gray-400">
-                {{ promotion.createdAt | date: 'HH:ss dd/MM/yyyy' }}
-              </p>
-            </td>
+          <td class="px-5 py-4 whitespace-nowrap">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              {{ promotion.createdAt | date: 'HH:ss dd/MM/yyyy' }}
+            </p>
+          </td>
 
-            <td class="px-5 py-4 whitespace-nowrap">
-              <div class="flex gap-2">
-                <!-- Edit Icon -->
-                <button
-                  *appHasPermission="'pricePromotion.update'"
-                  (click)="handleEdit(promotion)"
-                  class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="size-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                    />
-                  </svg>
-                </button>
-                <!-- Delete Icon -->
-                <button
-                  *appHasPermission="'pricePromotion.delete'"
-                  (click)="handleDelete(promotion)"
-                  class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="size-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
+          <td class="px-5 py-4 whitespace-nowrap">
+            <div class="flex gap-2">
+              <!-- Edit Icon -->
+              <button *appHasPermission="'pricePromotion.update'" (click)="handleEdit(promotion)"
+                class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="size-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>
+              </button>
+              <!-- Delete Icon -->
+              <button *appHasPermission="'pricePromotion.delete'" (click)="handleDelete(promotion)"
+                class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
         } @empty {
-          <tr>
-            <td colspan="12" class="py-10 text-center text-gray-500 dark:text-gray-400">
-              <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
-                Không tìm thấy khuyến mãi
-              </h3>
-              <p class="mt-1 text-sm">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
-            </td>
-          </tr>
+        <tr>
+          <td colspan="12" class="py-10 text-center text-gray-500 dark:text-gray-400">
+            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
+              Không tìm thấy khuyến mãi
+            </h3>
+            <p class="mt-1 text-sm">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
+          </td>
+        </tr>
         }
       </tbody>
     </table>
   </div>
 
   <!-- Pagination -->
-  <app-pagination
-    [page]="query.page"
-    [totalPages]="totalPages"
-    [totalResults]="totalResults"
-    [pageSize]="query.pageSize"
-    (pageChange)="onPageChange($event)"
-  >
+  <app-pagination [page]="query.page" [totalPages]="totalPages" [totalResults]="totalResults"
+    [pageSize]="query.pageSize" (pageChange)="onPageChange($event)">
   </app-pagination>
 </div>
 
@@ -466,8 +307,7 @@
   <div class="p-5">
     <h3 class="text-lg font-semibold mb-4">Confirm Delete</h3>
     <p class="mb-6">
-      Are you sure you want to delete promotion <strong>{{ itemToDelete?.name }}</strong
-      >?
+      Are you sure you want to delete promotion <strong>{{ itemToDelete?.name }}</strong>?
     </p>
     <div class="flex justify-end gap-3">
       <button (click)="dialog.close(false)" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700">
@@ -475,6 +315,25 @@
       </button>
       <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 text-white">
         Delete
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #confirmDeleteMany let-dialog>
+  <div class="p-5">
+    <h3 class="text-lg font-semibold mb-4 text-red-600">Xác nhận xóa nhiều</h3>
+    <p class="mb-6">
+      Bạn có chắc muốn xóa <strong>{{ dialog.data.count }}</strong> chương trình khuyến mãi đã chọn không?
+      <br>
+      <span class="text-sm text-gray-500">Hành động này sẽ xóa vĩnh viễn dữ liệu và không thể hoàn tác.</span>
+    </p>
+    <div class="flex justify-end gap-3">
+      <button (click)="dialog.close(false)" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition">
+        Hủy
+      </button>
+      <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white transition">
+        Đồng ý Xóa
       </button>
     </div>
   </div>
