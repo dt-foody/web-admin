@@ -34,6 +34,17 @@
         }
       </div>
 
+      @if (selected.length > 0) {
+      <button *appHasPermission="'category.delete'" (click)="handleDeleteMany()"
+        class="bg-red-500 shadow-sm hover:bg-red-600 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+        </svg>
+        Xóa ({{ selected.length }})
+      </button>
+      }
+
       <a *appHasPermission="'category.create'" routerLink="/category/add" [class.pointer-events-none]="isDragMode()"
         [class.opacity-50]="isDragMode()"
         class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600">
@@ -199,6 +210,25 @@
       </button>
       <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 text-white">
         Xóa
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #confirmDeleteMany let-dialog>
+  <div class="p-5">
+    <h3 class="text-lg font-semibold mb-4 text-red-600">Xác nhận xóa nhiều</h3>
+    <p class="mb-6">
+      Bạn có chắc muốn xóa <strong>{{ dialog.data.count }}</strong> danh mục đã chọn không?
+      <br>
+      <span class="text-sm text-gray-500">Hành động này sẽ xóa vĩnh viễn các danh mục và không thể hoàn tác.</span>
+    </p>
+    <div class="flex justify-end gap-3">
+      <button (click)="dialog.close(false)" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition">
+        Hủy
+      </button>
+      <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white transition">
+        Đồng ý Xóa
       </button>
     </div>
   </div>

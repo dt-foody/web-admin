@@ -101,6 +101,8 @@ export class CategoryListComponent implements OnInit {
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
   itemToDelete: Category | null = null;
 
+  @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
+
   constructor(
     private toastr: ToastrService,
     private categoryService: CategoryService,
@@ -346,6 +348,32 @@ export class CategoryListComponent implements OnInit {
       width: '90vw',     // Chiếm 90% chiều rộng màn hình
       maxWidth: '95vw',  // Giới hạn tối đa không để tràn lề quá sát
       closeButton: false, // Mình đã custom header có nút close
+    });
+  }
+
+  handleDeleteMany() {
+    if (this.selected.length === 0) return;
+
+    // Mở dialog xác nhận
+    const dialogRef = this.dialog.open(this.confirmDeleteManyTpl, {
+      data: { count: this.selected.length }, // Truyền số lượng để hiển thị
+    });
+
+    dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        // Gọi service deleteMany từ BaseService
+        this.categoryService.deleteMany(this.selected).subscribe({
+          next: () => {
+            this.toastr.success(`Đã xóa thành công ${this.selected.length} danh mục!`, 'Thành công');
+            this.selected = []; // Reset danh sách đã chọn
+            this.loadCategories(); // Tải lại dữ liệu
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Có lỗi xảy ra khi xóa danh mục.', 'Lỗi');
+          },
+        });
+      }
     });
   }
 }
