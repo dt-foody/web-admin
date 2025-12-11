@@ -1,35 +1,28 @@
-<div
-  class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
->
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
   <!-- Header -->
   <div
-    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800"
-  >
+    class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
     <!-- Tìm kiếm và Bộ lọc -->
     <div class="flex gap-3 sm:justify-between">
       <app-search-input placeholder="Tìm khách hàng..." (search)="onSearchChange($event)">
       </app-search-input>
     </div>
-    <div class="flex gap-3">
-      <a
-        routerLink="/customer/add"
-        *appHasPermission="'customer.create'"
-        class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-        >
-          <path
-            d="M5 10.0002H15.0006M10.0002 5V15.0006"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+    <div class="flex gap-3 items-center">
+      @if (selected.length > 0) {
+      <button *appHasPermission="'customer.delete'" (click)="handleDeleteMany()"
+        class="bg-red-500 shadow-sm hover:bg-red-600 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+        </svg>
+        Xóa ({{ selected.length }})
+      </button>
+      }
+      <a routerLink="/customer/add" *appHasPermission="'customer.create'"
+        class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 10.0002H15.0006M10.0002 5V15.0006" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+            strokeLinejoin="round" />
         </svg>
         Tạo mới
       </a>
@@ -46,279 +39,188 @@
           </th>
 
           <th>
-            <app-sort-header
-              label="Khách hàng"
-              key="name"
-              [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false"
-              (sortChange)="onSortChange($event)"
-            >
+            <app-sort-header label="Khách hàng" key="name" [activeKey]="query.sort?.key || ''"
+              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)">
             </app-sort-header>
           </th>
 
           <th>
-            <app-sort-header
-              label="Email"
-              key="email"
-              [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false"
-              (sortChange)="onSortChange($event)"
-            >
+            <app-sort-header label="Email" key="email" [activeKey]="query.sort?.key || ''"
+              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)">
             </app-sort-header>
           </th>
 
           <th>
-            <app-sort-header
-              label="Số điện thoại"
-              key="phone"
-              [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false"
-              (sortChange)="onSortChange($event)"
-            >
+            <app-sort-header label="Số điện thoại" key="phone" [activeKey]="query.sort?.key || ''"
+              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)">
             </app-sort-header>
           </th>
 
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Giới tính
           </th>
 
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Địa chỉ
           </th>
 
           <th>
-            <app-sort-header
-              label="Ngày tạo"
-              key="createdAt"
-              [activeKey]="query.sort?.key || ''"
-              [asc]="query.sort?.asc || false"
-              (sortChange)="onSortChange($event)"
-            >
+            <app-sort-header label="Ngày tạo" key="createdAt" [activeKey]="query.sort?.key || ''"
+              [asc]="query.sort?.asc || false" (sortChange)="onSortChange($event)">
             </app-sort-header>
           </th>
 
-          <th
-            class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
+          <th class="px-5 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
             Hành động
           </th>
         </tr>
       </thead>
       <tbody class="divide-x divide-y divide-gray-200 dark:divide-gray-800">
         @for (customer of dataSources; track customer.id) {
-          <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
-            <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
-              <app-checkbox
-                type="checkbox"
-                [checked]="selected.includes(customer.id)"
-                (checkedChange)="toggleSelect(customer.id, $event)"
-              />
-            </td>
+        <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
+          <td class="lg:w-14 px-5 py-4 whitespace-nowrap">
+            <app-checkbox type="checkbox" [checked]="selected.includes(customer.id)"
+              (checkedChange)="toggleSelect(customer.id, $event)" />
+          </td>
 
-            <!-- Thông tin khách hàng -->
-            <td class="px-5 py-4 whitespace-nowrap">
-              <div class="flex items-center gap-3">
-                <div
-                  class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white font-semibold text-sm"
-                >
-                  {{ customer.name.charAt(0).toUpperCase() }}
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
-                    customer.name
+          <!-- Thông tin khách hàng -->
+          <td class="px-5 py-4 whitespace-nowrap">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white font-semibold text-sm">
+                {{ customer.name.charAt(0).toUpperCase() }}
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
+                  customer.name
                   }}</span>
-                  @if (customer.customerId) {
-                    <span class="text-xs text-gray-500 dark:text-gray-400"
-                      >ID: {{ customer.customerId }}</span
-                    >
-                  }
-                </div>
+                @if (customer.customerId) {
+                <span class="text-xs text-gray-500 dark:text-gray-400">ID: {{ customer.customerId }}</span>
+                }
               </div>
-            </td>
+            </div>
+          </td>
 
-            <!-- Email -->
-            <td class="px-5 py-4">
-              @if (customer.emails && customer.emails.length > 0) {
-                <div class="flex flex-col">
-                  <span
-                    class="text-sm text-gray-600 dark:text-gray-400 max-w-[200px] truncate block"
-                    [title]="customer.emails[0].value"
-                  >
-                    {{ customer.emails[0].value }}
-                  </span>
-                  @if (customer.emails.length > 1) {
-                    <span class="text-xs text-gray-500 dark:text-gray-400">
-                      + {{ customer.emails.length - 1 }} email khác
-                    </span>
-                  }
-                </div>
-              } @else {
-                <span class="text-xs text-gray-400 dark:text-gray-500">Không có email</span>
-              }
-            </td>
-
-            <!-- Số điện thoại -->
-            <td class="px-5 py-4 whitespace-nowrap">
-              @if (customer.phones && customer.phones.length > 0) {
-                <div class="flex flex-col">
-                  <span class="text-sm text-gray-600 dark:text-gray-400">
-                    {{ customer.phones[0].value }}
-                  </span>
-                  @if (customer.phones.length > 1) {
-                    <span class="text-xs text-gray-500 dark:text-gray-400">
-                      + {{ customer.phones.length - 1 }} số khác
-                    </span>
-                  }
-                </div>
-              } @else {
-                <span class="text-xs text-gray-400 dark:text-gray-500">Không có số điện thoại</span>
-              }
-            </td>
-
-            <!-- Giới tính -->
-            <td class="px-5 py-4 whitespace-nowrap">
-              <span
-                class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
-                [ngClass]="getGenderBadgeClass(customer.gender)"
-              >
-                {{ getGenderLabel(customer.gender) }}
+          <!-- Email -->
+          <td class="px-5 py-4">
+            @if (customer.emails && customer.emails.length > 0) {
+            <div class="flex flex-col">
+              <span class="text-sm text-gray-600 dark:text-gray-400 max-w-[200px] truncate block"
+                [title]="customer.emails[0].value">
+                {{ customer.emails[0].value }}
               </span>
-            </td>
-
-            <!-- Địa chỉ -->
-            <td class="px-5 py-4">
-              @if (getAddressCount(customer) > 0) {
-                <div class="flex flex-col gap-1">
-                  <span
-                    class="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                      <circle cx="12" cy="10" r="3" />
-                    </svg>
-                    {{ getAddressCount(customer) }} địa chỉ
-                  </span>
-                </div>
-              } @else {
-                <span class="text-xs text-gray-400 dark:text-gray-500">Không có địa chỉ</span>
+              @if (customer.emails.length > 1) {
+              <span class="text-xs text-gray-500 dark:text-gray-400">
+                + {{ customer.emails.length - 1 }} email khác
+              </span>
               }
-            </td>
+            </div>
+            } @else {
+            <span class="text-xs text-gray-400 dark:text-gray-500">Không có email</span>
+            }
+          </td>
 
-            <!-- Ngày tạo -->
-            <td class="px-5 py-4 whitespace-nowrap">
-              <p class="text-sm text-gray-600 dark:text-gray-400">
-                {{ customer.createdAt | date: 'HH:ss dd/MM/yyyy' }}
-              </p>
-            </td>
+          <!-- Số điện thoại -->
+          <td class="px-5 py-4 whitespace-nowrap">
+            @if (customer.phones && customer.phones.length > 0) {
+            <div class="flex flex-col">
+              <span class="text-sm text-gray-600 dark:text-gray-400">
+                {{ customer.phones[0].value }}
+              </span>
+              @if (customer.phones.length > 1) {
+              <span class="text-xs text-gray-500 dark:text-gray-400">
+                + {{ customer.phones.length - 1 }} số khác
+              </span>
+              }
+            </div>
+            } @else {
+            <span class="text-xs text-gray-400 dark:text-gray-500">Không có số điện thoại</span>
+            }
+          </td>
 
-            <!-- Hành động -->
-            <td class="px-5 py-4 whitespace-nowrap">
-              <div class="flex gap-2">
-                <!-- Xem chi tiết -->
-                <button
-                  (click)="handleViewDetail(customer)"
-                  class="text-green-500 hover:text-green-700 dark:hover:text-green-400 p-1 rounded"
-                  title="Xem chi tiết"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="size-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-                    />
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                    />
-                  </svg>
-                </button>
-                <!-- Chỉnh sửa -->
-                <button
-                  *appHasPermission="'customer.update'"
-                  (click)="handleEdit(customer)"
-                  class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded"
-                  title="Chỉnh sửa"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="size-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                    />
-                  </svg>
-                </button>
-                <!-- Xóa -->
-                <button
-                  *appHasPermission="'customer.delete'"
-                  (click)="handleDelete(customer)"
-                  class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded"
-                  title="Xóa"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="size-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
+          <!-- Giới tính -->
+          <td class="px-5 py-4 whitespace-nowrap">
+            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
+              [ngClass]="getGenderBadgeClass(customer.gender)">
+              {{ getGenderLabel(customer.gender) }}
+            </span>
+          </td>
+
+          <!-- Địa chỉ -->
+          <td class="px-5 py-4">
+            @if (getAddressCount(customer) > 0) {
+            <div class="flex flex-col gap-1">
+              <span class="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                {{ getAddressCount(customer) }} địa chỉ
+              </span>
+            </div>
+            } @else {
+            <span class="text-xs text-gray-400 dark:text-gray-500">Không có địa chỉ</span>
+            }
+          </td>
+
+          <!-- Ngày tạo -->
+          <td class="px-5 py-4 whitespace-nowrap">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              {{ customer.createdAt | date: 'HH:ss dd/MM/yyyy' }}
+            </p>
+          </td>
+
+          <!-- Hành động -->
+          <td class="px-5 py-4 whitespace-nowrap">
+            <div class="flex gap-2">
+              <!-- Xem chi tiết -->
+              <button (click)="handleViewDetail(customer)"
+                class="text-green-500 hover:text-green-700 dark:hover:text-green-400 p-1 rounded" title="Xem chi tiết">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="size-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+              </button>
+              <!-- Chỉnh sửa -->
+              <button *appHasPermission="'customer.update'" (click)="handleEdit(customer)"
+                class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-1 rounded" title="Chỉnh sửa">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="size-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>
+              </button>
+              <!-- Xóa -->
+              <button *appHasPermission="'customer.delete'" (click)="handleDelete(customer)"
+                class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 rounded" title="Xóa">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
         } @empty {
-          <tr>
-            <td colspan="12" class="py-10 text-center text-gray-500 dark:text-gray-400">
-              <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
-                Không tìm thấy khách hàng
-              </h3>
-              <p class="mt-1 text-sm">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
-            </td>
-          </tr>
+        <tr>
+          <td colspan="12" class="py-10 text-center text-gray-500 dark:text-gray-400">
+            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">
+              Không tìm thấy khách hàng
+            </h3>
+            <p class="mt-1 text-sm">Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
+          </td>
+        </tr>
         }
       </tbody>
     </table>
   </div>
 
   <!-- Phân trang -->
-  <app-pagination
-    [page]="query.page"
-    [totalPages]="totalPages"
-    [totalResults]="totalResults"
-    [pageSize]="query.pageSize"
-    (pageChange)="onPageChange($event)"
-  >
+  <app-pagination [page]="query.page" [totalPages]="totalPages" [totalResults]="totalResults"
+    [pageSize]="query.pageSize" (pageChange)="onPageChange($event)">
   </app-pagination>
 </div>
 
@@ -330,17 +232,31 @@
       Bạn có chắc muốn xóa khách hàng <strong>{{ itemToDelete?.name }}</strong> không?
     </p>
     <div class="flex justify-end gap-3">
-      <button
-        (click)="dialog.close(false)"
-        class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
-      >
+      <button (click)="dialog.close(false)"
+        class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600">
         Hủy
       </button>
-      <button
-        (click)="dialog.close(true)"
-        class="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
-      >
+      <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600">
         Xóa
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #confirmDeleteMany let-dialog>
+  <div class="p-5">
+    <h3 class="text-lg font-semibold mb-4 text-red-600">Xác nhận xóa nhiều</h3>
+    <p class="mb-6">
+      Bạn có chắc muốn xóa <strong>{{ dialog.data.count }}</strong> khách hàng đã chọn không?
+      <br>
+      <span class="text-sm text-gray-500">Hành động này sẽ xóa vĩnh viễn dữ liệu và không thể hoàn tác.</span>
+    </p>
+    <div class="flex justify-end gap-3">
+      <button (click)="dialog.close(false)" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition">
+        Hủy
+      </button>
+      <button (click)="dialog.close(true)" class="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white transition">
+        Đồng ý Xóa
       </button>
     </div>
   </div>

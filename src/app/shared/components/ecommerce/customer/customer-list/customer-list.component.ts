@@ -30,8 +30,9 @@ import { CheckboxComponent } from '../../../form/input/checkbox.component';
 })
 export class CustomerListComponent extends BaseListComponent<Customer> implements OnInit {
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
-
   itemToDelete: Customer | null = null;
+
+  @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
 
   constructor(
     private customerService: CustomerService,
@@ -130,5 +131,31 @@ export class CustomerListComponent extends BaseListComponent<Customer> implement
   handleViewDetail(customer: Customer): void {
     // You can implement view detail modal or navigate to detail page
     this.router.navigate(['/customer/detail', customer.id]);
+  }
+
+  handleDeleteMany() {
+    if (this.selected.length === 0) return;
+
+    // Mở dialog xác nhận
+    const dialogRef = this.dialog.open(this.confirmDeleteManyTpl, {
+      data: { count: this.selected.length }, // Truyền số lượng để hiển thị
+    });
+
+    dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        // Gọi service deleteMany
+        this.customerService.deleteMany(this.selected).subscribe({
+          next: () => {
+            this.toastr.success(`Đã xóa thành công ${this.selected.length} khách hàng!`, 'Thành công');
+            this.selected = []; // Reset danh sách chọn
+            this.fetchData();   // Tải lại dữ liệu bảng
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Có lỗi xảy ra khi xóa khách hàng.', 'Lỗi');
+          },
+        });
+      }
+    });
   }
 }

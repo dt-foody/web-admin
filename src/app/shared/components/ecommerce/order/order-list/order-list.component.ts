@@ -35,19 +35,21 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
   @ViewChild('filterRef') filterRef!: ElementRef;
 
+  @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
+
   viewMode: 'table' | 'kanban' = 'table';
   itemToDelete: Order | null = null;
-  
+
   private refreshSubscription: Subscription | null = null;
 
   sortOptions = [
     { label: 'Mới nhất', value: 'createdAt:desc' },
     { label: 'Cũ nhất', value: 'createdAt:asc' },
     { label: 'Vừa cập nhật', value: 'updatedAt:desc' },
-    { label: 'Ưu tiên cao nhất (Gấp)', value: 'priorityTime:asc' }, 
+    { label: 'Ưu tiên cao nhất (Gấp)', value: 'priorityTime:asc' },
     { label: 'Ưu tiên thấp nhất', value: 'priorityTime:desc' },
   ];
-  
+
   currentSortValue: string = 'priorityTime:asc';
 
   get kanbanColumns() {
@@ -95,14 +97,14 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     this.query.status = '';
     this.query.paymentStatus = '';
     this.query.shippingStatus = '';
-    
+
     this.query.sort = { key: 'priorityTime', asc: true };
 
     const savedMode = localStorage.getItem('orderViewMode');
     if (savedMode === 'kanban') {
       this.viewMode = 'kanban';
     }
-    
+
     this.manageAutoRefresh();
   }
 
@@ -111,8 +113,8 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
   }
 
   manageAutoRefresh() {
-    this.stopAutoRefresh(); 
-    
+    this.stopAutoRefresh();
+
     if (this.viewMode === 'kanban') {
       this.refreshSubscription = interval(30000).subscribe(() => {
         this.fetchData();
@@ -132,7 +134,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
       const [key, direction] = this.currentSortValue.split(':');
       this.query.sort = {
         key: key,
-        asc: direction === 'asc'
+        asc: direction === 'asc',
       };
       this.onFilterChange();
     }
@@ -174,8 +176,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
         this.totalPages = data.totalPages;
         this.totalResults = data.totalResults;
       },
-      error: (error) => {
-      },
+      error: (error) => {},
     });
   }
 
@@ -272,14 +273,23 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
 
   getStatusColor(status: string): string {
     const colors: { [key: string]: string } = {
-      pending: 'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-700',
-      confirmed: 'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-700',
-      preparing: 'bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-700',
-      delivering: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-700',
-      completed: 'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400 border-green-200 dark:border-green-700',
-      canceled: 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400 border-red-200 dark:border-red-700',
+      pending:
+        'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-700',
+      confirmed:
+        'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-700',
+      preparing:
+        'bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-700',
+      delivering:
+        'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-700',
+      completed:
+        'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400 border-green-200 dark:border-green-700',
+      canceled:
+        'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400 border-red-200 dark:border-red-700',
     };
-    return colors[status] || 'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400 border-gray-200';
+    return (
+      colors[status] ||
+      'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400 border-gray-200'
+    );
   }
 
   getPaymentStatusColor(status: string): string {
@@ -329,6 +339,35 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
         });
       }
       this.itemToDelete = null;
+    });
+  }
+
+  handleDeleteMany() {
+    if (this.selected.length === 0) return;
+
+    // Mở dialog xác nhận
+    const dialogRef = this.dialog.open(this.confirmDeleteManyTpl, {
+      data: { count: this.selected.length }, // Truyền số lượng để hiển thị
+    });
+
+    dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        // Gọi service deleteMany
+        this.orderService.deleteMany(this.selected).subscribe({
+          next: () => {
+            this.toastr.success(
+              `Đã xóa thành công ${this.selected.length} đơn hàng!`,
+              'Thành công',
+            );
+            this.selected = []; // Reset danh sách chọn
+            this.fetchData(); // Tải lại dữ liệu bảng
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Có lỗi xảy ra khi xóa đơn hàng.', 'Lỗi');
+          },
+        });
+      }
     });
   }
 }
