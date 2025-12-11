@@ -35,6 +35,8 @@ export class ProductListComponent extends BaseListComponent<Product> implements 
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
   @ViewChild('filterRef') filterRef!: ElementRef;
 
+  @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
+
   itemToDelete: Product | null = null;
 
   constructor(
@@ -112,6 +114,35 @@ export class ProductListComponent extends BaseListComponent<Product> implements 
       error: () => {
         this.toastr.error('Update failed!', 'Product');
       },
+    });
+  }
+
+  handleDeleteMany() {
+    if (this.selected.length === 0) return;
+
+    // Mở dialog xác nhận
+    const dialogRef = this.dialog.open(this.confirmDeleteManyTpl, {
+      data: { count: this.selected.length }, // Truyền số lượng để hiển thị trong modal
+    });
+
+    dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        // Gọi API deleteMany
+        this.productService.deleteMany(this.selected).subscribe({
+          next: () => {
+            this.toastr.success(
+              `Đã xóa thành công ${this.selected.length} sản phẩm!`,
+              'Thành công',
+            );
+            this.selected = []; // Reset danh sách chọn sau khi xóa
+            this.fetchData(); // Tải lại dữ liệu bảng
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Có lỗi xảy ra khi xóa sản phẩm.', 'Lỗi');
+          },
+        });
+      }
     });
   }
 }
