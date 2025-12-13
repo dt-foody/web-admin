@@ -35,8 +35,9 @@ import { environment } from '../../../../../../environments/environment';
 })
 export class BlogCategoryListComponent extends BaseListComponent<BlogCategory> implements OnInit {
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
-
   itemToDelete: BlogCategory | null = null;
+
+  @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
 
   constructor(
     private blogCategoryService: BlogCategoryService,
@@ -103,6 +104,35 @@ export class BlogCategoryListComponent extends BaseListComponent<BlogCategory> i
       error: (err) => {
         this.toastr.error('Failed to update category status.', 'Error');
       },
+    });
+  }
+
+  handleDeleteMany() {
+    if (this.selected.length === 0) return;
+
+    // Mở dialog xác nhận
+    const dialogRef = this.dialog.open(this.confirmDeleteManyTpl, {
+      data: { count: this.selected.length }, // Truyền số lượng để hiển thị
+    });
+
+    dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        // Gọi service deleteMany
+        this.blogCategoryService.deleteMany(this.selected).subscribe({
+          next: () => {
+            this.toastr.success(
+              `Đã xóa thành công ${this.selected.length} danh mục!`,
+              'Thành công',
+            );
+            this.selected = []; // Reset danh sách chọn
+            this.fetchData(); // Tải lại dữ liệu bảng
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Có lỗi xảy ra khi xóa danh mục.', 'Lỗi');
+          },
+        });
+      }
     });
   }
 }
