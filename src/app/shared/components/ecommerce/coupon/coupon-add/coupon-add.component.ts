@@ -222,14 +222,14 @@ export class CouponAddComponent implements OnInit {
       ],
     },
     {
-      id: 'order_count',
+      id: 'customer_order_count',
       group: 'Đơn hàng',
       name: 'Số lượng đơn hàng',
       type: 'number',
       operators: [Operator.EQUALS, Operator.GREATER_THAN, Operator.LESS_THAN],
     },
     {
-      id: 'customer_lifetime_value', // Hoặc 'total_spent'
+      id: 'customer_total_spent',
       group: 'Đơn hàng',
       name: 'Tổng lịch sử mua hàng (VNĐ)',
       type: 'number',
