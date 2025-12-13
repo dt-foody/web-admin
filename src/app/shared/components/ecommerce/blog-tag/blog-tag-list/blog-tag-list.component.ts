@@ -34,8 +34,9 @@ import { CheckboxComponent } from '../../../form/input/checkbox.component';
 })
 export class BlogTagListComponent extends BaseListComponent<BlogTag> implements OnInit {
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
-
   itemToDelete: BlogTag | null = null;
+
+  @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
 
   constructor(
     private blogTagService: BlogTagService,
@@ -105,6 +106,32 @@ export class BlogTagListComponent extends BaseListComponent<BlogTag> implements 
         console.error(err);
         this.toastr.error('Failed to update tag status.', 'Error');
       },
+    });
+  }
+
+  handleDeleteMany() {
+    if (this.selected.length === 0) return;
+
+    // Open confirmation dialog
+    const dialogRef = this.dialog.open(this.confirmDeleteManyTpl, {
+      data: { count: this.selected.length }, // Pass the count to display
+    });
+
+    dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        // Call deleteMany service
+        this.blogTagService.deleteMany(this.selected).subscribe({
+          next: () => {
+            this.toastr.success(`Đã xóa thành công ${this.selected.length} thẻ!`, 'Thành công');
+            this.selected = []; // Reset selection
+            this.fetchData(); // Refresh table
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Có lỗi xảy ra khi xóa thẻ.', 'Lỗi');
+          },
+        });
+      }
     });
   }
 }
