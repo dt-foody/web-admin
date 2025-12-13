@@ -33,6 +33,8 @@ export class EmployeeListComponent extends BaseListComponent<Employee> implement
 
   itemToDelete: Employee | null = null;
 
+  @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
+
   constructor(
     private employeeService: EmployeeService,
     private router: Router,
@@ -130,5 +132,34 @@ export class EmployeeListComponent extends BaseListComponent<Employee> implement
   handleViewDetail(employee: Employee): void {
     // You can implement view detail modal or navigate to detail page
     this.router.navigate(['/employee/detail', employee.id]);
+  }
+
+  handleDeleteMany() {
+    if (this.selected.length === 0) return;
+
+    // Mở dialog xác nhận
+    const dialogRef = this.dialog.open(this.confirmDeleteManyTpl, {
+      data: { count: this.selected.length }, // Truyền số lượng
+    });
+
+    dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        // Gọi service deleteMany
+        this.employeeService.deleteMany(this.selected).subscribe({
+          next: () => {
+            this.toastr.success(
+              `Đã xóa thành công ${this.selected.length} nhân viên!`,
+              'Thành công',
+            );
+            this.selected = []; // Reset danh sách chọn
+            this.fetchData(); // Tải lại dữ liệu bảng
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Có lỗi xảy ra khi xóa nhân viên.', 'Lỗi');
+          },
+        });
+      }
+    });
   }
 }
