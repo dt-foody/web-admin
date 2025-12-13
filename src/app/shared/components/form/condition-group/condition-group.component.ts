@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './condition-group.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, FormsModule, ConditionRowComponent, ConditionGroupComponent],
+  imports: [CommonModule, FormsModule, ConditionRowComponent],
 })
 export class ConditionGroupComponent {
   group = model.required<ConditionGroup>();

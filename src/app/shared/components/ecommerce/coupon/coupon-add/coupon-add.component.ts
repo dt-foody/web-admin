@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 
 import { ConditionsBuilderComponent } from '../../../form/conditions-builder/conditions-builder.component';
 
@@ -151,6 +151,77 @@ export class CouponAddComponent implements OnInit {
       operators: [Operator.EQUALS, Operator.GREATER_THAN, Operator.LESS_THAN],
     },
     {
+      id: 'customer_birth_month',
+      group: 'Khách hàng',
+      name: 'Tháng sinh nhật',
+      type: 'number', // Dùng number để nhập tháng 1-12
+      operators: [
+        Operator.EQUALS,
+        Operator.IN, // Cho phép chọn nhiều tháng (ví dụ: tháng 1, 2, 3)
+        Operator.BETWEEN, // Trong khoảng tháng
+      ],
+    },
+    {
+      id: 'customer_birth_year',
+      group: 'Khách hàng',
+      name: 'Năm sinh',
+      type: 'number',
+      operators: [
+        Operator.EQUALS,
+        Operator.GREATER_THAN, // Sinh sau năm X
+        Operator.LESS_THAN, // Sinh trước năm X
+        Operator.BETWEEN, // Thế hệ GenZ, GenY...
+      ],
+    },
+    {
+      id: 'customer_gender',
+      group: 'Khách hàng',
+      name: 'Giới tính',
+      type: 'multi-select', // Cần cấu hình source optionsLoader trả về ['Nam', 'Nữ', 'Khác']
+      operators: [Operator.EQUALS],
+      // Lưu ý: Bạn cần implement source ở đây hoặc xử lý riêng trong component
+      source: {
+        valueField: 'code', // Tên thuộc tính dùng làm giá trị lưu (ví dụ: 'male')
+        labelField: 'name', // Tên thuộc tính hiển thị (ví dụ: 'Nam')
+        optionsLoader: (params) => {
+          // 1. Khai báo danh sách cứng
+          const genders = [
+            { code: 'male', name: 'Nam' },
+            { code: 'female', name: 'Nữ' },
+            { code: 'other', name: 'Khác' },
+          ];
+
+          // 2. Xử lý tìm kiếm (nếu người dùng gõ trong dropdown)
+          let filtered = genders;
+          if (params.search) {
+            const searchLower = params.search.toLowerCase();
+            filtered = genders.filter((g) => g.name.toLowerCase().includes(searchLower));
+          }
+
+          // 3. Trả về dạng Observable<PaginatedResponse> giả lập
+          return of({
+            results: filtered,
+            page: 1,
+            limit: 100, // Trả về tất cả vì danh sách ngắn
+            totalPages: 1,
+            totalResults: filtered.length,
+          });
+        },
+      },
+    },
+    {
+      id: 'customer_default_address_district',
+      group: 'Khách hàng',
+      name: 'Quận',
+      type: 'text', // Dùng text để tìm 'Quận 1', 'Bình Thạnh'
+      operators: [
+        Operator.EQUALS,
+        Operator.NOT_EQUALS,
+        Operator.CONTAINS, // Ví dụ: Chứa 'Thủ Đức'
+        Operator.IN, // Nếu bạn đổi sang type 'select' hoặc 'multi-select'
+      ],
+    },
+    {
       id: 'order_count',
       group: 'Đơn hàng',
       name: 'Số lượng đơn hàng',
@@ -158,11 +229,67 @@ export class CouponAddComponent implements OnInit {
       operators: [Operator.EQUALS, Operator.GREATER_THAN, Operator.LESS_THAN],
     },
     {
+      id: 'customer_lifetime_value', // Hoặc 'total_spent'
+      group: 'Đơn hàng',
+      name: 'Tổng lịch sử mua hàng (VNĐ)',
+      type: 'number',
+      operators: [
+        Operator.GREATER_THAN, // Khách VIP > 10tr
+        Operator.LESS_THAN,
+        Operator.BETWEEN,
+        Operator.EQUALS,
+      ],
+    },
+    {
       id: 'order_total_items',
       group: 'Đơn hàng',
       name: 'Số lượng sản phẩm trong đơn',
       type: 'number',
       operators: [Operator.GREATER_THAN, Operator.LESS_THAN, Operator.EQUALS],
+    },
+    {
+      id: 'current_day_of_week',
+      group: 'Thứ ngày',
+      name: 'Thứ trong tuần',
+      type: 'multi-select', // Hoặc 'number' (2-8) tùy logic backend của bạn
+      operators: [
+        Operator.EQUALS, // Ví dụ: Thứ 2
+        Operator.IN, // Ví dụ: Thứ 7, Chủ Nhật (Cuối tuần)
+        Operator.NOT_IN,
+      ],
+      // Lưu ý: Cần optionsLoader trả về: [{id: 2, label: 'Thứ 2'}, ..., {id: 8, label: 'Chủ Nhật'}]
+      source: {
+        valueField: 'id', // Giá trị lưu xuống DB (2, 3, ..., 8)
+        labelField: 'label', // Giá trị hiển thị (Thứ 2, ..., Chủ Nhật)
+        optionsLoader: (params) => {
+          // 1. Danh sách thứ trong tuần (Theo quy ước VN: 2=Thứ 2 ... 8=Chủ Nhật)
+          const days = [
+            { id: 2, label: 'Thứ 2' },
+            { id: 3, label: 'Thứ 3' },
+            { id: 4, label: 'Thứ 4' },
+            { id: 5, label: 'Thứ 5' },
+            { id: 6, label: 'Thứ 6' },
+            { id: 7, label: 'Thứ 7' },
+            { id: 8, label: 'Chủ Nhật' },
+          ];
+
+          // 2. Xử lý tìm kiếm
+          let filtered = days;
+          if (params.search) {
+            const searchLower = params.search.toLowerCase();
+            filtered = days.filter((d) => d.label.toLowerCase().includes(searchLower));
+          }
+
+          // 3. Trả về Observable
+          return of({
+            results: filtered,
+            page: 1,
+            limit: 100,
+            totalPages: 1,
+            totalResults: filtered.length,
+          });
+        },
+      },
     },
   ];
 
