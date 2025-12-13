@@ -30,8 +30,9 @@ import { CheckboxComponent } from '../../../form/input/checkbox.component';
 })
 export class BlogPostListComponent extends BaseListComponent<BlogPost> implements OnInit {
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
-
   itemToDelete: BlogPost | null = null;
+
+  @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
 
   constructor(
     private blogPostService: BlogPostService,
@@ -60,7 +61,7 @@ export class BlogPostListComponent extends BaseListComponent<BlogPost> implement
       params.search = this.query.search.trim();
     }
 
-    this.blogPostService.getAll(params).subscribe((data) => {
+    this.blogPostService.getAll(params).subscribe((data: any) => {
       this.dataSources = data.results;
       this.totalPages = data.totalPages;
       this.totalResults = data.totalResults;
@@ -121,7 +122,7 @@ export class BlogPostListComponent extends BaseListComponent<BlogPost> implement
             this.toastr.success('Delete successfully!', 'Blog Post');
             this.fetchData();
           },
-          error: (err) => {
+          error: (err: any) => {
             this.toastr.error(err?.error?.message || 'Delete failed!', 'Blog Post');
           },
         });
@@ -180,5 +181,34 @@ export class BlogPostListComponent extends BaseListComponent<BlogPost> implement
     event.stopPropagation();
     // Open in new tab - you might want to adjust the URL based on your frontend routing
     window.open(`/blog/${post.slug || post.id}`, '_blank');
+  }
+
+  handleDeleteMany() {
+    if (this.selected.length === 0) return;
+
+    // Mở dialog xác nhận
+    const dialogRef = this.dialog.open(this.confirmDeleteManyTpl, {
+      data: { count: this.selected.length }, // Truyền số lượng để hiển thị
+    });
+
+    dialogRef.afterClosed$.subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        // Gọi service deleteMany
+        this.blogPostService.deleteMany(this.selected).subscribe({
+          next: () => {
+            this.toastr.success(
+              `Đã xóa thành công ${this.selected.length} bài viết!`,
+              'Thành công',
+            );
+            this.selected = []; // Reset danh sách chọn
+            this.fetchData(); // Tải lại dữ liệu bảng
+          },
+          error: (err: any) => {
+            console.error(err);
+            this.toastr.error('Có lỗi xảy ra khi xóa bài viết.', 'Lỗi');
+          },
+        });
+      }
+    });
   }
 }
