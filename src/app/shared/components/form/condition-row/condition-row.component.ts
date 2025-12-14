@@ -7,6 +7,7 @@ import {
   output,
   signal,
   ChangeDetectorRef,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,7 +23,7 @@ import { SelectComponent } from '../select/select.component';
   standalone: true,
   imports: [CommonModule, FormsModule, NgSelectModule, InputFieldComponent, SelectComponent],
 })
-export class ConditionRowComponent {
+export class ConditionRowComponent implements OnInit {
   // Inputs / Outputs
   condition = model.required<Condition>();
   fields = input.required<Field[]>();
@@ -50,6 +51,15 @@ export class ConditionRowComponent {
   });
 
   constructor(private cdr: ChangeDetectorRef) {}
+
+  // [3] Thêm logic OnInit để load options khi vào chế độ Edit
+  ngOnInit(): void {
+    const field = this.selectedField();
+    // Nếu field đã có sẵn (từ dữ liệu cũ) và là loại cần load options
+    if (field && ['select', 'multi-select'].includes(field.type)) {
+      this.initializeSelectOptions();
+    }
+  }
 
   // ===== Select options handling =====
 

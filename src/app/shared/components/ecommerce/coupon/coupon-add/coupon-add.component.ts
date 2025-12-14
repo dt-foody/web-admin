@@ -178,7 +178,7 @@ export class CouponAddComponent implements OnInit {
       group: 'Khách hàng',
       name: 'Giới tính',
       type: 'multi-select', // Cần cấu hình source optionsLoader trả về ['Nam', 'Nữ', 'Khác']
-      operators: [Operator.EQUALS],
+      operators: [Operator.IN, Operator.NOT_IN],
       // Lưu ý: Bạn cần implement source ở đây hoặc xử lý riêng trong component
       source: {
         valueField: 'code', // Tên thuộc tính dùng làm giá trị lưu (ví dụ: 'male')
@@ -253,7 +253,7 @@ export class CouponAddComponent implements OnInit {
       name: 'Thứ trong tuần',
       type: 'multi-select', // Hoặc 'number' (2-8) tùy logic backend của bạn
       operators: [
-        Operator.EQUALS, // Ví dụ: Thứ 2
+        // Operator.EQUALS, // Ví dụ: Thứ 2
         Operator.IN, // Ví dụ: Thứ 7, Chủ Nhật (Cuối tuần)
         Operator.NOT_IN,
       ],
