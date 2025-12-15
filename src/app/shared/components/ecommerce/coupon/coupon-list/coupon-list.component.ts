@@ -202,21 +202,21 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
    * Hiển thị giới hạn tổng
    */
   getMaxUsesDisplay(coupon: Coupon): string {
-    return coupon.maxUses > 0 ? coupon.maxUses.toString() : 'Unlimited';
+    return coupon.maxUses > 0 ? coupon.maxUses.toString() : '∞';
   }
 
   /**
    * XÓA: Hiển thị giới hạn hàng ngày
    */
   // getDailyMaxUsesDisplay(coupon: Coupon): string {
-  //   return coupon.dailyMaxUses > 0 ? coupon.dailyMaxUses.toString() : 'Unlimited';
+  //   return coupon.dailyMaxUses > 0 ? coupon.dailyMaxUses.toString() : '∞';
   // }
 
   /**
    * Hiển thị giới hạn mỗi người dùng
    */
   getMaxUsesPerUserDisplay(coupon: Coupon): string {
-    return coupon.maxUsesPerUser > 0 ? coupon.maxUsesPerUser.toString() : 'Unlimited';
+    return coupon.maxUsesPerUser > 0 ? coupon.maxUsesPerUser.toString() : '∞';
   }
 
   handleDeleteMany() {
@@ -232,9 +232,12 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
         // Gọi service deleteMany
         this.couponService.deleteMany(this.selected).subscribe({
           next: () => {
-            this.toastr.success(`Đã xóa thành công ${this.selected.length} mã giảm giá!`, 'Thành công');
+            this.toastr.success(
+              `Đã xóa thành công ${this.selected.length} mã giảm giá!`,
+              'Thành công',
+            );
             this.selected = []; // Reset danh sách chọn
-            this.fetchData();   // Tải lại dữ liệu bảng
+            this.fetchData(); // Tải lại dữ liệu bảng
           },
           error: (err) => {
             console.error(err);

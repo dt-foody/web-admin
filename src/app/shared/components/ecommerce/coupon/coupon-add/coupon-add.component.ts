@@ -210,18 +210,6 @@ export class CouponAddComponent implements OnInit {
       },
     },
     {
-      id: 'customer_default_address_district',
-      group: 'Khách hàng',
-      name: 'Quận',
-      type: 'text', // Dùng text để tìm 'Quận 1', 'Bình Thạnh'
-      operators: [
-        Operator.EQUALS,
-        Operator.NOT_EQUALS,
-        Operator.CONTAINS, // Ví dụ: Chứa 'Thủ Đức'
-        Operator.IN, // Nếu bạn đổi sang type 'select' hoặc 'multi-select'
-      ],
-    },
-    {
       id: 'customer_order_count',
       group: 'Đơn hàng',
       name: 'Số lượng đơn hàng',
@@ -248,6 +236,48 @@ export class CouponAddComponent implements OnInit {
       operators: [Operator.GREATER_THAN, Operator.LESS_THAN, Operator.EQUALS],
     },
     {
+      id: 'customer_default_address_district',
+      group: 'Địa chỉ',
+      name: 'Quận',
+      type: 'multi-select',
+      operators: [Operator.IN, Operator.NOT_IN],
+      source: {
+        valueField: 'label', // Lưu text quận xuống DB
+        labelField: 'label', // Hiển thị
+        optionsLoader: (params) => {
+          const districts = [
+            { label: 'Quận Ba Đình' },
+            { label: 'Quận Cầu Giấy' },
+            { label: 'Quận Đống Đa' },
+            { label: 'Quận Hai Bà Trưng' },
+            { label: 'Quận Hoàn Kiếm' },
+            { label: 'Quận Thanh Xuân' },
+            { label: 'Quận Hoàng Mai' },
+            { label: 'Quận Long Biên' },
+            { label: 'Quận Hà Đông' },
+            { label: 'Quận Tây Hồ' },
+            { label: 'Quận Nam Từ Liêm' },
+            { label: 'Quận Bắc Từ Liêm' },
+          ];
+
+          // Search
+          let filtered = districts;
+          if (params.search) {
+            const searchLower = params.search.toLowerCase();
+            filtered = districts.filter((d) => d.label.toLowerCase().includes(searchLower));
+          }
+
+          return of({
+            results: filtered,
+            page: 1,
+            limit: 100,
+            totalPages: 1,
+            totalResults: filtered.length,
+          });
+        },
+      },
+    },
+    {
       id: 'current_day_of_week',
       group: 'Thứ ngày',
       name: 'Thứ trong tuần',
@@ -257,20 +287,20 @@ export class CouponAddComponent implements OnInit {
         Operator.IN, // Ví dụ: Thứ 7, Chủ Nhật (Cuối tuần)
         Operator.NOT_IN,
       ],
-      // Lưu ý: Cần optionsLoader trả về: [{id: 2, label: 'Thứ 2'}, ..., {id: 8, label: 'Chủ Nhật'}]
+      // Lưu ý: Cần optionsLoader trả về: [{id: 1, label: 'Thứ 2'}, ..., {id: 0, label: 'Chủ Nhật'}]
       source: {
-        valueField: 'id', // Giá trị lưu xuống DB (2, 3, ..., 8)
+        valueField: 'id', // Giá trị lưu xuống DB (1, 2, ..., 0)
         labelField: 'label', // Giá trị hiển thị (Thứ 2, ..., Chủ Nhật)
         optionsLoader: (params) => {
-          // 1. Danh sách thứ trong tuần (Theo quy ước VN: 2=Thứ 2 ... 8=Chủ Nhật)
+          // 1. Danh sách thứ trong tuần (Theo quy ước VN: 1=Thứ 2 ... 0=Chủ Nhật)
           const days = [
-            { id: 2, label: 'Thứ 2' },
-            { id: 3, label: 'Thứ 3' },
-            { id: 4, label: 'Thứ 4' },
-            { id: 5, label: 'Thứ 5' },
-            { id: 6, label: 'Thứ 6' },
-            { id: 7, label: 'Thứ 7' },
-            { id: 8, label: 'Chủ Nhật' },
+            { id: 1, label: 'Thứ 2' },
+            { id: 2, label: 'Thứ 3' },
+            { id: 3, label: 'Thứ 4' },
+            { id: 4, label: 'Thứ 5' },
+            { id: 5, label: 'Thứ 6' },
+            { id: 6, label: 'Thứ 7' },
+            { id: 0, label: 'Chủ Nhật' },
           ];
 
           // 2. Xử lý tìm kiếm
