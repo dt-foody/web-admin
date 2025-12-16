@@ -57,7 +57,7 @@ export class PosTerminalComponent implements OnInit {
           cat.image = cat.image ? `${environment.urlBaseImage}${cat.image}` : '';
         });
 
-        this.loadMenu();
+        // this.loadMenu();
       },
       error: (err) => console.error('Error loading master data', err),
     });
