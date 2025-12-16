@@ -27,6 +27,7 @@ interface BlogCategoryFormData {
   backgroundColor: string;
   textColor: string;
   isActive: boolean;
+  priority: number;
 }
 
 const DEFAULT_FORM: BlogCategoryFormData = {
@@ -36,6 +37,7 @@ const DEFAULT_FORM: BlogCategoryFormData = {
   backgroundColor: '#E0E0E0',
   textColor: '#212121',
   isActive: true,
+  priority: 0,
 };
 
 @Component({
@@ -93,6 +95,7 @@ export class BlogCategoryAddComponent implements OnInit {
           backgroundColor: data.backgroundColor || DEFAULT_FORM.backgroundColor,
           textColor: data.textColor || DEFAULT_FORM.textColor,
           isActive: data.isActive !== undefined ? data.isActive : true,
+          priority: data.priority || 0,
         };
         if (data.coverImage) {
           this.imagePreview = `${environment.urlBaseImage}${data.coverImage}`;

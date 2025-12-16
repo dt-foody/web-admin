@@ -6,7 +6,28 @@
   >
     <app-search-input placeholder="Tìm kiếm danh mục..." (search)="onSearchChange($event)">
     </app-search-input>
-    <div class="flex gap-3">
+
+    <div class="flex gap-3 items-center">
+      <div *appHasPermission="'blogCategory.update'" class="flex items-center gap-2 mr-2">
+        <label class="inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            class="sr-only peer"
+            [checked]="isDragMode()"
+            (change)="toggleDragMode()"
+          />
+          <div
+            class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+          ></div>
+          <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+            {{ isDragMode() ? 'Đang sắp xếp' : 'Sắp xếp' }}
+          </span>
+        </label>
+        @if (isSavingOrder) {
+          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+        }
+      </div>
+
       @if (selected.length > 0) {
         <button
           *appHasPermission="'blogCategory.delete'"
@@ -34,6 +55,8 @@
       <a
         routerLink="/blog-category/add"
         *appHasPermission="'blogCategory.create'"
+        [class.pointer-events-none]="isDragMode()"
+        [class.opacity-50]="isDragMode()"
         class="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
       >
         <svg
@@ -61,16 +84,29 @@
       <thead>
         <tr class="border-b border-gray-200 dark:divide-gray-800 dark:border-gray-800">
           <th class="w-14 px-5 py-4 text-left">
-            <app-checkbox [checked]="isAllSelected()" (checkedChange)="toggleAll()"></app-checkbox>
+            @if (!isDragMode()) {
+              <app-checkbox
+                [checked]="isAllSelected()"
+                (checkedChange)="toggleAll()"
+              ></app-checkbox>
+            } @else {
+              <span class="text-xs text-gray-400">#</span>
+            }
           </th>
           <th>
-            <app-sort-header
-              label="Danh Mục"
-              key="name"
-              [activeKey]="query.sort?.key"
-              [asc]="query.sort?.asc"
-              (sortChange)="onSortChange($event)"
-            ></app-sort-header>
+            @if (!isDragMode()) {
+              <app-sort-header
+                label="Danh Mục"
+                key="name"
+                [activeKey]="query.sort?.key"
+                [asc]="query.sort?.asc"
+                (sortChange)="onSortChange($event)"
+              ></app-sort-header>
+            } @else {
+              <span class="px-5 text-xs font-medium text-gray-500 dark:text-gray-400"
+                >Danh Mục</span
+              >
+            }
           </th>
           <th>
             <app-sort-header
@@ -98,15 +134,46 @@
           </th>
         </tr>
       </thead>
-      <tbody class="divide-x divide-y divide-gray-200 dark:divide-gray-800">
+
+      <tbody
+        class="divide-x divide-y divide-gray-200 dark:divide-gray-800"
+        cdkDropList
+        [cdkDropListDisabled]="!isDragMode()"
+        (cdkDropListDropped)="drop($event)"
+      >
         @for (category of dataSources; track category.id) {
-          <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-900">
+          <tr
+            class="transition hover:bg-gray-50 dark:hover:bg-gray-900 bg-white dark:bg-gray-900"
+            cdkDrag
+            [cdkDragData]="category"
+          >
+            <div *cdkDragPlaceholder class="opacity-0"></div>
+
             <td class="w-14 px-5 py-4">
-              <app-checkbox
-                type="checkbox"
-                [checked]="selected.includes(category.id)"
-                (checkedChange)="toggleSelect(category.id, $event)"
-              />
+              @if (isDragMode()) {
+                <div class="drag-handle" cdkDragHandle title="Kéo để sắp xếp">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                    />
+                  </svg>
+                </div>
+              } @else {
+                <app-checkbox
+                  type="checkbox"
+                  [checked]="selected.includes(category.id)"
+                  (checkedChange)="toggleSelect(category.id, $event)"
+                />
+              }
             </td>
             <td class="px-5 py-4">
               <div class="flex items-center gap-3">
@@ -172,10 +239,19 @@
               </button>
             </td>
             <td class="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">
-              {{ category.createdAt | date: 'HH:ss dd/MM/yyyy' }}
+              {{
+                category.createdAt
+                  | date
+                    : 'HH:ss
+            dd/MM/yyyy'
+              }}
             </td>
             <td class="px-5 py-4">
-              <div class="flex gap-2">
+              <div
+                class="flex gap-2"
+                [class.opacity-50]="isDragMode()"
+                [class.pointer-events-none]="isDragMode()"
+              >
                 <button
                   *appHasPermission="'blogCategory.update'"
                   (click)="handleEdit(category)"
@@ -229,13 +305,15 @@
     </table>
   </div>
 
-  <app-pagination
-    [page]="query.page"
-    [totalPages]="totalPages"
-    [totalResults]="totalResults"
-    [pageSize]="query.pageSize"
-    (pageChange)="onPageChange($event)"
-  ></app-pagination>
+  @if (!isDragMode()) {
+    <app-pagination
+      [page]="query.page"
+      [totalPages]="totalPages"
+      [totalResults]="totalResults"
+      [pageSize]="query.pageSize"
+      (pageChange)="onPageChange($event)"
+    ></app-pagination>
+  }
 </div>
 
 <ng-template #confirmDelete let-dialog>

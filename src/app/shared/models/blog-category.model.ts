@@ -10,6 +10,8 @@ export interface BlogCategory {
   coverImage?: string;
   postCount?: number;
 
+  priority?: number;
+
   // --- Trạng thái ---
   isActive?: boolean;
 
