@@ -14,6 +14,7 @@ import {
 import { OrderItemComboSelection, OrderItemOption } from '../../../../models/order.model';
 import { Product, ProductOption, ProductOptionGroup } from '../../../../models/product.model';
 import { ComboWithOptionsResult } from '../../../../services/api/pos.service';
+import { TextAreaComponent } from '../../../form/input/text-area.component';
 
 // Interface mở rộng để quản lý món đã chọn (kèm ID duy nhất và options riêng)
 interface ConfiguredComboItem {
@@ -26,7 +27,7 @@ interface ConfiguredComboItem {
 @Component({
   selector: 'app-combo-options-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TextAreaComponent],
   templateUrl: './combo-options-modal.component.html',
 })
 export class ComboOptionsModalComponent implements OnInit {
@@ -281,30 +282,36 @@ export class ComboOptionsModalComponent implements OnInit {
   }
 
   /**
-   * Hiển thị giá bên cạnh sản phẩm:
-   * - Luôn hiện giá phụ thu (Additional)
-   * - Nếu mode SlotPrice -> Hiện giá Slot
-   * - Nếu mode Discount -> Hiện giá gốc gạch ngang (nếu cần)
+   * Hiển thị giá bên cạnh sản phẩm theo 3 quy tắc:
+   * 1. SLOT_PRICE: slotPrice + additionalPrice
+   * 2. DISCOUNT: basePrice + additionalPrice
+   * 3. FIXED: Chỉ hiện additionalPrice (nếu > 0)
    */
-  getProductPriceDisplay(product: ComboSelectableProduct): { price: string; original?: string } {
-    let displayPrice = '';
-    let originalPrice = '';
+  getProductPriceDisplay(productInfo: ComboSelectableProduct): string {
     const { pricingMode } = this.combo;
-
-    if (product.additionalPrice > 0) {
-      displayPrice = `+${product.additionalPrice.toLocaleString('vi-VN')}đ`;
-    }
+    // Ép kiểu product về any để lấy basePrice (vì trong model mẫu product đang để là any hoặc Product chưa full field)
+    const product = productInfo.product as any;
+    const additional = productInfo.additionalPrice || 0;
 
     if (pricingMode === ComboPricingMode.SLOT_PRICE) {
-      const final = product.slotPrice + product.additionalPrice;
-      displayPrice = `${final.toLocaleString('vi-VN')}đ`;
-
-      if (product.snapshotPrice > final) {
-        originalPrice = `${product.snapshotPrice.toLocaleString('vi-VN')}đ`;
-      }
+      const finalPrice = productInfo.slotPrice + additional;
+      return `${finalPrice.toLocaleString('vi-VN')}đ`;
     }
 
-    return { price: displayPrice, original: originalPrice };
+    if (pricingMode === ComboPricingMode.DISCOUNT) {
+      // Lưu ý: Đảm bảo product có trường basePrice, nếu không dùng snapshotPrice làm fallback
+      const basePrice =
+        product.basePrice !== undefined ? product.basePrice : productInfo.snapshotPrice;
+      const finalPrice = basePrice + additional;
+      return `${finalPrice.toLocaleString('vi-VN')}đ`;
+    }
+
+    // Trường hợp FIXED: Chỉ hiện phụ thu nếu > 0
+    if (additional > 0) {
+      return `+${additional.toLocaleString('vi-VN')}đ`;
+    }
+
+    return ''; // Không hiện gì nếu FIXED và không có phụ thu
   }
 
   // --- VALIDATION & SUBMIT ---

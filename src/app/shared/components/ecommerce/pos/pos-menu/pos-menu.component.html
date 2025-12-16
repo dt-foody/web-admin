@@ -42,7 +42,7 @@
             [class.dark:hover:bg-gray-800]="selectedCategoryId !== 'combo'"
             (click)="onSelectCategory('combo')"
           >
-            Combos
+            Combo
           </button>
 
           <div class="my-1 border-t border-gray-100 dark:border-gray-700"></div>
@@ -128,7 +128,6 @@
               <p>Không tìm thấy combo nào.</p>
             </div>
           }
-
         } @else {
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             @for (product of filteredProducts; track product.id) {

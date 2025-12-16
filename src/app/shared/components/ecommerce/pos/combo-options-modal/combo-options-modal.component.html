@@ -70,7 +70,8 @@
           @for (productInfo of slot.selectableProducts; track productInfo.product.id) {
             @let isSelected = isProductSelected(slot.slotName, productInfo.product.id);
             @let configItem = getSelectedConfigItem(slot.slotName, productInfo.product.id);
-            @let prices = getProductPriceDisplay(productInfo);
+
+            @let priceDisplay = getProductPriceDisplay(productInfo);
 
             <div class="group">
               <div
@@ -114,15 +115,12 @@
                     >
                       {{ productInfo.product.name }}
                     </span>
-                    @if (prices.original) {
-                      <span class="text-xs text-gray-400 line-through">{{ prices.original }}</span>
-                    }
                   </div>
                 </div>
 
-                @if (prices.price) {
+                @if (priceDisplay) {
                   <div class="text-sm font-semibold text-gray-900 ml-2">
-                    {{ prices.price }}
+                    {{ priceDisplay }}
                   </div>
                 }
               </div>
@@ -219,12 +217,8 @@
 
     <div class="pt-4 border-t border-gray-100">
       <div class="block text-sm font-bold text-gray-900 mb-2">Ghi chú cho đơn hàng</div>
-      <textarea
-        [(ngModel)]="note"
-        class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-sm resize-none"
-        rows="2"
-        placeholder="Ví dụ: Không hành, ít đá..."
-      ></textarea>
+      <app-text-area [rows]="2" placeholder="Ví dụ: Không hành, ít đá..." [(value)]="note">
+      </app-text-area>
     </div>
   </main>
 
