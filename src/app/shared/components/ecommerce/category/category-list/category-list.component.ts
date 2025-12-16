@@ -116,7 +116,7 @@ export class CategoryListComponent implements OnInit {
 
   /** Load tất cả categories từ API */
   loadCategories() {
-    this.categoryService.getAll({ limit: 1000, populate: 'createdBy' }).subscribe({
+    this.categoryService.getAll({ limit: 1000, populate: 'createdBy:name,email,role' }).subscribe({
       next: (data) => {
         this.categories = data.results || [];
         // fix image url
@@ -336,17 +336,17 @@ export class CategoryListComponent implements OnInit {
   }
 
   openProductSort(category: CategoryTree) {
-    // Nếu category có con, có thể bạn muốn chặn hoặc cho phép. 
+    // Nếu category có con, có thể bạn muốn chặn hoặc cho phép.
     // Thông thường sản phẩm gắn vào node lá (leaf), nhưng tùy logic dự án.
-    
+
     this.dialog.open(ProductSortModalComponent, {
       data: {
         categoryId: category.id,
-        categoryName: category.name
+        categoryName: category.name,
       },
       // Config dialog size
-      width: '90vw',     // Chiếm 90% chiều rộng màn hình
-      maxWidth: '95vw',  // Giới hạn tối đa không để tràn lề quá sát
+      width: '90vw', // Chiếm 90% chiều rộng màn hình
+      maxWidth: '95vw', // Giới hạn tối đa không để tràn lề quá sát
       closeButton: false, // Mình đã custom header có nút close
     });
   }
@@ -364,7 +364,10 @@ export class CategoryListComponent implements OnInit {
         // Gọi service deleteMany từ BaseService
         this.categoryService.deleteMany(this.selected).subscribe({
           next: () => {
-            this.toastr.success(`Đã xóa thành công ${this.selected.length} danh mục!`, 'Thành công');
+            this.toastr.success(
+              `Đã xóa thành công ${this.selected.length} danh mục!`,
+              'Thành công',
+            );
             this.selected = []; // Reset danh sách đã chọn
             this.loadCategories(); // Tải lại dữ liệu
           },

@@ -44,7 +44,6 @@ export class BlogPostListComponent extends BaseListComponent<BlogPost> implement
   }
 
   override ngOnInit(): void {
-    console.log('BlogPostListComponent init logic');
     super.ngOnInit();
   }
 
@@ -52,7 +51,8 @@ export class BlogPostListComponent extends BaseListComponent<BlogPost> implement
     const params: any = {
       page: this.query.page,
       limit: this.query.pageSize,
-      populate: 'createdBy;categories;tags',
+      populate: 'createdBy:name,email,role;categories;tags',
+      select: '-content',
       sortBy: this.query.sort?.key + ':' + (this.query.sort?.asc ? 'asc' : 'desc'),
     };
 
