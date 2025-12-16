@@ -111,13 +111,13 @@ export class OrderAddComponent implements OnInit {
   ];
 
   orderStatuses = [
-    { key: 'pending', label: 'Chờ xác nhận' },
-    { key: 'confirmed', label: 'Đã xác nhận' },
-    { key: 'preparing', label: 'Đang chuẩn bị' },
-    { key: 'waiting_for_driver', label: 'Đang tìm tài xế' },
-    { key: 'delivering', label: 'Đang giao' },
-    { key: 'completed', label: 'Hoàn thành' },
-    { key: 'canceled', label: 'Đã hủy' },
+    { value: 'pending', label: 'Chờ xác nhận' },
+    { value: 'confirmed', label: 'Đã xác nhận' },
+    { value: 'preparing', label: 'Đang chuẩn bị' },
+    { value: 'waiting_for_driver', label: 'Đang tìm tài xế' },
+    { value: 'delivering', label: 'Đang giao' },
+    { value: 'completed', label: 'Hoàn thành' },
+    { value: 'canceled', label: 'Đã hủy' },
   ];
 
   discountTypeOptions = [
