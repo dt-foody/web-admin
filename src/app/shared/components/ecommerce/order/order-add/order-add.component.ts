@@ -15,12 +15,7 @@ import {
   OrderItem,
   OrderItemOption,
   OrderItemComboSelection,
-  OrderPayment,
-  OrderShipping,
-  OrderShippingAddress,
   OrderStatus,
-  PaymentMethod,
-  PaymentStatus,
   ShippingStatus,
   DEFAULT_FORM,
   DEFAULT_SHIPPING_ADDRESS,
@@ -37,7 +32,7 @@ import { ProductService } from '../../../../services/api/product.service';
 import { ComboService } from '../../../../services/api/combo.service';
 import { CustomerService } from '../../../../services/api/customer.service';
 
-import { createFormData, deepSanitize } from '../../../../utils/form-data.utils';
+import { createFormData } from '../../../../utils/form-data.utils';
 
 @Component({
   selector: 'app-order-add',
@@ -81,9 +76,9 @@ export class OrderAddComponent implements OnInit {
 
   // options
   orderTypeOptions = [
-    { value: 'TakeAway', label: 'Take Away' },
-    { value: 'DineIn', label: 'Dine In (At Store)' },
-    { value: 'Delivery', label: 'Delivery' },
+    { value: 'TakeAway', label: 'Mang về' },
+    { value: 'DineIn', label: 'Tại quán' },
+    { value: 'Delivery', label: 'Giao hàng' },
   ];
 
   channelOptions = [
@@ -102,30 +97,32 @@ export class OrderAddComponent implements OnInit {
   ];
 
   paymentStatuses = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'paid', label: 'Paid' },
-    { value: 'failed', label: 'Failed' },
+    { value: 'pending', label: 'Chờ thanh toán' },
+    { value: 'paid', label: 'Đã thanh toán' },
+    { value: 'failed', label: 'Thanh toán thất bại' },
+    { value: 'refunded', label: 'Đã hoàn tiền' },
   ];
 
   shippingStatuses = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'delivering', label: 'Delivering' },
-    { value: 'delivered', label: 'Delivered' },
-    { value: 'failed', label: 'Failed' },
+    { value: 'pending', label: 'Chờ vận chuyển' },
+    { value: 'delivering', label: 'Đang giao hàng' },
+    { value: 'delivered', label: 'Đã giao hàng' },
+    { value: 'failed', label: 'Giao hàng thất bại' },
   ];
 
   orderStatuses = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'confirmed', label: 'Confirmed' },
-    { value: 'preparing', label: 'Preparing' },
-    { value: 'delivering', label: 'Delivering' },
-    { value: 'completed', label: 'Completed' },
-    { value: 'canceled', label: 'Canceled' },
+    { key: 'pending', label: 'Chờ xác nhận' },
+    { key: 'confirmed', label: 'Đã xác nhận' },
+    { key: 'preparing', label: 'Đang chuẩn bị' },
+    { key: 'waiting_for_driver', label: 'Đang tìm tài xế' },
+    { key: 'delivering', label: 'Đang giao' },
+    { key: 'completed', label: 'Hoàn thành' },
+    { key: 'canceled', label: 'Đã hủy' },
   ];
 
   discountTypeOptions = [
-    { value: 'fixed_amount', label: 'Fixed Amount (đ)' },
-    { value: 'percentage', label: 'Percentage (%)' },
+    { value: 'fixed_amount', label: 'Số tiền cố định (đ)' },
+    { value: 'percentage', label: 'Phần trăm (%)' },
   ];
 
   // enum for template
@@ -913,7 +910,7 @@ export class OrderAddComponent implements OnInit {
     // chỉ check shipping nếu Delivery.
     if (this.editModeType !== 'metaOnly') {
       if (!this.orderData.items.length) {
-        this.toastr.error('Please add at least one item', 'Validation Error');
+        this.toastr.error('Vui lòng thêm ít nhất một sản phẩm', 'Lỗi dữ liệu');
         return false;
       }
 
@@ -921,12 +918,12 @@ export class OrderAddComponent implements OnInit {
         const item = this.orderData.items[i];
 
         if (!item.item) {
-          this.toastr.error(`Item ${i + 1}: Please select a product or combo`, 'Validation Error');
+          this.toastr.error(`Mục ${i + 1}: Vui lòng chọn sản phẩm hoặc combo`, 'Lỗi dữ liệu');
           return false;
         }
 
         if (item.quantity <= 0) {
-          this.toastr.error(`Item ${i + 1}: Quantity must be > 0`, 'Validation Error');
+          this.toastr.error(`Mục ${i + 1}: Số lượng phải lớn hơn 0`, 'Lỗi dữ liệu');
           return false;
         }
 
@@ -939,8 +936,8 @@ export class OrderAddComponent implements OnInit {
             const count = (item.options || []).filter((o) => o.groupName === group.name).length;
             if (count < group.minOptions) {
               this.toastr.error(
-                `Item ${i + 1} (${product.name}): "${group.name}" requires at least ${group.minOptions} selection(s)`,
-                'Validation Error',
+                `Mục ${i + 1} (${product.name}): "${group.name}" yêu cầu chọn ít nhất ${group.minOptions} tùy chọn`,
+                'Lỗi dữ liệu',
                 { timeOut: 5000 },
               );
               return false;
@@ -960,8 +957,8 @@ export class OrderAddComponent implements OnInit {
 
             if (selectionCount < slot.minSelection) {
               this.toastr.error(
-                `Item ${i + 1} (${combo.name}): Slot "${slot.slotName}" requires at least ${slot.minSelection} product(s)`,
-                'Validation Error',
+                `Mục ${i + 1} (${combo.name}): Slot "${slot.slotName}" yêu cầu chọn ít nhất ${slot.minSelection} sản phẩm`,
+                'Lỗi dữ liệu',
                 { timeOut: 5000 },
               );
               return false;
@@ -982,8 +979,8 @@ export class OrderAddComponent implements OnInit {
                 const count = sel.options.filter((o) => o.groupName === group.name).length;
                 if (count < group.minOptions) {
                   this.toastr.error(
-                    `Item ${i + 1} (${product.name} in combo): "${group.name}" requires at least ${group.minOptions} selection(s)`,
-                    'Validation Error',
+                    `Mục ${i + 1} (${product.name} trong combo): "${group.name}" yêu cầu chọn ít nhất ${group.minOptions} tùy chọn`,
+                    'Lỗi dữ liệu',
                     { timeOut: 5000 },
                   );
                   return false;
@@ -999,7 +996,7 @@ export class OrderAddComponent implements OnInit {
     if (this.orderData.orderType === 'Delivery') {
       const addr = this.orderData.shipping?.address;
       if (!addr?.recipientName || !addr.recipientPhone || !addr.street || !addr.city) {
-        this.toastr.error('Please fill in all required shipping fields', 'Validation Error');
+        this.toastr.error('Vui lòng điền đầy đủ thông tin giao hàng bắt buộc', 'Lỗi dữ liệu');
         return false;
       }
     }

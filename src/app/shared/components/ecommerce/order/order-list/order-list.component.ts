@@ -63,6 +63,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     { value: 'pending', label: 'Chờ xác nhận' },
     { value: 'confirmed', label: 'Đã xác nhận' },
     { value: 'preparing', label: 'Đang chuẩn bị' },
+    { value: 'waiting_for_driver', label: 'Đang tìm tài xế' },
     { value: 'delivering', label: 'Đang giao hàng' },
     { value: 'completed', label: 'Hoàn thành' },
     { value: 'canceled', label: 'Đã hủy' },
@@ -156,7 +157,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     if (this.query.status) {
       if (this.query.status === 'unfinished') {
         // Nếu chọn "Chưa hoàn tất", gửi danh sách các trạng thái đang active
-        params.status = ['pending', 'confirmed', 'preparing', 'delivering'];
+        params.status = ['pending', 'confirmed', 'preparing', 'waiting_for_driver', 'delivering'];
       } else {
         // Các trường hợp khác gửi giá trị đơn lẻ
         params.status = this.query.status;
@@ -229,6 +230,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
       pending: 'Chờ xác nhận',
       confirmed: 'Đã xác nhận',
       preparing: 'Đang chuẩn bị',
+      waiting_for_driver: 'Đang tìm tài xế',
       delivering: 'Đang giao hàng',
       completed: 'Hoàn thành',
       canceled: 'Đã hủy',
@@ -252,6 +254,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
       pending: 'bg-yellow-500',
       confirmed: 'bg-blue-500',
       preparing: 'bg-purple-500',
+      waiting_for_driver: 'bg-orange-500',
       delivering: 'bg-indigo-500',
       completed: 'bg-green-500',
       canceled: 'bg-red-500',
@@ -279,6 +282,8 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
         'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-700',
       preparing:
         'bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-700',
+      waiting_for_driver:
+        'bg-orange-50 dark:bg-orange-500/15 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-700',
       delivering:
         'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-700',
       completed:

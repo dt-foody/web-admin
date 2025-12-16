@@ -22,14 +22,14 @@ import { ImageFallbackDirective } from '../../../../directives/app-image-fallbac
     StatusTimelineComponent,
     ButtonComponent,
     ImageUrlPipe,
-    ImageFallbackDirective
+    ImageFallbackDirective,
   ],
   templateUrl: './order-detail.component.html',
   styles: ``,
 })
 export class OrderDetailComponent implements OnInit {
   public order: any = null;
-  public orderId: any = "";
+  public orderId: any = '';
   public isLoading: boolean = true;
   public profileData: any = null;
 
@@ -38,6 +38,7 @@ export class OrderDetailComponent implements OnInit {
     { key: 'pending', label: 'Chờ xác nhận', color: 'bg-yellow-500' },
     { key: 'confirmed', label: 'Đã xác nhận', color: 'bg-blue-500' },
     { key: 'preparing', label: 'Đang chuẩn bị', color: 'bg-purple-500' },
+    { key: 'waiting_for_driver', label: 'Đang tìm tài xế', color: 'bg-orange-500' },
     { key: 'delivering', label: 'Đang giao', color: 'bg-indigo-500' },
     { key: 'completed', label: 'Hoàn thành', color: 'bg-green-500' },
     { key: 'canceled', label: 'Đã hủy', color: 'bg-red-500' },
@@ -190,10 +191,10 @@ export class OrderDetailComponent implements OnInit {
 
   public handleCompletePreparation() {
     if (!this.order) return;
-    
+
     // Logic: Nếu đang "preparing" -> chuyển sang "delivering" (Đang giao)
     // Tận dụng hàm handleStatusUpdate có sẵn để cập nhật trạng thái
-    this.handleStatusUpdate('delivering'); 
+    this.handleStatusUpdate('delivering');
   }
 
   // --- THÊM MỚI: Xử lý Thanh toán ---
@@ -203,7 +204,7 @@ export class OrderDetailComponent implements OnInit {
     // Tạo object payment mới với trạng thái 'paid'
     const updatedPayment = {
       ...this.order.payment,
-      status: 'paid'
+      status: 'paid',
     };
 
     delete updatedPayment.qrCode;
@@ -214,13 +215,13 @@ export class OrderDetailComponent implements OnInit {
       next: (response) => {
         this.toastr.success('Xác nhận thanh toán thành công');
         // Reload lại dữ liệu để cập nhật UI đồng bộ
-        this.loadOrderDetail(); 
+        this.loadOrderDetail();
       },
       error: (error) => {
         this.toastr.error('Lỗi khi cập nhật thanh toán');
         console.error('Payment update error:', error);
         this.isLoading = false;
-      }
+      },
     });
   }
 }
