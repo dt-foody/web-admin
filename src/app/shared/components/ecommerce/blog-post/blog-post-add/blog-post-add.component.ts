@@ -22,6 +22,7 @@ import { ImageUploadComponent } from '../../../_core/image-upload/image-upload.c
 import { SafeHtmlPipe } from '../../../../pipe/safe-html.pipe';
 import { environment } from '../../../../../../environments/environment';
 import { OembedTransformPipe } from '../../../../pipe/oembed-transform.pipe';
+import { CheckboxComponent } from '../../../form/input/checkbox.component';
 
 interface BlogPostFormData {
   title: string;
@@ -37,6 +38,7 @@ interface BlogPostFormData {
   isPinned: boolean;
   seoTitle: string;
   seoDescription: string;
+  displayPages: string[];
 }
 
 const DEFAULT_FORM: BlogPostFormData = {
@@ -53,6 +55,7 @@ const DEFAULT_FORM: BlogPostFormData = {
   isPinned: false,
   seoTitle: '',
   seoDescription: '',
+  displayPages: [],
 };
 
 @Component({
@@ -69,6 +72,7 @@ const DEFAULT_FORM: BlogPostFormData = {
     ImageUploadComponent,
     SafeHtmlPipe,
     OembedTransformPipe,
+    CheckboxComponent,
   ],
   templateUrl: './blog-post-add.component.html',
   styles: ``,
@@ -90,6 +94,11 @@ export class BlogPostAddComponent implements OnInit {
     { value: 'draft', label: 'Nháp' },
     { value: 'published', label: 'Xuất bản' },
     { value: 'archived', label: 'Lưu trữ' },
+  ];
+
+  displayPageOptions = [
+    { value: 'sharing', label: 'Trang Sharing' },
+    { value: 'community', label: 'Trang Community' },
   ];
 
   // UI state - Expandable sections
@@ -165,6 +174,7 @@ export class BlogPostAddComponent implements OnInit {
             : '',
           categories: data.categories || [],
           tags: data.tags || [],
+          displayPages: data.displayPages || [],
         };
         if (data.coverImage) {
           this.imagePreview = `${environment.urlBaseImage}${data.coverImage}`;
@@ -221,27 +231,27 @@ export class BlogPostAddComponent implements OnInit {
       this.toastr.error('Title is required', 'Validation');
       return false;
     }
-  
+
     if (!this.postData.content.trim()) {
       this.toastr.error('Content is required', 'Validation');
       return false;
     }
-  
+
     // Check publishedAt
     if (this.postData.status === 'published') {
       if (!this.postData.publishedAt) {
         this.toastr.error('Published date is required for published posts', 'Validation');
         return false;
       }
-  
+
       const now = new Date();
       const pub = new Date(this.postData.publishedAt);
-  
+
       const sameDate =
         pub.getDate() === now.getDate() &&
         pub.getMonth() === now.getMonth() &&
         pub.getFullYear() === now.getFullYear();
-  
+
       if (sameDate) {
         this.postData.publishedAt = now;
       } else if (!this.isEditMode && pub.getTime() < now.getTime()) {
@@ -249,10 +259,10 @@ export class BlogPostAddComponent implements OnInit {
         return false;
       }
     }
-  
+
     return true;
   }
-  
+
   // Submit handlers
   onSave() {
     if (!this.validateForm()) return;
@@ -288,5 +298,20 @@ export class BlogPostAddComponent implements OnInit {
 
   onCancel() {
     this.router.navigateByUrl('/blog-post');
+  }
+
+  onDisplayPageChange(value: string, isChecked: boolean) {
+    // Khởi tạo mảng nếu chưa có
+    if (!this.postData.displayPages) {
+      this.postData.displayPages = [];
+    }
+
+    if (isChecked) {
+      // Nếu check -> thêm vào mảng
+      this.postData.displayPages.push(value);
+    } else {
+      // Nếu uncheck -> lọc bỏ khỏi mảng
+      this.postData.displayPages = this.postData.displayPages.filter((item) => item !== value);
+    }
   }
 }

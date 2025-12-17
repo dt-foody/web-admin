@@ -36,6 +36,7 @@
               [(value)]="postData.status"
             ></app-select>
           </div>
+
           <div>
             <app-label for="published-at">Ngày Xuất Bản</app-label>
             <app-input-field
@@ -43,6 +44,23 @@
               type="date"
               [(value)]="postData.publishedAt"
             ></app-input-field>
+          </div>
+
+          <div class="grid grid-cols-1 gap-5">
+            <div>
+              <app-label>Trang Hiển Thị</app-label>
+              <div class="mt-3 space-y-3">
+                <div *ngFor="let option of displayPageOptions" class="flex items-center">
+                  <app-checkbox
+                    [id]="'page-' + option.value"
+                    [label]="option.label"
+                    [checked]="postData.displayPages.includes(option.value)"
+                    (checkedChange)="onDisplayPageChange(option.value, $event)"
+                  >
+                  </app-checkbox>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

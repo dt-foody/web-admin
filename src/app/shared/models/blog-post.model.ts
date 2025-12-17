@@ -26,6 +26,8 @@ export interface BlogPost {
   seoTitle: string;
   seoDescription: string;
 
+  displayPages?: string[]; // Ví dụ: ['sharing', 'community']
+
   // --- Thống kê ---
   views?: number;
 
