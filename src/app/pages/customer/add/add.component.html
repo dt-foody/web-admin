@@ -1,4 +1,11 @@
 <div>
-  <app-page-breadcrumb pageTitle="Tạo khách hàng" />
+  <app-page-breadcrumb
+    pageTitle="Thêm Khách hàng"
+    [breadcrumbItems]="[
+      { label: 'Khách hàng', url: '/customer' },
+      { label: 'Thêm mới', url: '' },
+    ]"
+  >
+  </app-page-breadcrumb>
   <app-customer-add></app-customer-add>
 </div>

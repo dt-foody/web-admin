@@ -1,4 +1,11 @@
 <div>
-  <app-page-breadcrumb pageTitle="Tạo đơn hàng" />
+  <app-page-breadcrumb
+    pageTitle="Thêm Đơn hàng"
+    [breadcrumbItems]="[
+      { label: 'Đơn hàng', url: '/order' },
+      { label: 'Thêm mới', url: '' },
+    ]"
+  >
+  </app-page-breadcrumb>
   <app-order-add></app-order-add>
 </div>

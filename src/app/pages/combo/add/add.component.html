@@ -1,4 +1,11 @@
 <div>
-  <app-page-breadcrumb pageTitle="Tạo mới combo" />
+  <app-page-breadcrumb
+    pageTitle="Thêm Combo"
+    [breadcrumbItems]="[
+      { label: 'Combo', url: '/combo' },
+      { label: 'Thêm mới', url: '' },
+    ]"
+  >
+  </app-page-breadcrumb>
   <app-combo-add></app-combo-add>
 </div>

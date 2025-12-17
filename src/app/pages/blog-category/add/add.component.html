@@ -1,4 +1,11 @@
 <div>
-  <app-page-breadcrumb pageTitle="Thêm Danh Mục Bài Viết" />
+  <app-page-breadcrumb
+    pageTitle="Thêm Danh mục Blog"
+    [breadcrumbItems]="[
+      { label: 'Danh mục Blog', url: '/blog-category' },
+      { label: 'Thêm mới', url: '' },
+    ]"
+  >
+  </app-page-breadcrumb>
   <app-blog-category-add></app-blog-category-add>
 </div>

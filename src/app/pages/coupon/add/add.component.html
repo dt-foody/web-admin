@@ -1,4 +1,11 @@
 <div>
-  <app-page-breadcrumb pageTitle="Tạo mã giảm giá" />
+  <app-page-breadcrumb
+    pageTitle="Thêm Mã giảm giá"
+    [breadcrumbItems]="[
+      { label: 'Mã giảm giá', url: '/coupon' },
+      { label: 'Thêm mới', url: '' },
+    ]"
+  >
+  </app-page-breadcrumb>
   <app-coupon-add></app-coupon-add>
 </div>

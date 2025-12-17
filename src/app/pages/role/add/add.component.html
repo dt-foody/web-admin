@@ -1,4 +1,11 @@
 <div>
-  <app-page-breadcrumb pageTitle="Tạo vai trò" />
+  <app-page-breadcrumb
+    pageTitle="Thêm Vai trò"
+    [breadcrumbItems]="[
+      { label: 'Vai trò', url: '/role' },
+      { label: 'Thêm mới', url: '' },
+    ]"
+  >
+  </app-page-breadcrumb>
   <app-role-add></app-role-add>
 </div>
