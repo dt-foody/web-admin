@@ -1,4 +1,4 @@
-<div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+<!-- <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
   <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">
     {{ pageTitle }}
   </h2>
@@ -31,6 +31,78 @@
       <li class="text-sm text-gray-800 dark:text-white/90">
         {{ pageTitle }}
       </li>
+    </ol>
+  </nav>
+</div> -->
+
+<div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+  <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">
+    {{ pageTitle }}
+  </h2>
+  <nav>
+    <ol class="flex items-center gap-1.5">
+      <ng-container *ngIf="breadcrumbItems.length > 0; else defaultBreadcrumb">
+        <li *ngFor="let item of breadcrumbItems; let last = last">
+          <ng-container *ngIf="!last">
+            <a
+              [routerLink]="item.url"
+              class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-brand-500"
+            >
+              {{ item.label }}
+              <svg
+                class="stroke-current"
+                width="17"
+                height="16"
+                viewBox="0 0 17 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
+                  stroke=""
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </ng-container>
+
+          <span *ngIf="last" class="text-sm text-gray-800 dark:text-white/90 font-medium">
+            {{ item.label }}
+          </span>
+        </li>
+      </ng-container>
+
+      <ng-template #defaultBreadcrumb>
+        <li>
+          <a
+            class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
+            routerLink="/"
+          >
+            Trang chủ
+            <svg
+              class="stroke-current"
+              width="17"
+              height="16"
+              viewBox="0 0 17 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
+                stroke=""
+                stroke-width="1.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+        </li>
+        <li class="text-sm text-gray-800 dark:text-white/90">
+          {{ pageTitle }}
+        </li>
+      </ng-template>
     </ol>
   </nav>
 </div>

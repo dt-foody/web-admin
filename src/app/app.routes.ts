@@ -69,6 +69,9 @@ import { AddEmployeePageComponent } from './pages/employee/add/add.component';
 import { DetailEmployeePageComponent } from './pages/employee/detail/detail.component';
 import { EditEmployeePageComponent } from './pages/employee/edit/edit.component';
 import { EmployeeListPageComponent } from './pages/employee/list/list.component';
+import { SurchargeListPageComponent } from './pages/settings/surcharge/list/list.component';
+import { SurchargeEditPageComponent } from './pages/settings/surcharge/edit/edit.component';
+import { SurchargeAddPageComponent } from './pages/settings/surcharge/add/add.component';
 
 export const routes: Routes = [
   {
@@ -466,6 +469,40 @@ export const routes: Routes = [
             title: 'Chỉnh sửa Danh mục Blog',
             canActivate: [PermissionGuard],
             data: { permissions: ['blogCategory.update'] },
+          },
+        ],
+      },
+      {
+        path: 'settings',
+        children: [
+          {
+            path: 'surcharge',
+            children: [
+              {
+                path: '',
+                component: SurchargeListPageComponent,
+                pathMatch: 'full',
+                title: 'Danh sách Phụ thu',
+                canActivate: [PermissionGuard],
+                data: { permissions: ['surcharge.read'] },
+              },
+              {
+                path: 'add',
+                component: SurchargeAddPageComponent,
+                pathMatch: 'full',
+                title: 'Thêm Phụ thu',
+                canActivate: [PermissionGuard],
+                data: { permissions: ['surcharge.create'] },
+              },
+              {
+                path: 'edit/:id',
+                component: SurchargeEditPageComponent,
+                pathMatch: 'full',
+                title: 'Chỉnh sửa Phụ thu',
+                canActivate: [PermissionGuard],
+                data: { permissions: ['surcharge.update'] },
+              },
+            ],
           },
         ],
       },

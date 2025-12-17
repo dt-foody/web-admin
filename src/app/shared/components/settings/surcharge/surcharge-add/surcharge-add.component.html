@@ -1,0 +1,101 @@
+<div
+  class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]"
+>
+  <h3 class="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">
+    @if (isEditMode) {
+      Cập nhật Phụ thu
+    } @else {
+      Thêm mới Phụ thu
+    }
+  </h3>
+
+  @if (isLoading) {
+    <div class="flex h-40 items-center justify-center">
+      <div
+        class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"
+      ></div>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="col-span-2 sm:col-span-1">
+          <div class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+            Tên phụ thu <span class="text-red-500">*</span>
+          </div>
+          <app-input-field
+            placeholder="Ví dụ: Phí giao hàng hỏa tốc"
+            [value]="form.get('name')?.value"
+            (valueChange)="form.patchValue({ name: $event })"
+            [error]="!!(form.get('name')?.invalid && form.get('name')?.touched)"
+            [hint]="
+              form.get('name')?.invalid && form.get('name')?.touched
+                ? 'Tên phụ thu là bắt buộc'
+                : ''
+            "
+          ></app-input-field>
+        </div>
+
+        <div class="col-span-2 sm:col-span-1">
+          <div class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+            Giá trị (VNĐ) <span class="text-red-500">*</span>
+          </div>
+          <app-input-field
+            type="number"
+            placeholder="0"
+            [value]="form.get('cost')?.value"
+            (valueChange)="form.patchValue({ cost: $event })"
+            [error]="!!(form.get('cost')?.invalid && form.get('cost')?.touched)"
+            [hint]="
+              form.get('cost')?.invalid && form.get('cost')?.touched
+                ? 'Giá trị phải lớn hơn hoặc bằng 0'
+                : ''
+            "
+          ></app-input-field>
+        </div>
+
+        <div class="col-span-2">
+          <div class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Mô tả</div>
+          <app-text-area
+            placeholder="Nhập mô tả chi tiết..."
+            [rows]="3"
+            [value]="form.get('description')?.value"
+            (valueChange)="form.patchValue({ description: $event })"
+          ></app-text-area>
+        </div>
+
+        <div class="col-span-2 flex flex-col sm:flex-row gap-6">
+          <div>
+            <div class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-400">
+              Trạng thái
+            </div>
+            <app-switch
+              label="Kích hoạt"
+              [value]="form.get('isActive')?.value"
+              (valueChange)="form.patchValue({ isActive: $event })"
+            ></app-switch>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 flex justify-end gap-3">
+        <a
+          routerLink="/settings/surcharge"
+          class="flex justify-center rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90 dark:hover:bg-gray-700"
+        >
+          Hủy bỏ
+        </a>
+        <button
+          type="submit"
+          [disabled]="isSubmitting"
+          class="flex justify-center rounded-lg bg-brand-500 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          @if (isSubmitting) {
+            <span>Đang lưu...</span>
+          } @else {
+            <span>{{ isEditMode ? 'Lưu thay đổi' : 'Thêm mới' }}</span>
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>
