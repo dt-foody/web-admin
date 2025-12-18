@@ -10,11 +10,19 @@ import { Surcharge } from '../../../../models/surcharge.model';
 import { SurchargeService } from '../../../../services/api/surcharge.service';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
 import { CheckboxComponent } from '../../../form/input/checkbox.component';
+import { SwitchComponent } from '../../../form/input/switch.component';
 
 @Component({
   selector: 'app-surcharge-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, HasPermissionDirective, CheckboxComponent, DragDropModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    HasPermissionDirective,
+    CheckboxComponent,
+    DragDropModule,
+    SwitchComponent,
+  ],
   templateUrl: './surcharge-list.component.html',
   styles: `
     /* CSS cho Drag & Drop của CDK */
@@ -223,5 +231,24 @@ export class SurchargeListComponent implements OnInit {
         },
       });
     }
+  }
+
+  handleToggleActive(item: Surcharge) {
+    if (this.isDragMode()) return; // Không cho phép đổi trạng thái khi đang sắp xếp
+
+    const newStatus = !item.isActive;
+    this.surchargeService.update(item.id, { isActive: newStatus }).subscribe({
+      next: () => {
+        this.toastr.success(`Đã ${newStatus ? 'hiện' : 'ẩn'} phụ thu ${item.name}`, 'Thành công');
+        // Cập nhật lại state local để UI đồng bộ
+        this.surcharges.update((items) =>
+          items.map((s) => (s.id === item.id ? { ...s, isActive: newStatus } : s)),
+        );
+        this.updateFilteredList();
+      },
+      error: () => {
+        this.toastr.error('Không thể cập nhật trạng thái', 'Lỗi');
+      },
+    });
   }
 }

@@ -191,17 +191,13 @@
               </p>
             </td>
             <td class="px-5 py-4 whitespace-nowrap">
-              <span
-                class="text-xs rounded-full px-2 py-0.5 font-medium"
-                [ngClass]="{
-                  'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-500':
-                    item.isActive,
-                  'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-500': !item.isActive,
-                }"
-              >
-                {{ item.isActive ? 'Hoạt động' : 'Tạm ẩn' }}
-              </span>
+              <app-switch
+                [value]="item.isActive"
+                [disabled]="isDragMode()"
+                (valueChange)="handleToggleActive(item)"
+              ></app-switch>
             </td>
+
             <td class="px-5 py-4 whitespace-nowrap">
               <p class="text-sm text-gray-700 dark:text-gray-400">
                 {{ item.createdAt | date: 'HH:mm dd/MM/yyyy' }}
