@@ -72,6 +72,7 @@ import { EmployeeListPageComponent } from './pages/employee/list/list.component'
 import { SurchargeListPageComponent } from './pages/settings/surcharge/list/list.component';
 import { SurchargeEditPageComponent } from './pages/settings/surcharge/edit/edit.component';
 import { SurchargeAddPageComponent } from './pages/settings/surcharge/add/add.component';
+import { DealSettingPageComponent } from './pages/settings/deal/config/config.component';
 
 export const routes: Routes = [
   {
@@ -501,6 +502,19 @@ export const routes: Routes = [
                 title: 'Chỉnh sửa Phụ thu',
                 canActivate: [PermissionGuard],
                 data: { permissions: ['surcharge.update'] },
+              },
+            ],
+          },
+          {
+            path: 'deal',
+            children: [
+              {
+                path: '',
+                component: DealSettingPageComponent,
+                pathMatch: 'full',
+                title: 'Cấu hình Đơn hàng',
+                canActivate: [PermissionGuard],
+                data: { permissions: ['dealSettings.read'] },
               },
             ],
           },

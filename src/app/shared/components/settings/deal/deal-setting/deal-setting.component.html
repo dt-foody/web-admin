@@ -1,0 +1,39 @@
+<form [formGroup]="form" (ngSubmit)="onSave()" class="space-y-4 flex flex-col">
+  <app-component-card title="Cấu hình Giao hàng">
+    <div class="flex flex-col gap-4">
+      <app-switch
+        label="Giao hàng nhanh"
+        [value]="form.get('allowFastDelivery')?.value"
+        (valueChange)="form.patchValue({ allowFastDelivery: $event })"
+      ></app-switch>
+
+      <app-switch
+        label="Giao hàng sau"
+        [value]="form.get('allowScheduledDelivery')?.value"
+        (valueChange)="form.patchValue({ allowScheduledDelivery: $event })"
+      ></app-switch>
+    </div>
+  </app-component-card>
+
+  <app-component-card title="Cấu hình Thanh toán">
+    <div class="flex flex-col gap-4">
+      <app-switch
+        label="Thanh toán tiền mặt"
+        [value]="form.get('allowCashPayment')?.value"
+        (valueChange)="form.patchValue({ allowCashPayment: $event })"
+      ></app-switch>
+
+      <app-switch
+        label="Thanh toán chuyển khoản"
+        [value]="form.get('allowBankTransfer')?.value"
+        (valueChange)="form.patchValue({ allowBankTransfer: $event })"
+      ></app-switch>
+    </div>
+  </app-component-card>
+
+  <div class="flex justify-end">
+    <app-button type="submit" variant="primary" *appHasPermission="'dealSettings.update'">
+      Lưu thiết lập
+    </app-button>
+  </div>
+</form>
