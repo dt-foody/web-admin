@@ -22,14 +22,7 @@ interface CategoryTree extends Category {
 @Component({
   selector: 'app-category-list',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    HasPermissionDirective,
-    CheckboxComponent,
-    ProductSortModalComponent,
-    DragDropModule, // Import module DragDrop
-  ],
+  imports: [CommonModule, RouterModule, HasPermissionDirective, CheckboxComponent, DragDropModule],
   templateUrl: './category-list.component.html',
   styles: `
     /* 1. CSS bắt buộc của CDK để giữ form hàng khi kéo */

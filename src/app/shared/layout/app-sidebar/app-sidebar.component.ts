@@ -112,6 +112,11 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
           path: '/settings/surcharge',
           permission: 'surcharge.read',
         },
+        {
+          name: 'Đơn hàng',
+          path: '/settings/deal',
+          permission: 'settingDeal.read',
+        },
       ],
     },
   ];

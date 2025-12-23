@@ -49,10 +49,12 @@ export interface OrderItem {
   itemType: 'Product' | 'Combo';
   name: string; // Tên snapshot
   quantity: number;
-  basePrice: number; // Giá gốc
-  price: number; // Giá bán cuối cùng của 1 item
+  originalBasePrice?: number; // Giá trị thực tế nếu không mua Combo
+  basePrice: number; // Giá gốc (chưa cộng option, chưa trừ KM)
+  price: number; // Giá bán cuối cùng của 1 item (đã gộp mọi thứ và trừ KM)
   options: OrderItemOption[]; // Dùng khi itemType == 'Product'
   comboSelections: OrderItemComboSelection[]; // Dùng khi itemType == 'Combo'
+  promotion?: any;
   note?: string;
   image?: string;
 }
@@ -105,6 +107,10 @@ export interface Order {
   shippingFee: number;
   grandTotal: number;
 
+  // Thông tin phụ thu
+  surchargeAmount: number; // Thêm mới
+  surcharges: { id: string; name: string; cost: number }[];
+
   // Thông tin thanh toán
   payment: OrderPayment;
 
@@ -117,6 +123,14 @@ export interface Order {
 
   // Coupon
   appliedCoupons?: OrderAppliedCoupon[];
+
+  // Thời gian ưu tiên giao hàng
+  deliveryTime: {
+    option: 'immediate' | 'scheduled';
+    scheduledAt: string | Date | null;
+    timeSlot: string;
+  };
+  priorityTime: string | Date;
 
   // Meta
   createdBy?: string | User; // Nhân viên tạo (nếu có)
