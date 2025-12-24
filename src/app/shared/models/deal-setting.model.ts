@@ -1,7 +1,16 @@
+export interface DealOptionConfig {
+  value: boolean;
+  note: string;
+  activeNote: boolean;
+  showNoteWhen: 'on' | 'off' | 'always'; // Điều kiện hiện note
+}
+
 export interface DealSetting {
   id: string;
-  allowFastDelivery: boolean; // Giao hàng nhanh
-  allowScheduledDelivery: boolean; // Giao hàng sau
-  allowCashPayment: boolean; // Thanh toán tiền mặt
-  allowBankTransfer: boolean; // Thanh toán chuyển khoản
+  // Cấu hình giao hàng
+  fastDelivery: DealOptionConfig;
+  scheduledDelivery: DealOptionConfig;
+  // Cấu hình thanh toán
+  cashPayment: DealOptionConfig;
+  bankTransfer: DealOptionConfig;
 }

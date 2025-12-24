@@ -1,39 +1,129 @@
-<form [formGroup]="form" (ngSubmit)="onSave()" class="space-y-4 flex flex-col">
-  <app-component-card title="Cấu hình Giao hàng">
-    <div class="flex flex-col gap-4">
-      <app-switch
-        label="Giao hàng nhanh"
-        [value]="form.get('allowFastDelivery')?.value"
-        (valueChange)="form.patchValue({ allowFastDelivery: $event })"
-      ></app-switch>
+<form [formGroup]="form" (ngSubmit)="onSave()" class="flex flex-col gap-9 pb-10">
+  <app-component-card title="Cấu hình vận chuyển">
+    <div class="flex flex-col gap-10">
+      <ng-container *ngFor="let key of ['fastDelivery', 'scheduledDelivery']">
+        <div class="flex flex-col gap-4">
+          <app-switch
+            [label]="
+              key === 'fastDelivery' ? 'Cho phép Giao hàng nhanh' : 'Cho phép Hẹn giờ giao hàng'
+            "
+            [value]="form.get(key + '.value')?.value"
+            (valueChange)="form.get(key + '.value')?.setValue($event)"
+          >
+          </app-switch>
 
-      <app-switch
-        label="Giao hàng sau"
-        [value]="form.get('allowScheduledDelivery')?.value"
-        (valueChange)="form.patchValue({ allowScheduledDelivery: $event })"
-      ></app-switch>
+          <div
+            class="ml-12 border-l-2 border-stroke pl-6 dark:border-strokedark flex flex-col gap-5"
+          >
+            <div class="flex items-center h-10">
+              <app-switch
+                label="Kích hoạt ghi chú thông báo"
+                [value]="form.get(key + '.activeNote')?.value"
+                (valueChange)="form.get(key + '.activeNote')?.setValue($event)"
+              >
+              </app-switch>
+            </div>
+
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300"
+              [class.opacity-40]="!form.get(key + '.activeNote')?.value"
+            >
+              <div class="flex flex-col gap-2">
+                <div class="text-sm text-black dark:text-white">Nội dung thông báo</div>
+                <app-text-area
+                  [value]="form.get(key + '.note')?.value"
+                  (valueChange)="form.get(key + '.note')?.setValue($event)"
+                  placeholder="Ví dụ: Ưu tiên đơn hàng đặt trước..."
+                  [rows]="2"
+                >
+                </app-text-area>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="text-sm text-black dark:text-white">Điều kiện hiển thị</div>
+                <app-select
+                  [value]="form.get(key + '.showNoteWhen')?.value"
+                  (valueChange)="form.get(key + '.showNoteWhen')?.setValue($event)"
+                  [options]="[
+                    { label: 'Tùy chọn đang TẮT (OFF)', value: 'off' },
+                    { label: 'Tùy chọn đang BẬT (ON)', value: 'on' },
+                    { label: 'Luôn luôn hiển thị', value: 'always' },
+                  ]"
+                >
+                </app-select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </app-component-card>
 
-  <app-component-card title="Cấu hình Thanh toán">
-    <div class="flex flex-col gap-4">
-      <app-switch
-        label="Thanh toán tiền mặt"
-        [value]="form.get('allowCashPayment')?.value"
-        (valueChange)="form.patchValue({ allowCashPayment: $event })"
-      ></app-switch>
+  <app-component-card title="Phương thức thanh toán">
+    <div class="flex flex-col gap-10">
+      <ng-container *ngFor="let key of ['cashPayment', 'bankTransfer']">
+        <div class="flex flex-col gap-4">
+          <app-switch
+            [label]="
+              key === 'cashPayment' ? 'Bật thanh toán Tiền mặt' : 'Bật thanh toán Chuyển khoản'
+            "
+            [value]="form.get(key + '.value')?.value"
+            (valueChange)="form.get(key + '.value')?.setValue($event)"
+          >
+          </app-switch>
 
-      <app-switch
-        label="Thanh toán chuyển khoản"
-        [value]="form.get('allowBankTransfer')?.value"
-        (valueChange)="form.patchValue({ allowBankTransfer: $event })"
-      ></app-switch>
+          <div
+            class="ml-12 border-l-2 border-stroke pl-6 dark:border-strokedark flex flex-col gap-5"
+          >
+            <div class="flex items-center h-10">
+              <app-switch
+                label="Kích hoạt lưu ý thanh toán"
+                [value]="form.get(key + '.activeNote')?.value"
+                (valueChange)="form.get(key + '.activeNote')?.setValue($event)"
+              >
+              </app-switch>
+            </div>
+
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300"
+              [class.opacity-40]="!form.get(key + '.activeNote')?.value"
+            >
+              <div class="flex flex-col gap-2">
+                <div class="text-sm text-black dark:text-white">Thông tin hiển thị</div>
+                <app-text-area
+                  [value]="form.get(key + '.note')?.value"
+                  (valueChange)="form.get(key + '.note')?.setValue($event)"
+                  [placeholder]="
+                    key === 'bankTransfer' ? 'STK - Ngân hàng - Chủ TK...' : 'Nhập lưu ý...'
+                  "
+                  [rows]="2"
+                >
+                </app-text-area>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="text-sm text-black dark:text-white">Điều kiện hiển thị</div>
+                <app-select
+                  [value]="form.get(key + '.showNoteWhen')?.value"
+                  (valueChange)="form.get(key + '.showNoteWhen')?.setValue($event)"
+                  [options]="[
+                    { label: 'Khi Bật', value: 'on' },
+                    { label: 'Khi Tắt', value: 'off' },
+                    { label: 'Luôn hiện', value: 'always' },
+                  ]"
+                >
+                </app-select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </app-component-card>
 
-  <div class="flex justify-end">
-    <app-button type="submit" variant="primary" *appHasPermission="'dealSettings.update'">
-      Lưu thiết lập
+  <div class="flex justify-end pt-4">
+    <app-button type="submit" variant="primary" size="sm" *appHasPermission="'dealSettings.update'">
+      Lưu cấu hình
     </app-button>
   </div>
 </form>

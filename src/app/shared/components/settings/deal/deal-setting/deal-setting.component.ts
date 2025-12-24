@@ -6,14 +6,20 @@ import { ButtonComponent } from '../../../ui/button/button.component';
 import { DealSettingService } from '../../../../services/api/deal-setting.service';
 import { ToastrService } from 'ngx-toastr';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
+import { CommonModule } from '@angular/common';
+import { TextAreaComponent } from '../../../form/input/text-area.component';
+import { SelectComponent } from '../../../form/select/select.component';
 
 @Component({
   selector: 'app-deal-setting',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     SwitchComponent,
     ButtonComponent,
+    TextAreaComponent,
+    SelectComponent,
     ComponentCardComponent,
     HasPermissionDirective,
   ],
@@ -34,12 +40,14 @@ export class DealSettingComponent implements OnInit {
     // Khởi tạo form nếu chưa có
     if (!this.form) {
       this.form = this.fb.group({
-        allowFastDelivery: [false],
-        allowScheduledDelivery: [false],
-        allowCashPayment: [false],
-        allowBankTransfer: [false],
+        fastDelivery: this.createOptionGroup(false),
+        scheduledDelivery: this.createOptionGroup(false),
+        cashPayment: this.createOptionGroup(false),
+        bankTransfer: this.createOptionGroup(false),
       });
     }
+
+    this.loadDealSetting();
   }
 
   loadDealSetting() {
@@ -50,6 +58,15 @@ export class DealSettingComponent implements OnInit {
         this.dealSettingId = setting.id;
         this.form.patchValue(setting);
       }
+    });
+  }
+
+  private createOptionGroup(defaultValue: boolean) {
+    return this.fb.group({
+      value: [defaultValue],
+      note: [''],
+      activeNote: [false],
+      showNoteWhen: ['off'], // Mặc định hiện khi tắt theo yêu cầu khách hàng
     });
   }
 
