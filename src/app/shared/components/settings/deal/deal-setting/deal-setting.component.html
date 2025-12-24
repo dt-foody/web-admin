@@ -1,4 +1,4 @@
-<form [formGroup]="form" (ngSubmit)="onSave()" class="flex flex-col gap-9 pb-10">
+<form [formGroup]="form" (ngSubmit)="onSave()" class="flex flex-col gap-4 pb-10">
   <app-component-card title="Cấu hình vận chuyển">
     <div class="flex flex-col gap-10">
       <ng-container *ngFor="let key of ['fastDelivery', 'scheduledDelivery']">
@@ -25,7 +25,7 @@
             </div>
 
             <div
-              class="grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300"
+              class="grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300"
               [class.opacity-40]="!form.get(key + '.activeNote')?.value"
             >
               <div class="flex flex-col gap-2">
@@ -34,7 +34,7 @@
                   [value]="form.get(key + '.note')?.value"
                   (valueChange)="form.get(key + '.note')?.setValue($event)"
                   placeholder="Ví dụ: Ưu tiên đơn hàng đặt trước..."
-                  [rows]="2"
+                  [rows]="4"
                 >
                 </app-text-area>
               </div>
@@ -85,7 +85,7 @@
             </div>
 
             <div
-              class="grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300"
+              class="grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300"
               [class.opacity-40]="!form.get(key + '.activeNote')?.value"
             >
               <div class="flex flex-col gap-2">
@@ -96,7 +96,7 @@
                   [placeholder]="
                     key === 'bankTransfer' ? 'STK - Ngân hàng - Chủ TK...' : 'Nhập lưu ý...'
                   "
-                  [rows]="2"
+                  [rows]="4"
                 >
                 </app-text-area>
               </div>
@@ -121,7 +121,7 @@
     </div>
   </app-component-card>
 
-  <div class="flex justify-end pt-4">
+  <div class="flex justify-end">
     <app-button type="submit" variant="primary" size="sm" *appHasPermission="'dealSettings.update'">
       Lưu cấu hình
     </app-button>
