@@ -51,11 +51,11 @@
             </span>
           </div>
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            {{ formatDateTime(order?.createdAt) }}
+            Thời gian tạo: {{ formatDateTime(order?.createdAt) }}
           </p>
         </div>
 
-        <div class="flex flex-wrap gap-2">
+        <!-- <div class="flex flex-wrap gap-2">
           <app-button
             size="xs"
             *ngIf="order?.status !== 'completed' && order?.status !== 'canceled'"
@@ -86,7 +86,7 @@
               />
             </svg>
           </app-button>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -129,6 +129,47 @@
             class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between"
           >
             <h3 class="font-semibold text-gray-900 dark:text-white">Chi tiết đơn hàng</h3>
+
+            <div class="text-sm flex items-center gap-2">
+              <!-- Giao ngay -->
+              <ng-container *ngIf="order.deliveryTime?.option === 'immediate'; else scheduled">
+                <span
+                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
+                >
+                  ⚡ Giao ngay
+                </span>
+
+                <span class="text-gray-600 dark:text-gray-300">
+                  · Đặt lúc
+                  <span class="font-medium text-gray-900 dark:text-white">
+                    {{ order?.createdAt | date: 'HH:mm dd/MM/yyyy' }}
+                  </span>
+                </span>
+              </ng-container>
+
+              <!-- Hẹn giao -->
+              <ng-template #scheduled>
+                <span
+                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                >
+                  🕒 Hẹn giao
+                </span>
+
+                <span class="text-gray-600 dark:text-gray-300">
+                  ·
+                  <span class="font-medium text-gray-900 dark:text-white">
+                    {{ order.deliveryTime?.scheduledAt | date: 'dd/MM/yyyy' }}
+                  </span>
+
+                  <ng-container *ngIf="order.deliveryTime?.timeSlot">
+                    ·
+                    <span class="font-medium text-gray-900 dark:text-white">
+                      {{ order.deliveryTime.timeSlot }}
+                    </span>
+                  </ng-container>
+                </span>
+              </ng-template>
+            </div>
           </div>
 
           <div class="p-6">
