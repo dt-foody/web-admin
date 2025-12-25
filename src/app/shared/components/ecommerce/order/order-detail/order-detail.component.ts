@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +10,7 @@ import { ToastrService } from 'ngx-toastr';
 import { OrderService } from '../../../../services/api/order.service';
 import { ImageUrlPipe } from '../../../../pipe/image-url.pipe';
 import { ImageFallbackDirective } from '../../../../directives/app-image-fallback.directive';
+import { DialogService } from '@ngneat/dialog';
 
 @Component({
   selector: 'app-order-detail',
@@ -28,6 +29,10 @@ import { ImageFallbackDirective } from '../../../../directives/app-image-fallbac
   styles: ``,
 })
 export class OrderDetailComponent implements OnInit {
+  @ViewChild('confirmCompleteTpl') confirmCompleteTpl!: TemplateRef<any>;
+  // Biến lưu dialog ref để đóng khi cần
+  private dialogRef: any;
+
   public order: any = null;
   public orderId: any = '';
   public isLoading: boolean = true;
@@ -64,6 +69,7 @@ export class OrderDetailComponent implements OnInit {
     private orderService: OrderService,
     private toastr: ToastrService,
     private route: ActivatedRoute,
+    private dialog: DialogService,
   ) {}
 
   ngOnInit() {
@@ -113,12 +119,10 @@ export class OrderDetailComponent implements OnInit {
   public handleStatusUpdate(newStatusKey: string) {
     if (!this.order) return;
 
-    // Không cho phép quay lại trạng thái cũ hoặc chuyển sang canceled
     if (this.order.status === newStatusKey || newStatusKey === 'canceled') {
       return;
     }
 
-    // Kiểm tra không cho phép nhảy cóc trạng thái (optional)
     const currentIndex = this.getCurrentStatusIndex(this.filteredOrderStatuses, this.order.status);
     const newIndex = this.getCurrentStatusIndex(this.filteredOrderStatuses, newStatusKey);
 
@@ -127,8 +131,65 @@ export class OrderDetailComponent implements OnInit {
       return;
     }
 
-    // Gọi API cập nhật trạng thái
+    // XỬ LÝ KHI CHỌN "HOÀN THÀNH"
+    if (newStatusKey === 'completed') {
+      if (this.order?.payment?.status === 'paid') {
+        // Trường hợp 1: Đã thanh toán -> Hoàn thành luôn (update cả shipping)
+        this.processCompleteOrder(false);
+      } else {
+        // Trường hợp 2: Chưa thanh toán -> Hiện Popup xác nhận
+        this.dialogRef = this.dialog.open(this.confirmCompleteTpl);
+      }
+      return;
+    }
+
+    // Các trạng thái khác update bình thường
     this.updateOrderStatus(newStatusKey);
+  }
+
+  public confirmPaymentAndComplete() {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    }
+    this.processCompleteOrder(true); // true = update thêm payment status thành paid
+  }
+
+  private processCompleteOrder(updatePayment: boolean) {
+    this.isLoading = true;
+
+    // Payload cơ bản: Đổi trạng thái đơn + Đổi trạng thái vận chuyển
+    const payload: any = {
+      status: 'completed',
+      shipping: {
+        ...this.order.shipping,
+        status: 'delivered', // Logic: Hoàn thành -> Shipping auto Delivered
+      },
+    };
+
+    // Nếu cần xác nhận thanh toán (từ popup)
+    if (updatePayment) {
+      const updatedPayment = {
+        ...this.order.payment,
+        status: 'paid',
+      };
+      delete updatedPayment.qrCode; // Xóa QR thừa nếu có
+      payload.payment = updatedPayment;
+    }
+
+    this.orderService.adminUpdateOrder(this.order.id, payload).subscribe({
+      next: (response) => {
+        const msg = updatePayment
+          ? 'Đã xác nhận thanh toán và hoàn thành đơn hàng'
+          : 'Đơn hàng đã hoàn thành';
+        this.toastr.success(msg);
+        this.loadOrderDetail();
+      },
+      error: (error) => {
+        this.toastr.error('Cập nhật thất bại');
+        console.error('Complete order error:', error);
+        this.isLoading = false;
+      },
+    });
   }
 
   // Gọi API cập nhật trạng thái

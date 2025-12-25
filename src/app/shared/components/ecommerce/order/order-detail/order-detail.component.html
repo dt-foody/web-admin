@@ -347,31 +347,6 @@
           <div
             class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between"
           >
-            <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Ghi chú</h3>
-            <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
-            </button>
-          </div>
-          <div class="p-4">
-            <p class="text-sm text-gray-700 dark:text-gray-300 italic">
-              {{ order?.note || 'Không có ghi chú' }}
-            </p>
-          </div>
-        </div>
-
-        <div
-          class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
-        >
-          <div
-            class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between"
-          >
             <h3 class="font-semibold text-gray-900 dark:text-white text-sm">
               Thông tin khách hàng
             </h3>
@@ -612,7 +587,67 @@
             </button>
           </div>
         </div>
+
+        <!-- <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Ghi chú</h3>
+            <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+          </div>
+          <div class="p-4">
+            <p class="text-sm text-gray-700 dark:text-gray-300 italic">
+              {{ order?.note || 'Không có ghi chú' }}
+            </p>
+          </div>
+        </div> -->
       </div>
     </div>
   </div>
 </div>
+
+<ng-template #confirmCompleteTpl let-ref>
+  <div class="p-6">
+    <div class="text-center mb-6">
+      <div
+        class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 mb-4"
+      >
+        <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white">Xác nhận hoàn thành?</h3>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        Đơn hàng này <span class="text-red-500 font-bold">chưa được thanh toán</span>.
+        <br />
+        Hành động này sẽ xác nhận
+        <span class="font-bold text-gray-900 dark:text-white">đã nhận tiền</span> và
+        <span class="font-bold text-gray-900 dark:text-white">hoàn tất</span> đơn hàng.
+      </p>
+    </div>
+
+    <div class="flex gap-3 justify-center">
+      <button
+        (click)="ref.close()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+      >
+        Huỷ bỏ
+      </button>
+
+      <button
+        (click)="confirmPaymentAndComplete()"
+        class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-sm"
+      >
+        Xác nhận & Hoàn thành
+      </button>
+    </div>
+  </div>
+</ng-template>
