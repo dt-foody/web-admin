@@ -44,6 +44,8 @@ export class DealSettingComponent implements OnInit {
         scheduledDelivery: this.createOptionGroup(false),
         cashPayment: this.createOptionGroup(false),
         bankTransfer: this.createOptionGroup(false),
+        homeDelivery: this.createOptionGroup(false),
+        storePickup: this.createOptionGroup(false),
       });
     }
 

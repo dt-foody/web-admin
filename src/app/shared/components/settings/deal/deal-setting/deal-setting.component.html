@@ -1,4 +1,70 @@
 <form [formGroup]="form" (ngSubmit)="onSave()" class="flex flex-col gap-4 pb-10">
+  <app-component-card title="Loại hình phục vụ">
+    <div class="flex flex-col gap-10">
+      <ng-container *ngFor="let key of ['homeDelivery', 'storePickup']">
+        <div class="flex flex-col gap-4">
+          <app-switch
+            [label]="
+              key === 'homeDelivery'
+                ? 'Kích hoạt Giao hàng tận nơi (Delivery)'
+                : 'Kích hoạt Khách đến lấy (Store Pickup)'
+            "
+            [value]="form.get(key + '.value')?.value"
+            (valueChange)="form.get(key + '.value')?.setValue($event)"
+          >
+          </app-switch>
+
+          <div
+            class="ml-12 border-l-2 border-stroke pl-6 dark:border-strokedark flex flex-col gap-5"
+          >
+            <div class="flex items-center h-10">
+              <app-switch
+                label="Kích hoạt ghi chú cảnh báo"
+                [value]="form.get(key + '.activeNote')?.value"
+                (valueChange)="form.get(key + '.activeNote')?.setValue($event)"
+              >
+              </app-switch>
+            </div>
+
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300"
+              [class.opacity-40]="!form.get(key + '.activeNote')?.value"
+            >
+              <div class="flex flex-col gap-2">
+                <div class="text-sm text-black dark:text-white">Nội dung thông báo</div>
+                <app-text-area
+                  [value]="form.get(key + '.note')?.value"
+                  (valueChange)="form.get(key + '.note')?.setValue($event)"
+                  [placeholder]="
+                    key === 'homeDelivery'
+                      ? 'Ví dụ: Tạm ngưng giao hàng các quận xa...'
+                      : 'Ví dụ: Vui lòng mang theo hóa đơn khi nhận hàng...'
+                  "
+                  [rows]="4"
+                >
+                </app-text-area>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="text-sm text-black dark:text-white">Điều kiện hiển thị</div>
+                <app-select
+                  [value]="form.get(key + '.showNoteWhen')?.value"
+                  (valueChange)="form.get(key + '.showNoteWhen')?.setValue($event)"
+                  [options]="[
+                    { label: 'Khi Tắt tính năng này (OFF)', value: 'off' },
+                    { label: 'Khi Bật tính năng này (ON)', value: 'on' },
+                    { label: 'Luôn luôn hiển thị', value: 'always' },
+                  ]"
+                >
+                </app-select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </app-component-card>
+
   <app-component-card title="Cấu hình vận chuyển">
     <div class="flex flex-col gap-10">
       <ng-container *ngFor="let key of ['fastDelivery', 'scheduledDelivery']">

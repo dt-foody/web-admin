@@ -13,4 +13,8 @@ export interface DealSetting {
   // Cấu hình thanh toán
   cashPayment: DealOptionConfig;
   bankTransfer: DealOptionConfig;
+
+  //
+  homeDelivery: DealOptionConfig; // Giao hàng tận nơi
+  storePickup: DealOptionConfig; // Đến lấy tại cửa hàng
 }
