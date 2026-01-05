@@ -28,6 +28,8 @@ const DEFAULT_FORM: PricePromotionFormData = {
   endDate: '',
   maxQuantity: 0,
   dailyMaxUses: 0,
+  minOrderValue: 0, // Mặc định là 0 (không giới hạn)
+  limitPerOrder: 0, // Mặc định là 0 (không giới hạn)
   isActive: true,
 };
 
@@ -250,6 +252,16 @@ export class PricePromotionAddComponent implements OnInit {
         'Daily maximum uses cannot exceed total maximum quantity',
         'Validation Error',
       );
+      return false;
+    }
+
+    if (this.promotionData.minOrderValue < 0) {
+      this.toastr.error('Giá trị đơn hàng tối thiểu không được âm', 'Lỗi validate');
+      return false;
+    }
+
+    if (this.promotionData.limitPerOrder < 0) {
+      this.toastr.error('Giới hạn mỗi đơn không được âm', 'Lỗi validate');
       return false;
     }
 

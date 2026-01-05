@@ -82,26 +82,46 @@ export abstract class BaseListComponent<T extends { id: string }> implements OnI
     return ids.length > 0 && ids.every((id) => this.selected.includes(id));
   }
 
-  formatDate(dateString?: string | Date): string {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  formatDate(dateInput?: string | Date): string {
+    if (!dateInput) return '-';
 
-    if (diffDays === 0) {
-      return 'Today';
-    } else if (diffDays === 1) {
-      return 'Yesterday';
-    } else if (diffDays < 7) {
-      return `${diffDays} days ago`;
-    } else {
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      });
+    const date = new Date(dateInput);
+    const now = new Date();
+
+    // Chuẩn hoá về đầu ngày (00:00)
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const startOfDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const diffDays = Math.floor(
+      (startOfDate.getTime() - startOfToday.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    // 🔮 TƯƠNG LAI
+    if (diffDays > 0) {
+      if (diffDays === 1) return 'Ngày mai';
+      if (diffDays < 7) return `Còn ${diffDays} ngày`;
+      return this.formatFullDateVi(date);
     }
+
+    // ⏳ QUÁ KHỨ
+    if (diffDays < 0) {
+      const pastDays = Math.abs(diffDays);
+      if (pastDays === 1) return 'Hôm qua';
+      if (pastDays < 7) return `${pastDays} ngày trước`;
+      return this.formatFullDateVi(date);
+    }
+
+    // 📌 HIỆN TẠI
+    return 'Hôm nay';
+  }
+
+  formatFullDateVi(date: Date): string {
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
   }
 
   formatDateTime(date?: string | Date): string {

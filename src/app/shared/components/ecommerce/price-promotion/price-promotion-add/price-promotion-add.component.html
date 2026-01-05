@@ -3,8 +3,12 @@
   <!-- CỘT CHÍNH (8 cột) -->
   <div class="lg:col-span-8 space-y-6">
     <!-- Thông tin khuyến mãi -->
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-      <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex items-center justify-between">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
+      <div
+        class="border-b border-gray-200 px-6 py-4 dark:border-gray-800 flex items-center justify-between"
+      >
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thông tin khuyến mãi</h2>
         <app-switch label="Hoạt động" [(value)]="promotionData.isActive"></app-switch>
       </div>
@@ -13,54 +17,74 @@
           <!-- Tên khuyến mãi -->
           <div>
             <app-label for="promotion-name" className="required">Tên khuyến mãi</app-label>
-            <app-input-field id="promotion-name" placeholder="Nhập tên khuyến mãi"
-              [(value)]="promotionData.name"></app-input-field>
+            <app-input-field
+              id="promotion-name"
+              placeholder="Nhập tên khuyến mãi"
+              [(value)]="promotionData.name"
+            ></app-input-field>
           </div>
 
           <!-- Mô tả -->
           <div>
             <app-label for="description">Mô tả</app-label>
-            <app-text-area id="description" [rows]="3" placeholder="Nhập mô tả khuyến mãi"
-              [(value)]="promotionData.description"></app-text-area>
+            <app-text-area
+              id="description"
+              [rows]="3"
+              placeholder="Nhập mô tả khuyến mãi"
+              [(value)]="promotionData.description"
+            ></app-text-area>
           </div>
 
           <!-- Loại & giá trị giảm giá -->
           <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div>
               <app-label for="discount-type" className="required">Loại giảm giá</app-label>
-              <app-select id="discount-type" [options]="discountTypeOptions" placeholder="Chọn loại giảm giá"
+              <app-select
+                id="discount-type"
+                [options]="discountTypeOptions"
+                placeholder="Chọn loại giảm giá"
                 [value]="promotionData.discountType"
-                (valueChange)="handleSelectChange('discountType', $event)"></app-select>
+                (valueChange)="handleSelectChange('discountType', $event)"
+              ></app-select>
             </div>
             <div>
               <app-label for="discount-value" className="required">Giá trị giảm</app-label>
-              <app-input-field id="discount-value" type="number" placeholder="0"
-                [(value)]="promotionData.discountValue"></app-input-field>
+              <app-input-field
+                id="discount-value"
+                type="number"
+                placeholder="0"
+                [(value)]="promotionData.discountValue"
+              ></app-input-field>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 {{
-                promotionData.discountType === 'percentage'
-                ? 'Nhập phần trăm (0-100)'
-                : 'Nhập số tiền cố định'
+                  promotionData.discountType === 'percentage'
+                    ? 'Nhập phần trăm (0-100)'
+                    : 'Nhập số tiền cố định'
                 }}
               </p>
             </div>
 
             <div *ngIf="promotionData.discountType === 'percentage'">
               <app-label for="max-discount-amount">Giảm tối đa</app-label>
-              <app-input-field id="max-discount-amount" type="number" placeholder="0"
-                [(value)]="promotionData.maxDiscountAmount"></app-input-field>
+              <app-input-field
+                id="max-discount-amount"
+                type="number"
+                placeholder="0"
+                [(value)]="promotionData.maxDiscountAmount"
+              ></app-input-field>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 Số tiền được giảm tối đa (0 = không giới hạn)
               </p>
             </div>
-
           </div>
         </div>
       </div>
     </div>
 
     <!-- Giới hạn số lượng -->
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Giới hạn số lượng</h2>
       </div>
@@ -69,8 +93,12 @@
           <!-- Số lượng tối đa -->
           <div>
             <app-label for="max-quantity">Tổng số lượng tối đa</app-label>
-            <app-input-field id="max-quantity" type="number" placeholder="0"
-              [(value)]="promotionData.maxQuantity"></app-input-field>
+            <app-input-field
+              id="max-quantity"
+              type="number"
+              placeholder="0"
+              [(value)]="promotionData.maxQuantity"
+            ></app-input-field>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Tổng số lượng có thể bán (0 = không giới hạn)
             </p>
@@ -79,10 +107,53 @@
           <!-- Số lượng tối đa theo ngày -->
           <div>
             <app-label for="daily-max-uses">Số lượng tối đa hàng ngày</app-label>
-            <app-input-field id="daily-max-uses" type="number" placeholder="0"
-              [(value)]="promotionData.dailyMaxUses"></app-input-field>
+            <app-input-field
+              id="daily-max-uses"
+              type="number"
+              placeholder="0"
+              [(value)]="promotionData.dailyMaxUses"
+            ></app-input-field>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Số lượng tối đa mỗi ngày (0 = không giới hạn)
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
+      <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">Điều kiện đơn hàng</h2>
+      </div>
+
+      <div class="p-4 sm:p-6">
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div>
+            <app-label for="min-order-value">Giá trị đơn hàng tối thiểu để áp dụng</app-label>
+            <app-input-field
+              id="min-order-value"
+              type="number"
+              placeholder="Ví dụ: 100000"
+              [(value)]="promotionData.minOrderValue"
+            ></app-input-field>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Tổng tiền đơn hàng (trước khi giảm giá món này) phải đạt ngưỡng này mới được áp dụng
+              (0 = không giới hạn)
+            </p>
+          </div>
+
+          <div>
+            <app-label for="limit-per-order">Giới hạn số lượng trên mỗi đơn hàng</app-label>
+            <app-input-field
+              id="limit-per-order"
+              type="number"
+              placeholder="Ví dụ: 1"
+              [(value)]="promotionData.limitPerOrder"
+            ></app-input-field>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Số lượng tối đa món này được hưởng ưu đãi trong 1 lần mua (0 = không giới hạn)
             </p>
           </div>
         </div>
@@ -93,7 +164,9 @@
   <!-- CỘT PHỤ (4 cột) -->
   <div class="lg:col-span-4 space-y-6">
     <!-- Mục áp dụng -->
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Áp dụng cho</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Chọn sản phẩm hoặc combo</p>
@@ -103,23 +176,44 @@
           <!-- Chọn loại -->
           <div>
             <app-label for="applicable-to" className="required">Áp dụng cho</app-label>
-            <app-select id="applicable-to" [options]="applicableToOptions" placeholder="Chọn loại"
-              [value]="selectedApplicableTo" (valueChange)="handleApplicableToChange($event)"></app-select>
+            <app-select
+              id="applicable-to"
+              [options]="applicableToOptions"
+              placeholder="Chọn loại"
+              [value]="selectedApplicableTo"
+              (valueChange)="handleApplicableToChange($event)"
+            ></app-select>
           </div>
 
           <!-- Chọn sản phẩm -->
           <div *ngIf="selectedApplicableTo === 'product'">
             <app-label for="product" className="required">Sản phẩm</app-label>
-            <ng-select [items]="products" bindLabel="name" bindValue="id" placeholder="Chọn sản phẩm"
-              [(ngModel)]="promotionData.product" [searchable]="true" [clearable]="true" name="product">
+            <ng-select
+              [items]="products"
+              bindLabel="name"
+              bindValue="id"
+              placeholder="Chọn sản phẩm"
+              [(ngModel)]="promotionData.product"
+              [searchable]="true"
+              [clearable]="true"
+              name="product"
+            >
             </ng-select>
           </div>
 
           <!-- Chọn combo -->
           <div *ngIf="selectedApplicableTo === 'combo'">
             <app-label for="combo" className="required">Combo</app-label>
-            <ng-select [items]="combos" bindLabel="name" bindValue="id" placeholder="Chọn combo"
-              [(ngModel)]="promotionData.combo" [searchable]="true" [clearable]="true" name="combo">
+            <ng-select
+              [items]="combos"
+              bindLabel="name"
+              bindValue="id"
+              placeholder="Chọn combo"
+              [(ngModel)]="promotionData.combo"
+              [searchable]="true"
+              [clearable]="true"
+              name="combo"
+            >
             </ng-select>
           </div>
         </div>
@@ -127,7 +221,9 @@
     </div>
 
     <!-- Thời gian hiệu lực -->
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    >
       <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thời gian hiệu lực</h2>
       </div>
@@ -136,14 +232,21 @@
           <!-- Ngày bắt đầu -->
           <div>
             <app-label for="start-date" className="required">Ngày bắt đầu</app-label>
-            <app-input-field id="start-date" type="datetime-local"
-              [(value)]="promotionData.startDate"></app-input-field>
+            <app-input-field
+              id="start-date"
+              type="datetime-local"
+              [(value)]="promotionData.startDate"
+            ></app-input-field>
           </div>
 
           <!-- Ngày kết thúc -->
           <div>
             <app-label for="end-date" className="required">Ngày kết thúc</app-label>
-            <app-input-field id="end-date" type="datetime-local" [(value)]="promotionData.endDate"></app-input-field>
+            <app-input-field
+              id="end-date"
+              type="datetime-local"
+              [(value)]="promotionData.endDate"
+            ></app-input-field>
           </div>
         </div>
       </div>

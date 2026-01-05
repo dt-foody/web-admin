@@ -26,6 +26,9 @@ export interface PricePromotion {
   lastUsedDate: string | Date;
   dailyUsedCount: number; // số lần đã dùng trong ngày
 
+  minOrderValue: number; // Ngưỡng đơn hàng tối thiểu (ví dụ: 100,000)
+  limitPerOrder: number; // Giới hạn lượt mua trên mỗi đơn (ví dụ: 1)minOrderValue: number;    // Ngưỡng đơn hàng tối thiểu (ví dụ: 100,000)
+
   // Trạng thái
   isActive: boolean;
 
@@ -54,4 +57,6 @@ export interface PricePromotionFormData {
   maxQuantity: number;
   dailyMaxUses: number;
   isActive: boolean;
+  minOrderValue: number;
+  limitPerOrder: number;
 }
