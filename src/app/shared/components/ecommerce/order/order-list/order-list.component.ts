@@ -34,11 +34,13 @@ import { Subscription, interval } from 'rxjs';
 export class OrderListComponent extends BaseListComponent<Order> implements OnInit, OnDestroy {
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
   @ViewChild('filterRef') filterRef!: ElementRef;
-
   @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
 
   viewMode: 'table' | 'kanban' = 'table';
   itemToDelete: Order | null = null;
+
+  // [MỚI] Biến điều khiển hiển thị bộ lọc nâng cao
+  showFilters = false;
 
   private refreshSubscription: Subscription | null = null;
 
@@ -52,6 +54,12 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
 
   currentSortValue: string = 'priorityTime:asc';
 
+  deliveryOptions = [
+    { value: '', label: 'Tất cả lịch giao' },
+    { value: 'immediate', label: 'Giao ngay' },
+    { value: 'scheduled', label: 'Giao hàng đặt lịch' },
+  ];
+
   get kanbanColumns() {
     // Loại trừ 'unfinished' khỏi các cột Kanban để tránh hiển thị cột tổng hợp thừa
     return this.orderStatuses.filter((s) => s.value !== '' && s.value !== 'unfinished');
@@ -59,7 +67,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
 
   orderStatuses = [
     { value: '', label: 'Tất cả trạng thái' },
-    { value: 'unfinished', label: 'Chưa hoàn tất' }, // [MỚI] Thêm trạng thái chưa hoàn tất
+    { value: 'unfinished', label: 'Chưa hoàn tất' }, // Trạng thái gộp
     { value: 'pending', label: 'Chờ xác nhận' },
     { value: 'confirmed', label: 'Đã xác nhận' },
     { value: 'preparing', label: 'Đang chuẩn bị' },
@@ -95,9 +103,10 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
 
   override ngOnInit(): void {
     super.ngOnInit();
-    this.query.status = '';
+    this.query.status = 'unfinished';
     this.query.paymentStatus = '';
     this.query.shippingStatus = '';
+    this.query.deliveryType = '';
 
     this.query.sort = { key: 'priorityTime', asc: true };
 
@@ -130,6 +139,10 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     }
   }
 
+  toggleFilters() {
+    this.showFilters = !this.showFilters;
+  }
+
   onSortOptionChange() {
     if (this.currentSortValue) {
       const [key, direction] = this.currentSortValue.split(':');
@@ -153,7 +166,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
       params.search = this.query.search.trim();
     }
 
-    // [MỚI] Xử lý logic lọc trạng thái
+    // Xử lý logic lọc trạng thái
     if (this.query.status) {
       if (this.query.status === 'unfinished') {
         // Nếu chọn "Chưa hoàn tất", gửi danh sách các trạng thái đang active
@@ -169,6 +182,10 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     }
     if (this.query.shippingStatus) {
       params.shippingStatus = this.query.shippingStatus;
+    }
+
+    if (this.query.deliveryType) {
+      params.deliveryType = this.query.deliveryType;
     }
 
     this.orderService.getAll(params).subscribe({

@@ -11,8 +11,7 @@ import { SurchargeAddComponent } from '../../../../shared/components/settings/su
       <app-page-breadcrumb
         pageTitle="Thêm Phụ thu"
         [breadcrumbItems]="[
-          { label: 'Thiết lập', url: '/' },
-          { label: 'Phụ thu', url: '/settings/surcharge' },
+          { label: 'Danh sách phụ thu', url: '/settings/surcharge' },
           { label: 'Thêm mới', url: '' },
         ]"
       >
