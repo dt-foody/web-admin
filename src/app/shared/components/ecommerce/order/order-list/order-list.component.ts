@@ -99,10 +99,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     private toastr: ToastrService,
   ) {
     super();
-  }
 
-  override ngOnInit(): void {
-    super.ngOnInit();
     this.query.status = 'unfinished';
     this.query.paymentStatus = '';
     this.query.shippingStatus = '';
@@ -114,6 +111,10 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     if (savedMode === 'kanban') {
       this.viewMode = 'kanban';
     }
+  }
+
+  override ngOnInit(): void {
+    super.ngOnInit();
 
     this.manageAutoRefresh();
   }

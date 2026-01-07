@@ -118,7 +118,7 @@ export class CouponAddComponent implements OnInit {
   typeOptions = [
     { value: 'discount_code', label: 'Mã giảm giá' },
     { value: 'freeship', label: 'Miễn phí vận chuyển' },
-    // { value: 'gift', label: 'Quà tặng' },
+    { value: 'referral', label: 'Chương trình giới thiệu (Referral)' },
   ];
 
   statusOptions = [
@@ -320,6 +320,26 @@ export class CouponAddComponent implements OnInit {
           });
         },
       },
+    },
+    {
+      id: 'referrer_successful_invites',
+      group: 'Mã giới thiệu',
+      name: 'Số lượt giới thiệu thành công (đã có đơn)',
+      type: 'number',
+      operators: [
+        Operator.GREATER_THAN, // VD: > 3 người
+        Operator.EQUALS, // VD: = 5 người
+        Operator.BETWEEN, // VD: Từ 3 đến 10 người
+      ],
+    },
+    {
+      id: 'is_referred_new_customer',
+      group: 'Mã giới thiệu',
+      name: 'Là khách hàng mới qua giới thiệu?',
+      type: 'boolean', // True/False
+      operators: [
+        Operator.EQUALS, // Chọn True để áp dụng
+      ],
     },
   ];
 
