@@ -7,9 +7,17 @@ export interface BasicUser {
 }
 
 // ===== Enums / Types (Khớp với Backend Model) =====
-export type CouponType = 'discount_code' | 'freeship' | 'gift';
-export type ValueType = 'fixed_amount' | 'percentage';
+export type CouponType = 'discount_code' | 'freeship' | 'referral';
+export type ValueType = 'fixed_amount' | 'percentage' | 'gift_item';
 export type CouponStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'EXPIRED';
+
+export type GiftType = 'Product' | 'Combo';
+
+export interface CouponGiftItem {
+  itemId: string; // ID của Product hoặc Combo
+  type: GiftType; // 'Product' hoặc 'Combo'
+  price: number; // Giá bán ưu đãi (0 = Miễn phí)
+}
 
 // ===== Interface chính (Coupon) =====
 export interface Coupon {
@@ -26,6 +34,9 @@ export interface Coupon {
   // Quy tắc giảm giá
   value: number;
   valueType: ValueType;
+
+  giftItems?: CouponGiftItem[];
+
   maxDiscountAmount: number;
   minOrderAmount: number;
 
@@ -82,4 +93,6 @@ export interface CouponFormData {
 
   conditions: any; // Nhập JSON dưới dạng text
   status: CouponStatus;
+
+  giftItems: CouponGiftItem[];
 }

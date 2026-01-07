@@ -17,7 +17,7 @@ import { ButtonComponent } from '../../../ui/button/button.component';
 import { SwitchComponent } from '../../../form/input/switch.component';
 
 // Models
-import { Coupon, CouponFormData } from '../../../../models/coupon.model';
+import { Coupon, CouponFormData, CouponGiftItem } from '../../../../models/coupon.model';
 import { Voucher, VoucherProfileType } from '../../../../models/voucher.model';
 import { ConditionGroup, Field, Operator } from '../../../../models/conditions.model';
 
@@ -53,6 +53,8 @@ const DEFAULT_FORM: CouponFormData = {
   stackable: false,
   conditions: null,
   status: 'DRAFT',
+
+  giftItems: [],
 };
 
 // Form phát hành voucher (Updated)
@@ -104,6 +106,16 @@ export class CouponAddComponent implements OnInit {
   isLoadingVoucherData = false;
   isIssuing = false; // Loading state cho nút phát hành
 
+  // Data sources
+  productList: any[] = [];
+  comboList: any[] = [];
+
+  selectedProductIds: string[] = [];
+  selectedComboIds: string[] = [];
+
+  isLoadingProducts = false;
+  isLoadingCombos = false;
+
   // Options
   profileTypeOptions = [
     { value: 'Customer', label: 'Khách hàng' },
@@ -113,6 +125,7 @@ export class CouponAddComponent implements OnInit {
   valueTypeOptions = [
     { value: 'percentage', label: 'Phần trăm (%)' },
     { value: 'fixed_amount', label: 'Số tiền cố định' },
+    { value: 'gift_item', label: 'Tặng sản phẩm / Mua giá ưu đãi' },
   ];
 
   typeOptions = [
@@ -364,6 +377,9 @@ export class CouponAddComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.loadProducts();
+    this.loadCombos();
+
     this.activatedRoute.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (id) {
@@ -390,12 +406,23 @@ export class CouponAddComponent implements OnInit {
         this.couponData = {
           ...createFormData(DEFAULT_FORM),
           ...data,
+          giftItems: data.giftItems || [],
           startDate: this.formatDateTimeLocal(new Date(data.startDate)),
           endDate: this.formatDateTimeLocal(new Date(data.endDate)),
           conditions: data.conditions || null,
           maxDiscountAmount: data.maxDiscountAmount ?? 0,
           code: data.code ?? '',
         };
+
+        if (this.couponData.giftItems) {
+          this.selectedProductIds = this.couponData.giftItems
+            .filter((x) => x.type === 'Product')
+            .map((x) => x.itemId);
+
+          this.selectedComboIds = this.couponData.giftItems
+            .filter((x) => x.type === 'Combo')
+            .map((x) => x.itemId);
+        }
 
         // ✅ Nếu coupon đã có điều kiện (rootGroup đã được build), set lại vào builder
         if (data.conditions) {
@@ -405,6 +432,45 @@ export class CouponAddComponent implements OnInit {
       error: (err) => {
         console.error(err);
         this.toastr.error('Cannot load coupon data', 'Error');
+      },
+    });
+  }
+
+  loadProducts() {
+    this.isLoadingProducts = true;
+    this.productService.getAll({ limit: 1000 }).subscribe({
+      // Giả sử service có hàm này hoặc tương tự
+      next: (res: any) => {
+        // Map dữ liệu tùy theo cấu trúc trả về của API product
+        this.productList = (res.results || []).map((p: any) => ({
+          id: p.id,
+          name: `${p.name} - ${p.basePrice}đ`, // Hiển thị tên kèm giá gốc
+          image: p.image, // Nếu có ảnh
+        }));
+        this.isLoadingProducts = false;
+
+        console.log('productList', this.productList);
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoadingProducts = false;
+      },
+    });
+  }
+
+  loadCombos() {
+    this.isLoadingCombos = true;
+    this.comboService.getAll({ limit: 1000 }).subscribe({
+      next: (res: any) => {
+        this.comboList = (res.results || []).map((c: any) => ({
+          id: c.id,
+          name: `${c.name} - ${c.comboPrice}đ`, // Hiển thị tên + giá
+        }));
+        this.isLoadingCombos = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoadingCombos = false;
       },
     });
   }
@@ -514,6 +580,20 @@ export class CouponAddComponent implements OnInit {
     if (!this.couponData.status) {
       this.toastr.error('Status is required', 'Validation Error');
       return false;
+    }
+
+    if (this.couponData.valueType === 'gift_item') {
+      if (!this.couponData.giftItems || this.couponData.giftItems.length === 0) {
+        this.toastr.error('Vui lòng chọn ít nhất một món quà', 'Validation Error');
+        return false;
+      }
+
+      // Kiểm tra giá âm
+      const invalidPrice = this.couponData.giftItems.some((i) => i.price < 0);
+      if (invalidPrice) {
+        this.toastr.error('Giá bán ưu đãi không được nhỏ hơn 0', 'Validation Error');
+        return false;
+      }
     }
 
     return true;
@@ -658,5 +738,72 @@ export class CouponAddComponent implements OnInit {
       return `${p.name} ${typeLabel}`;
     }
     return 'ID: ' + p;
+  }
+
+  // [NEW] Hàm đồng bộ khi chọn Sản phẩm từ ng-select
+  onProductSelectionChange() {
+    this.syncGiftItems(this.selectedProductIds, 'Product');
+  }
+
+  // [NEW] Hàm đồng bộ khi chọn Combo từ ng-select
+  onComboSelectionChange() {
+    this.syncGiftItems(this.selectedComboIds, 'Combo');
+  }
+
+  // [CORE LOGIC] Đồng bộ danh sách ID chọn với danh sách GiftItems (giữ lại giá đã set)
+  private syncGiftItems(currentIds: string[], type: 'Product' | 'Combo') {
+    const currentItems = this.couponData.giftItems || [];
+
+    // Lọc giữ lại các loại khác
+    const otherTypeItems = currentItems.filter((item) => item.type !== type);
+
+    // Lấy items cũ của loại hiện tại để giữ lại giá (price)
+    const existingItemsOfType = currentItems.filter((item) => item.type === type);
+
+    // Map ID mới -> Object GiftItem
+    const newItemsOfType: CouponGiftItem[] = currentIds.map((id) => {
+      // Vì itemId giờ là string, so sánh trực tiếp ===
+      const existing = existingItemsOfType.find((x) => x.itemId === id);
+
+      if (existing) {
+        return existing; // Giữ nguyên object cũ (đang có giá tiền)
+      }
+
+      // Tạo mới
+      return {
+        itemId: id, // [FIX] Chỉ gán String ID
+        type: type,
+        price: 0,
+      };
+    });
+
+    this.couponData.giftItems = [...otherTypeItems, ...newItemsOfType];
+  }
+
+  // [HELPER] Lấy tên hiển thị cho bảng
+  getItemName(item: CouponGiftItem): string {
+    console.log('item', item);
+
+    if (item.type === 'Product') {
+      const product = this.productList.find((p) => p.id === item.itemId);
+      return product ? product.name : 'Unknown Product';
+    } else {
+      const combo = this.comboList.find((c) => c.id === item.itemId);
+      return combo ? combo.name : 'Unknown Combo';
+    }
+  }
+
+  onTypeChange() {
+    // Reset giá trị để tránh validate sai
+    if (this.couponData.valueType === 'gift_item') {
+      this.couponData.value = 0; // Gift không dùng field này
+      this.couponData.maxDiscountAmount = 0;
+    } else if (this.couponData.valueType === 'fixed_amount') {
+      this.couponData.maxDiscountAmount = 0; // Fix amount thì max discount = chính nó rồi
+      this.couponData.giftItems = []; // Xóa data gift
+    } else {
+      // Percentage
+      this.couponData.giftItems = [];
+    }
   }
 }
