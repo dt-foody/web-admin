@@ -41,6 +41,9 @@ export interface Customer {
   // --- ĐỊA CHỈ ---
   addresses?: CustomerAddress[];
 
+  referralCode?: string;
+  referredBy?: any;
+
   // --- METADATA ---
   lastOrderDate?: string | Date; // Thêm trường này (có trong schema)
 
