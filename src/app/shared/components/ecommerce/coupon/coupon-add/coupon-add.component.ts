@@ -754,26 +754,38 @@ export class CouponAddComponent implements OnInit {
   private syncGiftItems(currentIds: string[], type: 'Product' | 'Combo') {
     const currentItems = this.couponData.giftItems || [];
 
-    // Lọc giữ lại các loại khác
+    // Lọc giữ lại các item thuộc loại khác (ví dụ: đang xử lý Product thì giữ lại Combo)
     const otherTypeItems = currentItems.filter((item) => item.type !== type);
 
-    // Lấy items cũ của loại hiện tại để giữ lại giá (price)
+    // Lấy items cũ của loại hiện tại để giữ lại giá (price) và name đã có
     const existingItemsOfType = currentItems.filter((item) => item.type === type);
 
     // Map ID mới -> Object GiftItem
     const newItemsOfType: CouponGiftItem[] = currentIds.map((id) => {
-      // Vì itemId giờ là string, so sánh trực tiếp ===
+      // Kiểm tra xem item này đã có trong danh sách chưa
       const existing = existingItemsOfType.find((x) => x.itemId === id);
 
       if (existing) {
-        return existing; // Giữ nguyên object cũ (đang có giá tiền)
+        return existing; // Giữ nguyên object cũ (giữ giá tiền và tên cũ)
       }
 
-      // Tạo mới
+      // [NEW LOGIC] Tìm tên để snapshot
+      let name = '';
+      if (type === 'Product') {
+        const found = this.productList.find((p) => p.id === id);
+        // Lưu ý: p.name trong loadProducts của bạn đang là `${p.name} - ${p.basePrice}đ`
+        name = found ? found.name : 'Unknown Product';
+      } else {
+        const found = this.comboList.find((c) => c.id === id);
+        name = found ? found.name : 'Unknown Combo';
+      }
+
+      // Tạo item mới với tên snapshot
       return {
-        itemId: id, // [FIX] Chỉ gán String ID
+        itemId: id,
         type: type,
         price: 0,
+        name: name, // Lưu tên vào đây
       };
     });
 
@@ -782,14 +794,12 @@ export class CouponAddComponent implements OnInit {
 
   // [HELPER] Lấy tên hiển thị cho bảng
   getItemName(item: CouponGiftItem): string {
-    console.log('item', item);
-
     if (item.type === 'Product') {
       const product = this.productList.find((p) => p.id === item.itemId);
-      return product ? product.name : 'Unknown Product';
+      return product ? product.name : item.name || 'Unknown Product';
     } else {
       const combo = this.comboList.find((c) => c.id === item.itemId);
-      return combo ? combo.name : 'Unknown Combo';
+      return combo ? combo.name : item.name || 'Unknown Combo';
     }
   }
 

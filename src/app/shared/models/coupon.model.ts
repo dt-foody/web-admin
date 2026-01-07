@@ -17,6 +17,7 @@ export interface CouponGiftItem {
   itemId: string; // ID của Product hoặc Combo
   type: GiftType; // 'Product' hoặc 'Combo'
   price: number; // Giá bán ưu đãi (0 = Miễn phí)
+  name?: string;
 }
 
 // ===== Interface chính (Coupon) =====
