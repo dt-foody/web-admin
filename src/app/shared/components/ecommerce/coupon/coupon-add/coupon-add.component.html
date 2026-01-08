@@ -258,7 +258,7 @@
                         </tr>
                       </thead>
                       <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @for (item of couponData.giftItems; track item.itemId) {
+                        @for (item of couponData.giftItems; track item.item) {
                           <tr>
                             <td class="px-3 py-2 text-sm text-gray-900 dark:text-white">
                               {{ getItemName(item) }}
@@ -267,12 +267,12 @@
                               <span
                                 class="px-2 py-0.5 rounded text-xs font-medium"
                                 [class]="
-                                  item.type === 'Product'
+                                  item.itemType === 'Product'
                                     ? 'bg-blue-100 text-blue-700'
                                     : 'bg-purple-100 text-purple-700'
                                 "
                               >
-                                {{ item.type }}
+                                {{ item.itemType }}
                               </span>
                             </td>
                             <td class="px-3 py-2">

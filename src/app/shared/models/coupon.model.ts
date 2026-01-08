@@ -14,8 +14,8 @@ export type CouponStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'EXPIRED';
 export type GiftType = 'Product' | 'Combo';
 
 export interface CouponGiftItem {
-  itemId: string; // ID của Product hoặc Combo
-  type: GiftType; // 'Product' hoặc 'Combo'
+  item: string; // ID của Product hoặc Combo
+  itemType: GiftType; // 'Product' hoặc 'Combo'
   price: number; // Giá bán ưu đãi (0 = Miễn phí)
   name?: string;
 }

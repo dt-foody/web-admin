@@ -416,12 +416,12 @@ export class CouponAddComponent implements OnInit {
 
         if (this.couponData.giftItems) {
           this.selectedProductIds = this.couponData.giftItems
-            .filter((x) => x.type === 'Product')
-            .map((x) => x.itemId);
+            .filter((x) => x.itemType === 'Product')
+            .map((x) => x.item);
 
           this.selectedComboIds = this.couponData.giftItems
-            .filter((x) => x.type === 'Combo')
-            .map((x) => x.itemId);
+            .filter((x) => x.itemType === 'Combo')
+            .map((x) => x.item);
         }
 
         // ✅ Nếu coupon đã có điều kiện (rootGroup đã được build), set lại vào builder
@@ -751,19 +751,19 @@ export class CouponAddComponent implements OnInit {
   }
 
   // [CORE LOGIC] Đồng bộ danh sách ID chọn với danh sách GiftItems (giữ lại giá đã set)
-  private syncGiftItems(currentIds: string[], type: 'Product' | 'Combo') {
+  private syncGiftItems(currentIds: string[], itemType: 'Product' | 'Combo') {
     const currentItems = this.couponData.giftItems || [];
 
     // Lọc giữ lại các item thuộc loại khác (ví dụ: đang xử lý Product thì giữ lại Combo)
-    const otherTypeItems = currentItems.filter((item) => item.type !== type);
+    const otherTypeItems = currentItems.filter((item) => item.itemType !== itemType);
 
     // Lấy items cũ của loại hiện tại để giữ lại giá (price) và name đã có
-    const existingItemsOfType = currentItems.filter((item) => item.type === type);
+    const existingItemsOfType = currentItems.filter((item) => item.itemType === itemType);
 
     // Map ID mới -> Object GiftItem
     const newItemsOfType: CouponGiftItem[] = currentIds.map((id) => {
       // Kiểm tra xem item này đã có trong danh sách chưa
-      const existing = existingItemsOfType.find((x) => x.itemId === id);
+      const existing = existingItemsOfType.find((x) => x.item === id);
 
       if (existing) {
         return existing; // Giữ nguyên object cũ (giữ giá tiền và tên cũ)
@@ -771,7 +771,7 @@ export class CouponAddComponent implements OnInit {
 
       // [NEW LOGIC] Tìm tên để snapshot
       let name = '';
-      if (type === 'Product') {
+      if (itemType === 'Product') {
         const found = this.productList.find((p) => p.id === id);
         // Lưu ý: p.name trong loadProducts của bạn đang là `${p.name} - ${p.basePrice}đ`
         name = found ? found.name : 'Unknown Product';
@@ -782,8 +782,8 @@ export class CouponAddComponent implements OnInit {
 
       // Tạo item mới với tên snapshot
       return {
-        itemId: id,
-        type: type,
+        item: id,
+        itemType: itemType,
         price: 0,
         name: name, // Lưu tên vào đây
       };
@@ -794,11 +794,11 @@ export class CouponAddComponent implements OnInit {
 
   // [HELPER] Lấy tên hiển thị cho bảng
   getItemName(item: CouponGiftItem): string {
-    if (item.type === 'Product') {
-      const product = this.productList.find((p) => p.id === item.itemId);
+    if (item.itemType === 'Product') {
+      const product = this.productList.find((p) => p.id === item.item);
       return product ? product.name : item.name || 'Unknown Product';
     } else {
-      const combo = this.comboList.find((c) => c.id === item.itemId);
+      const combo = this.comboList.find((c) => c.id === item.item);
       return combo ? combo.name : item.name || 'Unknown Combo';
     }
   }
