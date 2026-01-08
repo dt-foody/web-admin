@@ -53,7 +53,8 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
     { value: 'all', label: 'Tất cả loại' },
     { value: 'discount_code', label: 'Mã giảm giá' },
     { value: 'freeship', label: 'Miễn phí vận chuyển' },
-    { value: 'gift', label: 'Quà tặng' },
+    { value: 'referral', label: 'Giới thiệu' },
+    // { value: 'gift', label: 'Quà tặng' },
   ];
 
   statusOptions = [
@@ -246,5 +247,26 @@ export class CouponListComponent extends BaseListComponent<Coupon> implements On
         });
       }
     });
+  }
+
+  getGiftNames(coupon: Coupon): string {
+    if (!coupon.giftItems || coupon.giftItems.length === 0) {
+      return 'Chưa chọn quà';
+    }
+
+    // Lấy tên món đầu tiên (nếu backend chưa populate name thì hiển thị ID hoặc text fallback)
+    const firstItemName =
+      coupon.giftItems[0].name || 'Món quà #' + coupon.giftItems[0].name || 'Món quà';
+
+    if (coupon.giftItems.length > 1) {
+      return `${firstItemName} (+${coupon.giftItems.length - 1} khác)`;
+    }
+
+    return firstItemName;
+  }
+
+  getFullGiftNames(coupon: Coupon): string {
+    if (!coupon.giftItems || coupon.giftItems.length === 0) return '';
+    return coupon.giftItems.map((item) => item.name || item.item).join(', ');
   }
 }
