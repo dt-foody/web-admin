@@ -44,6 +44,8 @@ export interface Customer {
   referralCode?: string;
   referredBy?: any;
 
+  referrerSuccessfulInvites?: number;
+
   // --- METADATA ---
   lastOrderDate?: string | Date; // Thêm trường này (có trong schema)
 
