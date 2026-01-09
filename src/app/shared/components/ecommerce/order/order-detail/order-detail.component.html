@@ -301,18 +301,43 @@
                   formatCurrency(order?.totalAmount)
                 }}</span>
               </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Giảm giá</span>
-                <span class="text-green-600 dark:text-green-400"
-                  >-{{ formatCurrency(order?.discountAmount) }}</span
-                >
-              </div>
+
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600 dark:text-gray-400">Phí vận chuyển</span>
                 <span class="text-gray-900 dark:text-white">{{
                   formatCurrency(order?.shippingFee)
                 }}</span>
               </div>
+
+              @if (order.surchargeAmount > 0) {
+                <div class="flex items-center justify-between text-sm">
+                  <div class="flex flex-col">
+                    <span class="text-gray-600 dark:text-gray-400">Phụ thu</span>
+
+                    @if (order.surcharges && order.surcharges.length > 0) {
+                      <div class="mt-1 flex flex-col gap-0.5">
+                        @for (surcharge of order.surcharges; track surcharge.id) {
+                          <span class="text-xs text-gray-400 italic">
+                            + {{ surcharge.name }}: {{ formatCurrency(surcharge.cost) }}
+                          </span>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <span class="text-sm text-gray-900 dark:text-white">
+                    {{ formatCurrency(order.surchargeAmount) }}
+                  </span>
+                </div>
+              }
+
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Giảm giá</span>
+                <span class="text-green-600 dark:text-green-400"
+                  >-{{ formatCurrency(order?.discountAmount) }}</span
+                >
+              </div>
+
               <div
                 class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700"
               >
