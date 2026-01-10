@@ -5,6 +5,7 @@ export interface Category {
   image?: string; // URL hình ảnh
   isActive: boolean;
   priority?: number;
+  showInMenu?: boolean;
   parent?: any; // ID của category cha
   ancestors?: any[];
   createdBy: any; // ID của user tạo

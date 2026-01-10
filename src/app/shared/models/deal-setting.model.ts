@@ -17,4 +17,7 @@ export interface DealSetting {
   //
   homeDelivery: DealOptionConfig; // Giao hàng tận nơi
   storePickup: DealOptionConfig; // Đến lấy tại cửa hàng
+
+  flashSale: DealOptionConfig;
+  combo: DealOptionConfig;
 }

@@ -1,6 +1,8 @@
 <div class="space-y-3">
   <!-- Section: Thông tin Category -->
-  <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+  <div
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+  >
     <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
       <h2 class="text-lg font-medium text-gray-800 dark:text-white">Thông tin Danh mục</h2>
     </div>
@@ -11,7 +13,10 @@
           <div class="lg:col-span-3">
             <app-label>Ảnh Danh mục</app-label>
             <div class="mt-2">
-              <app-image-upload [imagePreview]="imagePreview" (fileSelected)="onFileSelected($event)">
+              <app-image-upload
+                [imagePreview]="imagePreview"
+                (fileSelected)="onFileSelected($event)"
+              >
               </app-image-upload>
             </div>
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Đề xuất: 400x400px</p>
@@ -24,7 +29,11 @@
                 <app-label for="category-name">
                   Tên danh mục <span class="text-red-500">*</span>
                 </app-label>
-                <app-input-field id="category-name" placeholder="Nhập tên danh mục" [(value)]="categoryForm.name">
+                <app-input-field
+                  id="category-name"
+                  placeholder="Nhập tên danh mục"
+                  [(value)]="categoryForm.name"
+                >
                 </app-input-field>
               </div>
 
@@ -37,21 +46,41 @@
                   </ng-select>
                 </div> -->
 
-                <div>
-                  <div class="mb-2 inline-block text-sm font-semibold text-gray-700 dark:text-gray-400">
-                    Trạng thái
-                  </div>
-                  <div class="flex items-center h-10">
-                    <app-switch label="Kích hoạt" [(value)]="categoryForm.isActive"> </app-switch>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <div
+                      class="mb-2 inline-block text-sm font-semibold text-gray-700 dark:text-gray-400"
+                    >
+                      Trạng thái
+                    </div>
+                    <div class="flex flex-col gap-3">
+                      <div class="flex items-center h-10">
+                        <app-switch
+                          label="Kích hoạt"
+                          [(value)]="categoryForm.isActive"
+                        ></app-switch>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div>
                 <app-label for="description">Mô tả</app-label>
-                <app-text-area id="description" [rows]="4" placeholder="Nhập mô tả danh mục (tùy chọn)"
-                  [(value)]="categoryForm.description">
+                <app-text-area
+                  id="description"
+                  [rows]="4"
+                  placeholder="Nhập mô tả danh mục (tùy chọn)"
+                  [(value)]="categoryForm.description"
+                >
                 </app-text-area>
+
+                <div class="flex items-center h-10">
+                  <app-switch
+                    label="Hiển thị trên Menu"
+                    [(value)]="categoryForm.showInMenu"
+                  ></app-switch>
+                </div>
               </div>
             </div>
           </div>

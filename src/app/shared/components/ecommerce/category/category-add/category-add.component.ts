@@ -22,6 +22,7 @@ interface CategoryFormData {
   image: string;
   isActive: boolean;
   parent: string | null;
+  showInMenu: boolean;
 }
 
 @Component({
@@ -47,7 +48,8 @@ export class CategoryAddComponent implements OnInit {
     name: '',
     description: '',
     image: '',
-    isActive: true,
+    isActive: false,
+    showInMenu: false,
     parent: null,
   };
 
@@ -84,7 +86,6 @@ export class CategoryAddComponent implements OnInit {
       if (data?.results?.length) {
         data.results = data.results.filter((el) => el.id !== this.categoryId);
         this.parentCategories = buildTreeOptions(data.results);
-        console.log('parentCategories', this.parentCategories);
       }
     });
   }
@@ -98,6 +99,7 @@ export class CategoryAddComponent implements OnInit {
           image: data.image || '',
           isActive: data.isActive,
           parent: data.parent || null,
+          showInMenu: data.showInMenu !== undefined ? data.showInMenu : true,
         };
         if (data.image) {
           this.imagePreview = `${environment.urlBaseImage}${data.image}`;
@@ -156,6 +158,7 @@ export class CategoryAddComponent implements OnInit {
       image: this.categoryForm.image || undefined,
       isActive: this.categoryForm.isActive,
       parent: this.categoryForm.parent,
+      showInMenu: this.categoryForm.showInMenu,
     };
 
     const obs =

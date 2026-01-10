@@ -46,6 +46,8 @@ export class DealSettingComponent implements OnInit {
         bankTransfer: this.createOptionGroup(false),
         homeDelivery: this.createOptionGroup(false),
         storePickup: this.createOptionGroup(false),
+        flashSale: this.createOptionGroup(false),
+        combo: this.createOptionGroup(true),
       });
     }
 
