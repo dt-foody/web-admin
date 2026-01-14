@@ -14,6 +14,8 @@ import { HasPermissionDirective } from '../../../../directives/has-permission.di
 import { CheckboxComponent } from '../../../form/input/checkbox.component';
 import { DndModule, DndDropEvent } from 'ngx-drag-drop';
 import { Subscription, interval } from 'rxjs';
+import flatpickr from 'flatpickr';
+import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
 
 @Component({
   selector: 'app-order-list',
@@ -35,7 +37,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
   @ViewChild('confirmDelete') confirmDeleteTpl!: TemplateRef<any>;
   @ViewChild('filterRef') filterRef!: ElementRef;
   @ViewChild('confirmDeleteMany') confirmDeleteManyTpl!: TemplateRef<any>;
-
+  @ViewChild('deliveryDateInput') deliveryDateInput!: ElementRef;
   viewMode: 'table' | 'kanban' = 'table';
   itemToDelete: Order | null = null;
 
@@ -59,6 +61,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     { value: 'immediate', label: 'Giao ngay' },
     { value: 'scheduled', label: 'Giao hàng đặt lịch' },
   ];
+  deliveryDatePicker!: FlatpickrInstance;
 
   get kanbanColumns() {
     // Loại trừ 'unfinished' khỏi các cột Kanban để tránh hiển thị cột tổng hợp thừa
@@ -105,6 +108,9 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
     this.query.shippingStatus = '';
     this.query.deliveryType = '';
 
+    this.query.deliveryFrom = '';
+    this.query.deliveryTo = '';
+
     this.query.sort = { key: 'priorityTime', asc: true };
 
     const savedMode = localStorage.getItem('orderViewMode');
@@ -142,6 +148,35 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
 
   toggleFilters() {
     this.showFilters = !this.showFilters;
+
+    if (this.showFilters) {
+      setTimeout(() => {
+        if (this.deliveryDateInput && !this.deliveryDatePicker) {
+          this.deliveryDatePicker = flatpickr(this.deliveryDateInput.nativeElement, {
+            mode: 'range',
+            dateFormat: 'Y-m-d',
+            allowInput: true,
+            onChange: (selectedDates) => {
+              if (selectedDates.length === 2) {
+                this.query.deliveryFrom = selectedDates[0].toISOString();
+
+                const toDate = new Date(selectedDates[1]);
+                toDate.setHours(23, 59, 59, 999);
+                this.query.deliveryTo = toDate.toISOString();
+
+                this.onFilterChange();
+              }
+            },
+          });
+        }
+      });
+    } else {
+      if (this.deliveryDatePicker) {
+        this.deliveryDatePicker.clear();
+      }
+      this.query.deliveryFrom = '';
+      this.query.deliveryTo = '';
+    }
   }
 
   onSortOptionChange() {
@@ -189,6 +224,16 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
       params.deliveryType = this.query.deliveryType;
     }
 
+    const { deliveryFrom, deliveryTo } = this.query;
+    if (deliveryFrom && deliveryTo) {
+      params.deliveryFrom = deliveryFrom;
+      params.deliveryTo = deliveryTo;
+    }
+
+    if ((deliveryFrom && !deliveryTo) || (!deliveryFrom && deliveryTo)) {
+      return;
+    }
+
     this.orderService.getAll(params).subscribe({
       next: (data) => {
         this.dataSources = data.results;
@@ -197,6 +242,13 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
       },
       error: (error) => {},
     });
+  }
+
+  resetDeliveryDate() {
+    this.query.deliveryFrom = null;
+    this.query.deliveryTo = null;
+    this.deliveryDatePicker.clear();
+    this.onFilterChange();
   }
 
   setViewMode(mode: 'table' | 'kanban') {

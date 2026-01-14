@@ -28,7 +28,8 @@
             "styles": [
               "src/styles.css",
               "node_modules/ngx-toastr/toastr.css",
-              "node_modules/@ng-select/ng-select/themes/default.theme.css"
+              "node_modules/@ng-select/ng-select/themes/default.theme.css",
+              "node_modules/flatpickr/dist/flatpickr.min.css"
             ],
             "scripts": ["node_modules/apexcharts/dist/apexcharts.min.js"]
           },

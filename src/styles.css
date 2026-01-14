@@ -908,3 +908,7 @@ label.required::after {
   @apply !text-gray-400;
   top: 10px !important;
 }
+
+.flatpickr-calendar {
+  z-index: 9999 !important;
+}
