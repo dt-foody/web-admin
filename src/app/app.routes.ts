@@ -73,6 +73,7 @@ import { SurchargeListPageComponent } from './pages/settings/surcharge/list/list
 import { SurchargeEditPageComponent } from './pages/settings/surcharge/edit/edit.component';
 import { SurchargeAddPageComponent } from './pages/settings/surcharge/add/add.component';
 import { DealSettingPageComponent } from './pages/settings/deal/config/config.component';
+import { LayoutSettingPageComponent } from './pages/settings/layout/config/config.component';
 
 export const routes: Routes = [
   {
@@ -515,6 +516,19 @@ export const routes: Routes = [
                 title: 'Cấu hình Đơn hàng',
                 canActivate: [PermissionGuard],
                 data: { permissions: ['dealSettings.read'] },
+              },
+            ],
+          },
+          {
+            path: 'layout',
+            children: [
+              {
+                path: '',
+                component: LayoutSettingPageComponent,
+                pathMatch: 'full',
+                title: 'Cấu hình Giao diện',
+                canActivate: [PermissionGuard],
+                data: { permissions: ['layoutSettings.read'] },
               },
             ],
           },

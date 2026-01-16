@@ -1,0 +1,62 @@
+<form [formGroup]="form" (ngSubmit)="onSave()" class="flex flex-col gap-4 pb-10">
+  <app-component-card title="Cấu hình Header (Web User)">
+    <div *ngIf="isLoading" class="py-10 text-center text-gray-500">Đang tải dữ liệu...</div>
+
+    <div *ngIf="!isLoading" class="flex flex-col gap-8" formArrayName="items">
+      <ng-container
+        *ngFor="let itemGroup of itemsFormArray.controls; let i = index"
+        [formGroupName]="i"
+      >
+        <div class="flex flex-col gap-4">
+          <app-switch
+            [label]="'Hiển thị mục: ' + itemGroup.get('title')?.value"
+            [value]="itemGroup.get('enable')?.value"
+            (valueChange)="itemGroup.get('enable')?.setValue($event)"
+          >
+          </app-switch>
+
+          <div
+            class="ml-12 border-l-2 border-stroke pl-6 dark:border-strokedark flex flex-col gap-5 transition-all duration-300"
+            [class.opacity-50]="!itemGroup.get('enable')?.value"
+          >
+            <div class="flex flex-col gap-2">
+              <div class="text-sm text-black dark:text-white">
+                Mô tả (Description)
+                <span class="text-xs text-gray-500 font-normal ml-1">- Hiển thị dưới tiêu đề</span>
+              </div>
+              <app-text-area
+                [value]="itemGroup.get('description')?.value"
+                (valueChange)="itemGroup.get('description')?.setValue($event)"
+                [placeholder]="'Nhập mô tả cho ' + itemGroup.get('title')?.value + '...'"
+                [rows]="3"
+                [disabled]="!itemGroup.get('enable')?.value"
+              >
+              </app-text-area>
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngIf="i < itemsFormArray.length - 1"
+          class="border-b border-stroke dark:border-strokedark"
+        ></div>
+      </ng-container>
+    </div>
+  </app-component-card>
+
+  <div class="flex justify-end gap-3 mt-4">
+    <app-button type="button" size="sm" (click)="loadData()" [disabled]="isSaving">
+      Hủy bỏ
+    </app-button>
+
+    <app-button
+      type="submit"
+      variant="primary"
+      size="sm"
+      [loading]="isSaving"
+      *appHasPermission="'layoutSettings.update'"
+    >
+      Lưu cấu hình
+    </app-button>
+  </div>
+</form>
