@@ -132,7 +132,7 @@
 
             <div class="text-sm flex items-center gap-2">
               <!-- Giao ngay -->
-              <ng-container *ngIf="order.deliveryTime?.option === 'immediate'; else scheduled">
+              <ng-container *ngIf="order?.deliveryTime?.option === 'immediate'; else scheduled">
                 <span
                   class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
                 >
@@ -158,13 +158,13 @@
                 <span class="text-gray-600 dark:text-gray-300">
                   ·
                   <span class="font-medium text-gray-900 dark:text-white">
-                    {{ order.deliveryTime?.scheduledAt | date: 'dd/MM/yyyy' }}
+                    {{ order?.deliveryTime?.scheduledAt | date: 'dd/MM/yyyy' }}
                   </span>
 
-                  <ng-container *ngIf="order.deliveryTime?.timeSlot">
+                  <ng-container *ngIf="order?.deliveryTime?.timeSlot">
                     ·
                     <span class="font-medium text-gray-900 dark:text-white">
-                      {{ order.deliveryTime.timeSlot }}
+                      {{ order?.deliveryTime.timeSlot }}
                     </span>
                   </ng-container>
                 </span>
@@ -309,14 +309,14 @@
                 }}</span>
               </div>
 
-              @if (order.surchargeAmount > 0) {
+              @if (order?.surchargeAmount > 0) {
                 <div class="flex items-center justify-between text-sm">
                   <div class="flex flex-col">
                     <span class="text-gray-600 dark:text-gray-400">Phụ thu</span>
 
-                    @if (order.surcharges && order.surcharges.length > 0) {
+                    @if (order?.surcharges && order?.surcharges.length > 0) {
                       <div class="mt-1 flex flex-col gap-0.5">
-                        @for (surcharge of order.surcharges; track surcharge.id) {
+                        @for (surcharge of order?.surcharges; track surcharge.id) {
                           <span class="text-xs text-gray-400 italic">
                             + {{ surcharge.name }}: {{ formatCurrency(surcharge.cost) }}
                           </span>
@@ -326,7 +326,7 @@
                   </div>
 
                   <span class="text-sm text-gray-900 dark:text-white">
-                    {{ formatCurrency(order.surchargeAmount) }}
+                    {{ formatCurrency(order?.surchargeAmount) }}
                   </span>
                 </div>
               }
@@ -569,7 +569,7 @@
             </ng-container>
 
             <ng-container *ngIf="!order?.shipping && order?.profile?.addresses?.length">
-              <ng-container *ngIf="order.profile.addresses[0] as defAddr">
+              <ng-container *ngIf="order?.profile.addresses[0] as defAddr">
                 <div class="mb-2">
                   <span
                     class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 px-2 py-0.5 rounded"
@@ -633,6 +633,81 @@
             </p>
           </div>
         </div> -->
+
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm flex flex-col max-h-[600px]"
+        >
+          <div
+            class="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 sticky top-0 z-10"
+          >
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm flex items-center gap-2">
+              <svg
+                class="w-4 h-4 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Lịch sử hoạt động
+            </h3>
+            <span
+              *ngIf="auditLogs.length > 0"
+              class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-bold px-2 py-0.5 rounded-full"
+            >
+              {{ auditLogs.length }}
+            </span>
+          </div>
+
+          <div class="p-5 overflow-y-auto custom-scrollbar flex-1 relative">
+            <div *ngIf="isLoadingLogs && auditLogs.length === 0" class="flex justify-center py-8">
+              <svg
+                class="animate-spin h-6 w-6 text-indigo-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            </div>
+
+            <app-order-history *ngIf="auditLogs.length > 0" [logs]="auditLogs"></app-order-history>
+
+            <div
+              *ngIf="!isLoadingLogs && auditLogs.length === 0"
+              class="text-center py-8 text-gray-400 text-sm"
+            >
+              Chưa có lịch sử ghi nhận
+            </div>
+
+            <div *ngIf="hasMoreLogs" class="mt-4 text-center">
+              <button
+                (click)="loadAuditLogs()"
+                [disabled]="isLoadingLogs"
+                class="text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:opacity-50 transition-colors"
+              >
+                {{ isLoadingLogs ? 'Đang tải...' : 'Xem cũ hơn' }}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

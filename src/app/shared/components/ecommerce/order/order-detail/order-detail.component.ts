@@ -11,6 +11,10 @@ import { OrderService } from '../../../../services/api/order.service';
 import { ImageUrlPipe } from '../../../../pipe/image-url.pipe';
 import { ImageFallbackDirective } from '../../../../directives/app-image-fallback.directive';
 import { DialogService } from '@ngneat/dialog';
+import { Observable } from 'rxjs';
+import { AuditLog } from '../../../../models/audit-log.model';
+import { AuditLogService } from '../../../../services/api/audit-log.service';
+import { OrderHistoryComponent } from '../../../transactions/order-history/order-history.component';
 
 @Component({
   selector: 'app-order-detail',
@@ -24,6 +28,7 @@ import { DialogService } from '@ngneat/dialog';
     ButtonComponent,
     ImageUrlPipe,
     ImageFallbackDirective,
+    OrderHistoryComponent,
   ],
   templateUrl: './order-detail.component.html',
   styles: ``,
@@ -37,6 +42,13 @@ export class OrderDetailComponent implements OnInit {
   public orderId: any = '';
   public isLoading: boolean = true;
   public profileData: any = null;
+
+  // --- [Biến cho Audit Log] ---
+  auditLogs: AuditLog[] = [];
+  logsPage = 1;
+  logsLimit = 5; // Load mỗi lần 5 log
+  hasMoreLogs = true;
+  isLoadingLogs = false;
 
   // Các mảng trạng thái
   public orderStatuses = [
@@ -70,6 +82,7 @@ export class OrderDetailComponent implements OnInit {
     private toastr: ToastrService,
     private route: ActivatedRoute,
     private dialog: DialogService,
+    private auditLogService: AuditLogService,
   ) {}
 
   ngOnInit() {
@@ -79,6 +92,7 @@ export class OrderDetailComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.orderId = params['id'];
       this.loadOrderDetail();
+      this.loadAuditLogs();
     });
   }
 
@@ -282,6 +296,38 @@ export class OrderDetailComponent implements OnInit {
         this.toastr.error('Lỗi khi cập nhật thanh toán');
         console.error('Payment update error:', error);
         this.isLoading = false;
+      },
+    });
+  }
+
+  loadAuditLogs() {
+    if (this.isLoadingLogs || !this.hasMoreLogs) return;
+
+    this.isLoadingLogs = true;
+
+    const query = {
+      targetModel: 'Order',
+      target: this.orderId,
+      page: this.logsPage,
+      limit: this.logsLimit,
+      sortBy: 'createdAt:desc',
+      populate: 'performer:name,email',
+    };
+
+    // Gọi hàm getAll có sẵn từ BaseService
+    this.auditLogService.getAll(query).subscribe({
+      next: (res) => {
+        // [QUAN TRỌNG] Cộng dồn mảng cũ + mảng mới
+        this.auditLogs = [...this.auditLogs, ...res.results];
+
+        // Kiểm tra xem còn trang sau không
+        this.hasMoreLogs = this.logsPage < res.totalPages;
+        this.logsPage++; // Tăng page cho lần gọi sau
+
+        this.isLoadingLogs = false;
+      },
+      error: () => {
+        this.isLoadingLogs = false;
       },
     });
   }
