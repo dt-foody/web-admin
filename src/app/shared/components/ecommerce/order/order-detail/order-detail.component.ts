@@ -92,7 +92,6 @@ export class OrderDetailComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.orderId = params['id'];
       this.loadOrderDetail();
-      this.loadAuditLogs();
     });
   }
 
@@ -106,6 +105,8 @@ export class OrderDetailComponent implements OnInit {
 
         this.updateOrderStatusIndex();
         this.isLoading = false;
+
+        this.loadAuditLogs(true); // Load lại log khi load chi tiết đơn hàng
       },
       error: (error) => {
         this.toastr.error('Không thể tải thông tin đơn hàng');
@@ -300,8 +301,15 @@ export class OrderDetailComponent implements OnInit {
     });
   }
 
-  loadAuditLogs() {
+  loadAuditLogs(isRefresh: boolean = false) {
     if (this.isLoadingLogs || !this.hasMoreLogs) return;
+
+    if (isRefresh) {
+      // Nếu là refresh, reset các biến
+      this.auditLogs = [];
+      this.logsPage = 1;
+      this.hasMoreLogs = true;
+    }
 
     this.isLoadingLogs = true;
 
