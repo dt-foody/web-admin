@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { SocketService } from '../socket.service';
 
-// Định nghĩa Interface
 export interface Notification {
   id: string;
   title: string;
   content: string;
   type: string; // 'ORDER_NEW', 'SYSTEM', etc.
   isRead: boolean;
+  readAt?: string | null;
   createdAt: string;
   referenceId?: string;
   referenceModel?: string;
@@ -21,7 +21,6 @@ export interface NotificationResponse {
   page: number;
   totalPages: number;
   totalResults: number;
-  // ...
 }
 
 @Injectable({
@@ -31,29 +30,41 @@ export class NotificationService {
   private baseUrl = `${environment.apiUrl}/notifications`;
 
   // --- STATE MANAGEMENT ---
-  // Lưu trữ danh sách thông báo để chia sẻ giữa các component
   private _notifications = new BehaviorSubject<Notification[]>([]);
   public notifications$ = this._notifications.asObservable();
 
   private _unreadCount = new BehaviorSubject<number>(0);
   public unreadCount$ = this._unreadCount.asObservable();
 
-  // Pagination State
   private currentPage = 1;
   private totalPages = 1;
   private isInitialized = false;
   private isLoading = false;
 
+  // [NEW] Cấu hình âm thanh
+  public isSoundEnabled = true;
+
   constructor(
     private http: HttpClient,
     private socketService: SocketService,
   ) {
-    // Tự động lắng nghe socket khi Service được khởi tạo (Singleton)
+    // [NEW] Khởi tạo setting từ localStorage
+    this.initSoundSetting();
     this.initSocket();
   }
 
+  // --- LOGIC SETTINGS ---
+  private initSoundSetting() {
+    const stored = localStorage.getItem('notification_sound_enabled');
+    this.isSoundEnabled = stored !== null ? JSON.parse(stored) : true;
+  }
+
+  toggleSound(enabled: boolean) {
+    this.isSoundEnabled = enabled;
+    localStorage.setItem('notification_sound_enabled', JSON.stringify(enabled));
+  }
+
   // --- LOGIC KHỞI TẠO ---
-  // Gọi hàm này từ Component. Nó sẽ chỉ fetch dữ liệu nếu chưa có.
   init() {
     if (!this.isInitialized) {
       this.fetchNotifications(1);
@@ -62,15 +73,13 @@ export class NotificationService {
     }
   }
 
-  // Làm mới dữ liệu (Pull to refresh hoặc khi có sự kiện lớn)
   refresh() {
     this.currentPage = 1;
     this.fetchNotifications(1);
     this.fetchUnreadCount();
   }
 
-  // --- API CALLS & STATE UPDATE ---
-
+  // --- API CALLS ---
   fetchNotifications(page: number) {
     if (this.isLoading) return;
     this.isLoading = true;
@@ -87,10 +96,8 @@ export class NotificationService {
         this.totalPages = res.totalPages;
 
         if (page === 1) {
-          // Trang 1: Gán mới hoàn toàn
           this._notifications.next(res.results);
         } else {
-          // Trang > 1: Nối thêm vào danh sách cũ (Load more)
           const current = this._notifications.value;
           this._notifications.next([...current, ...res.results]);
         }
@@ -113,21 +120,14 @@ export class NotificationService {
   }
 
   // --- ACTIONS ---
-
   markAsRead(item: Notification) {
-    // Optimistic Update: Cập nhật UI ngay lập tức
     if (!item.isRead) {
       item.isRead = true;
       const currentCount = this._unreadCount.value;
       this._unreadCount.next(Math.max(0, currentCount - 1));
 
-      // Notify Angular change detection if needed by updating reference (optional)
-      // this._notifications.next([...this._notifications.value]);
-
-      // Gọi API background
       this.http.patch(`${this.baseUrl}/${item.id}/read`, {}).subscribe({
         error: () => {
-          // Revert nếu lỗi (ít khi xảy ra)
           item.isRead = false;
           this._unreadCount.next(currentCount);
         },
@@ -136,17 +136,15 @@ export class NotificationService {
   }
 
   markAllAsRead() {
-    // Optimistic Update
     const currentList = this._notifications.value;
     currentList.forEach((n) => (n.isRead = true));
-    this._notifications.next([...currentList]); // Trigger update UI
+    this._notifications.next([...currentList]);
     this._unreadCount.next(0);
 
     this.http.patch(`${this.baseUrl}/read-all`, {}).subscribe();
   }
 
   // --- REALTIME SOCKET ---
-
   private initSocket() {
     this.socketService.connect();
     this.socketService.on('notification_received').subscribe((data: any) => {
@@ -161,23 +159,23 @@ export class NotificationService {
       isRead: false,
     };
 
-    // Thêm vào đầu danh sách hiện tại
     const current = this._notifications.value;
     this._notifications.next([newNotif, ...current]);
-
-    // Tăng số lượng chưa đọc
     this._unreadCount.next(this._unreadCount.value + 1);
 
-    // Phát âm thanh
+    // [UPDATED] Check setting trước khi phát
     this.playNotificationSound();
   }
 
   private playNotificationSound() {
-    const audio = new Audio('assets/sounds/notification.mp3');
-    audio.play().catch((err) => console.error('Audio error', err));
+    if (!this.isSoundEnabled) return;
+
+    // Đường dẫn file trong assets
+    const audio = new Audio('/sounds/notification.mp3');
+    audio.load(); // Preload để tránh delay
+    audio.play().catch((err) => console.error('Audio play error:', err));
   }
 
-  // Helper getter để component biết còn trang để load không
   get hasMorePages(): boolean {
     return this.currentPage < this.totalPages;
   }

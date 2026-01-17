@@ -35,29 +35,28 @@ export class NotificationDropdownComponent implements OnInit {
     this.isOpen = !this.isOpen;
   }
 
-  /**
-   * Hành động 1: Chỉ đánh dấu là đã đọc (khi click vào vùng trống của thông báo)
-   */
+  // [NEW] Hàm xử lý bật tắt âm thanh
+  toggleSound(event: Event) {
+    event.stopPropagation(); // Ngăn dropdown đóng lại
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.notificationService.toggleSound(isChecked);
+  }
+
   onMarkAsReadOnly(item: Notification) {
     if (!item.isRead) {
       this.notificationService.markAsRead(item);
     }
-    // Không đóng dropdown, không navigate
   }
 
-  /**
-   * Hành động 2: Chuyển tới trang chi tiết (khi click vào icon con mắt)
-   */
   onNavigateToOrder(event: Event, item: Notification) {
-    event.stopPropagation(); // Ngăn chặn sự kiện click lan ra ngoài (để tránh gọi hàm onMarkAsReadOnly nếu không muốn conflict logic)
+    event.stopPropagation();
 
-    // Tùy chọn: Có thể mark as read luôn khi chuyển trang nếu muốn
     if (!item.isRead) {
       this.notificationService.markAsRead(item);
     }
 
     if (item.type === 'ORDER_NEW' && item.referenceId) {
-      this.isOpen = false; // Đóng dropdown
+      this.isOpen = false;
       this.router.navigate(['/order/detail', item.referenceId]);
     }
   }

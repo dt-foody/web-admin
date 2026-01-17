@@ -33,7 +33,60 @@
     <div
       class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700"
     >
-      <h3 class="font-semibold text-gray-800 dark:text-white">Thông báo</h3>
+      <div class="flex items-center gap-3">
+        <h3 class="font-semibold text-gray-800 dark:text-white">Thông báo</h3>
+
+        <label
+          class="inline-flex items-center cursor-pointer select-none"
+          title="Bật/Tắt âm thanh"
+          (click)="$event.stopPropagation()"
+        >
+          <input
+            type="checkbox"
+            class="sr-only peer"
+            [checked]="notificationService.isSoundEnabled"
+            (change)="toggleSound($event)"
+          />
+          <div
+            class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+          ></div>
+
+          <span class="ms-2 text-gray-400 dark:text-gray-500">
+            <svg
+              *ngIf="notificationService.isSoundEnabled"
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            <svg
+              *ngIf="!notificationService.isSoundEnabled"
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+          </span>
+        </label>
+      </div>
+
       <button
         *ngIf="(unreadCount$ | async)! > 0"
         (click)="onMarkAllRead($event)"
@@ -103,16 +156,13 @@
               <p class="text-xs text-gray-500 mt-1 line-clamp-2 dark:text-gray-400">
                 {{ item.content }}
               </p>
-              <p class="text-[10px] text-gray-400 mt-1">
-                {{ formatTime(item.createdAt) }}
-              </p>
+              <p class="text-[10px] text-gray-400 mt-1">{{ formatTime(item.createdAt) }}</p>
             </div>
 
             <div class="flex flex-col items-end justify-between py-1">
               <div class="h-2 w-2">
                 <span *ngIf="!item.isRead" class="block w-2 h-2 bg-blue-500 rounded-full"></span>
               </div>
-
               <button
                 *ngIf="item.type === 'ORDER_NEW'"
                 (click)="onNavigateToOrder($event, item)"
