@@ -6,6 +6,7 @@ import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { tap, catchError, shareReplay } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
+import { SocketService } from '../socket.service';
 
 // Định nghĩa cấu trúc trả về của API để code chặt chẽ hơn
 export interface AuthResponse {

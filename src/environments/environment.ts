@@ -4,4 +4,5 @@ export const environment = {
   // urlBaseImage: 'http://localhost:3000',
   urlBaseImage: 'http://localhost:3000',
   apiUrl: 'http://localhost:3000/v1/admin',
+  socketUrl: 'http://localhost:3000',
 };

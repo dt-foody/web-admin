@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { User } from '../../../models/user.model';
 import { AuthService } from '../../../services/api/auth.service';
+import { SocketService } from '../../../services/socket.service';
 
 @Component({
   selector: 'app-user-dropdown',
@@ -22,7 +23,10 @@ export class UserDropdownComponent implements OnInit {
     this.isOpen = false;
   }
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private socketService: SocketService,
+  ) {}
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
@@ -30,5 +34,6 @@ export class UserDropdownComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+    this.socketService.disconnect();
   }
 }

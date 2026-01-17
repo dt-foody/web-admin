@@ -9,6 +9,7 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/api/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { SocketService } from '../../../services/socket.service';
 
 @Component({
   selector: 'app-signin-form',
@@ -28,7 +29,7 @@ export class SigninFormComponent {
   isChecked = false;
 
   // Đổi email -> username
-  username = ''; 
+  username = '';
   password = '';
   errorMessage = '';
 
@@ -36,6 +37,7 @@ export class SigninFormComponent {
     private authService: AuthService,
     private router: Router,
     private toastr: ToastrService,
+    private socketService: SocketService,
   ) {}
 
   togglePasswordVisibility() {
@@ -50,6 +52,8 @@ export class SigninFormComponent {
         if (data) {
           this.router.navigate(['/order']);
         }
+
+        this.socketService.connect();
       },
       error: (err) => {
         console.log('Err', err);
