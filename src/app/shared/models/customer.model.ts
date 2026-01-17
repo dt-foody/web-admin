@@ -48,6 +48,8 @@ export interface Customer {
 
   // --- METADATA ---
   lastOrderDate?: string | Date; // Thêm trường này (có trong schema)
+  totalSpent?: number; // Thêm trường này (có trong schema)
+  totalOrder?: number; // Thêm trường này (có trong schema)
 
   // --- THÔNG TIN QUẢN TRỊ ---
   createdBy?: string | any; // ID User tạo (nên là string thay vì any)

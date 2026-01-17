@@ -5,16 +5,9 @@ import { Customer, CustomerEmail, CustomerPhone } from '../../../../models/custo
 import { CustomerService } from '../../../../services/api/customer.service';
 import { ToastrService } from 'ngx-toastr';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
+import { OrderService } from '../../../../services/api/order.service';
+import { Order } from '../../../../models/order.model';
 
-// --- (GIỮ NGUYÊN CÁC INTERFACE MOCK DATA) ---
-interface OrderHistory {
-  id: string;
-  orderId: string;
-  date: Date;
-  total: number;
-  status: 'pending' | 'processing' | 'completed' | 'cancelled';
-  items: number;
-}
 interface LoyaltyPoint {
   id: string;
   points: number;
@@ -40,28 +33,26 @@ interface Activity {
 export class CustomerDetailComponent implements OnInit {
   customer: Customer | null = null;
   loading = true;
-  activeTab: 'overview' | 'orders' | 'loyalty' | 'activity' = 'overview';
+  activeTab: 'overview' | 'orders' | 'activity' = 'orders';
 
   // THÊM MỚI: Thuộc tính để hiển thị email/phone chính
   displayEmail: CustomerEmail | null = null;
   displayPhone: CustomerPhone | null = null;
 
   // --- (GIỮ NGUYÊN MOCK DATA VÀ STATS) ---
-  orderHistory: OrderHistory[] = [];
+  orderList: Order[] = [];
   loyaltyPoints: LoyaltyPoint[] = [];
   activities: Activity[] = [];
-  stats = {
-    totalOrders: 0,
-    totalSpent: 0,
-    averageOrderValue: 0,
-    loyaltyPoints: 0,
-  };
-  // --- (HẾT PHẦN GIỮ NGUYÊN) ---
+
+  queryOrder = { page: 1, limit: 10, profile: '' };
+  totalPagesOrder = 0;
+  totalResultsOrder = 0;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private customerService: CustomerService,
+    private orderService: OrderService,
     private toastr: ToastrService,
   ) {}
 
@@ -101,28 +92,15 @@ export class CustomerDetailComponent implements OnInit {
 
   // --- (GIỮ NGUYÊN CÁC HÀM loadOrderHistory, loadLoyaltyPoints, loadActivities) ---
   loadOrderHistory(customerId: string): void {
-    this.orderHistory = [
-      {
-        id: '1',
-        orderId: 'ORD-2024-001',
-        date: new Date('2024-10-05'),
-        total: 1500000,
-        status: 'completed',
-        items: 3,
+    this.queryOrder.profile = customerId;
+    this.orderService.getAll(this.queryOrder).subscribe({
+      next: (data) => {
+        this.orderList = data.results;
+        this.totalPagesOrder = data.totalPages;
+        this.totalResultsOrder = data.totalResults;
       },
-      {
-        id: '2',
-        orderId: 'ORD-2024-002',
-        date: new Date('2024-09-20'),
-        total: 2300000,
-        status: 'completed',
-        items: 5,
-      },
-    ];
-    this.stats.totalOrders = this.orderHistory.length;
-    this.stats.totalSpent = this.orderHistory.reduce((sum, order) => sum + order.total, 0);
-    this.stats.averageOrderValue =
-      this.stats.totalSpent > 0 ? this.stats.totalSpent / this.stats.totalOrders : 0;
+      error: (error) => {},
+    });
   }
 
   loadLoyaltyPoints(customerId: string): void {
@@ -143,7 +121,6 @@ export class CustomerDetailComponent implements OnInit {
         date: new Date('2024-09-25'),
       },
     ];
-    this.stats.loyaltyPoints = this.loyaltyPoints.reduce((sum, point) => sum + point.points, 0);
   }
 
   loadActivities(customerId: string): void {
@@ -165,7 +142,7 @@ export class CustomerDetailComponent implements OnInit {
   // --- (HẾT PHẦN GIỮ NGUYÊN) ---
 
   // --- (GIỮ NGUYÊN TẤT CẢ CÁC HÀM HELPER VÀ HANDLER) ---
-  setActiveTab(tab: 'overview' | 'orders' | 'loyalty' | 'activity'): void {
+  setActiveTab(tab: 'overview' | 'orders' | 'activity'): void {
     this.activeTab = tab;
   }
 
@@ -249,5 +226,13 @@ export class CustomerDetailComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/customer/list']); // Sửa lại /list
+  }
+
+  calculateAverageOrderValue(): any {
+    if (this.customer && this.customer.totalSpent && this.customer.totalOrder) {
+      return this.formatCurrency(Math.round(this.customer.totalSpent / this.customer.totalOrder));
+    } else {
+      return '---';
+    }
   }
 }

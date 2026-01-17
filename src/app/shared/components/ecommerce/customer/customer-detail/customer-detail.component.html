@@ -401,7 +401,7 @@
 
               <div class="space-y-1">
                 <p class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-                  {{ stats.totalOrders }}
+                  {{ customer?.totalOrder || 0 }}
                 </p>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Orders</p>
                 <p class="text-xs text-gray-500 dark:text-gray-500">Lifetime purchases</p>
@@ -459,7 +459,7 @@
 
               <div class="space-y-1">
                 <p class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-                  {{ formatCurrency(stats.totalSpent) }}
+                  {{ formatCurrency(customer?.totalSpent || 0) }}
                 </p>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Revenue</p>
                 <p class="text-xs text-gray-500 dark:text-gray-500">Customer lifetime value</p>
@@ -517,7 +517,7 @@
 
               <div class="space-y-1">
                 <p class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-                  {{ formatCurrency(stats.averageOrderValue) }}
+                  {{ calculateAverageOrderValue() }}
                 </p>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Avg. Order Value</p>
                 <p class="text-xs text-gray-500 dark:text-gray-500">Per transaction</p>
@@ -570,9 +570,7 @@
               </div>
 
               <div class="space-y-1">
-                <p class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-                  {{ stats.loyaltyPoints }}
-                </p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">0</p>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Loyalty Points</p>
                 <p class="text-xs text-gray-500 dark:text-gray-500">Reward balance</p>
               </div>
@@ -587,17 +585,6 @@
           <div class="border-b border-gray-200 dark:border-gray-800">
             <nav class="flex gap-8 px-6" aria-label="Tabs">
               <button
-                (click)="setActiveTab('overview')"
-                [ngClass]="{
-                  'border-brand-500 text-brand-600 dark:text-brand-400': activeTab === 'overview',
-                  'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300':
-                    activeTab !== 'overview',
-                }"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition"
-              >
-                Overview
-              </button>
-              <button
                 (click)="setActiveTab('orders')"
                 [ngClass]="{
                   'border-brand-500 text-brand-600 dark:text-brand-400': activeTab === 'orders',
@@ -608,17 +595,7 @@
               >
                 Order History
               </button>
-              <button
-                (click)="setActiveTab('loyalty')"
-                [ngClass]="{
-                  'border-brand-500 text-brand-600 dark:text-brand-400': activeTab === 'loyalty',
-                  'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300':
-                    activeTab !== 'loyalty',
-                }"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition"
-              >
-                Loyalty Points
-              </button>
+
               <button
                 (click)="setActiveTab('activity')"
                 [ngClass]="{
@@ -634,128 +611,10 @@
           </div>
 
           <div class="p-6">
-            <!-- Overview Tab -->
-            @if (activeTab === 'overview') {
-              <div class="space-y-6">
-                <div>
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    Recent Orders
-                  </h3>
-                  @if (orderHistory.length > 0) {
-                    <div class="space-y-3">
-                      @for (order of orderHistory.slice(0, 3); track order.id) {
-                        <div
-                          class="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition"
-                        >
-                          <div class="flex items-center gap-4">
-                            <div class="p-2 rounded-lg bg-blue-50 dark:bg-blue-500/15">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 text-blue-600 dark:text-blue-400"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="2"
-                                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                                />
-                              </svg>
-                            </div>
-                            <div>
-                              <p class="font-medium text-gray-900 dark:text-white">
-                                {{ order.orderId }}
-                              </p>
-                              <p class="text-sm text-gray-500 dark:text-gray-400">
-                                {{ formatDate(order.date) }} • {{ order.items }} items
-                              </p>
-                            </div>
-                          </div>
-                          <div class="text-right">
-                            <p class="font-semibold text-gray-900 dark:text-white">
-                              {{ formatCurrency(order.total) }}
-                            </p>
-                            <span
-                              class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium mt-1"
-                              [ngClass]="getOrderStatusClass(order.status)"
-                            >
-                              {{ getOrderStatusLabel(order.status) }}
-                            </span>
-                          </div>
-                        </div>
-                      }
-                    </div>
-                  } @else {
-                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-12 w-12 mx-auto mb-3 opacity-50"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                        />
-                      </svg>
-                      <p>No orders yet</p>
-                    </div>
-                  }
-                </div>
-
-                <div>
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    Recent Activity
-                  </h3>
-                  @if (activities.length > 0) {
-                    <div class="space-y-3">
-                      @for (activity of activities.slice(0, 5); track activity.id) {
-                        <div class="flex items-start gap-4">
-                          <div class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4 text-gray-600 dark:text-gray-400"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                [attr.d]="getActivityIcon(activity.type)"
-                              />
-                            </svg>
-                          </div>
-                          <div class="flex-1">
-                            <p class="text-sm text-gray-900 dark:text-white">
-                              {{ activity.description }}
-                            </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">
-                              {{ formatDateTime(activity.date) }}
-                            </p>
-                          </div>
-                        </div>
-                      }
-                    </div>
-                  } @else {
-                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                      <p>No recent activity</p>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-
             <!-- Orders Tab -->
             @if (activeTab === 'orders') {
               <div>
-                @if (orderHistory.length > 0) {
+                @if (orderList.length > 0) {
                   <div class="overflow-x-auto">
                     <table class="w-full">
                       <thead>
@@ -793,7 +652,7 @@
                         </tr>
                       </thead>
                       <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-                        @for (order of orderHistory; track order.id) {
+                        @for (order of orderList; track order.id) {
                           <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition">
                             <td class="px-4 py-4">
                               <span class="font-medium text-gray-900 dark:text-white">{{
@@ -802,7 +661,7 @@
                             </td>
                             <td class="px-4 py-4">
                               <span class="text-sm text-gray-600 dark:text-gray-400">{{
-                                formatDate(order.date)
+                                formatDate(order.createdAt)
                               }}</span>
                             </td>
                             <td class="px-4 py-4">
@@ -812,7 +671,7 @@
                             </td>
                             <td class="px-4 py-4">
                               <span class="font-medium text-gray-900 dark:text-white">{{
-                                formatCurrency(order.total)
+                                formatCurrency(order.grandTotal)
                               }}</span>
                             </td>
                             <td class="px-4 py-4">
@@ -853,131 +712,6 @@
                     </svg>
                     <p class="text-lg font-medium">No orders found</p>
                     <p class="text-sm mt-1">This customer hasn't placed any orders yet</p>
-                  </div>
-                }
-              </div>
-            }
-
-            <!-- Loyalty Tab -->
-            @if (activeTab === 'loyalty') {
-              <div>
-                <div
-                  class="mb-6 p-6 rounded-lg bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border border-amber-200 dark:border-amber-800"
-                >
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <p class="text-sm text-amber-600 dark:text-amber-400 font-medium mb-1">
-                        Total Points Balance
-                      </p>
-                      <p class="text-4xl font-bold text-amber-900 dark:text-amber-100">
-                        {{ stats.loyaltyPoints }}
-                      </p>
-                    </div>
-                    <div class="p-4 rounded-full bg-amber-200/50 dark:bg-amber-700/30">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-12 w-12 text-amber-600 dark:text-amber-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                @if (loyaltyPoints.length > 0) {
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    Points History
-                  </h3>
-                  <div class="space-y-3">
-                    @for (point of loyaltyPoints; track point.id) {
-                      <div
-                        class="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700"
-                      >
-                        <div class="flex items-center gap-4">
-                          <div
-                            class="p-2 rounded-lg"
-                            [ngClass]="{
-                              'bg-green-50 dark:bg-green-500/15': point.type === 'earned',
-                              'bg-red-50 dark:bg-red-500/15': point.type === 'redeemed',
-                            }"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-5 w-5"
-                              [ngClass]="{
-                                'text-green-600 dark:text-green-400': point.type === 'earned',
-                                'text-red-600 dark:text-red-400': point.type === 'redeemed',
-                              }"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              @if (point.type === 'earned') {
-                                <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="2"
-                                  d="M12 4v16m8-8H4"
-                                />
-                              } @else {
-                                <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="2"
-                                  d="M20 12H4"
-                                />
-                              }
-                            </svg>
-                          </div>
-                          <div>
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">
-                              {{ point.description }}
-                            </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">
-                              {{ formatDateTime(point.date) }}
-                            </p>
-                          </div>
-                        </div>
-                        <div class="text-right">
-                          <p
-                            class="font-bold text-lg"
-                            [ngClass]="{
-                              'text-green-600 dark:text-green-400': point.type === 'earned',
-                              'text-red-600 dark:text-red-400': point.type === 'redeemed',
-                            }"
-                          >
-                            {{ point.points > 0 ? '+' : '' }}{{ point.points }}
-                          </p>
-                        </div>
-                      </div>
-                    }
-                  </div>
-                } @else {
-                  <div class="text-center py-12 text-gray-500 dark:text-gray-400">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-16 w-16 mx-auto mb-4 opacity-50"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                      />
-                    </svg>
-                    <p class="text-lg font-medium">No loyalty points yet</p>
-                    <p class="text-sm mt-1">Points will appear here when earned</p>
                   </div>
                 }
               </div>
