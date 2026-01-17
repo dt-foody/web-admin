@@ -41,7 +41,7 @@ export class CustomerDetailComponent implements OnInit {
   loyaltyPoints: LoyaltyPoint[] = [];
   activities: Activity[] = [];
 
-  queryOrder = { page: 1, limit: 10, profile: '' };
+  queryOrder = { page: 1, limit: 10, profile: '', sort: { key: 'createdAt', asc: false } };
   totalPagesOrder = 0;
   totalResultsOrder = 0;
 
