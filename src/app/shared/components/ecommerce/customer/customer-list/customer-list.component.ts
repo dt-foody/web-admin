@@ -44,7 +44,6 @@ export class CustomerListComponent extends BaseListComponent<Customer> implement
   }
 
   override ngOnInit(): void {
-    console.log('CustomerListComponent init logic');
     super.ngOnInit();
   }
 
@@ -69,9 +68,9 @@ export class CustomerListComponent extends BaseListComponent<Customer> implement
 
   getGenderLabel(gender?: string): string {
     const labels: any = {
-      male: 'Male',
-      female: 'Female',
-      other: 'Other',
+      male: 'Nam',
+      female: 'Nữ',
+      other: 'Khác',
     };
     return gender ? labels[gender] || '-' : '-';
   }
@@ -116,11 +115,11 @@ export class CustomerListComponent extends BaseListComponent<Customer> implement
       if (confirmed && this.itemToDelete) {
         this.customerService.delete(this.itemToDelete.id).subscribe({
           next: () => {
-            this.toastr.success('Delete successfully!', 'Customer');
+            this.toastr.success('Đã xóa thành công!', 'Thành công');
             this.fetchData();
           },
           error: (err) => {
-            this.toastr.error(err?.error?.message || 'Delete failed!', 'Customer');
+            this.toastr.error('Có lỗi xảy ra khi xóa khách hàng.', 'Lỗi');
           },
         });
       }
@@ -146,12 +145,14 @@ export class CustomerListComponent extends BaseListComponent<Customer> implement
         // Gọi service deleteMany
         this.customerService.deleteMany(this.selected).subscribe({
           next: () => {
-            this.toastr.success(`Đã xóa thành công ${this.selected.length} khách hàng!`, 'Thành công');
+            this.toastr.success(
+              `Đã xóa thành công ${this.selected.length} khách hàng!`,
+              'Thành công',
+            );
             this.selected = []; // Reset danh sách chọn
-            this.fetchData();   // Tải lại dữ liệu bảng
+            this.fetchData(); // Tải lại dữ liệu bảng
           },
           error: (err) => {
-            console.error(err);
             this.toastr.error('Có lỗi xảy ra khi xóa khách hàng.', 'Lỗi');
           },
         });

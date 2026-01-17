@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Customer, CustomerEmail, CustomerPhone } from '../../../../models/customer.model'; // Import thêm
+import { Customer, CustomerEmail, CustomerPhone } from '../../../../models/customer.model';
 import { CustomerService } from '../../../../services/api/customer.service';
 import { ToastrService } from 'ngx-toastr';
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
@@ -22,7 +22,6 @@ interface Activity {
   description: string;
   date: Date;
 }
-// --- (HẾT PHẦN GIỮ NGUYÊN) ---
 
 @Component({
   selector: 'app-customer-detail',
@@ -35,11 +34,9 @@ export class CustomerDetailComponent implements OnInit {
   loading = true;
   activeTab: 'overview' | 'orders' | 'activity' = 'orders';
 
-  // THÊM MỚI: Thuộc tính để hiển thị email/phone chính
   displayEmail: CustomerEmail | null = null;
   displayPhone: CustomerPhone | null = null;
 
-  // --- (GIỮ NGUYÊN MOCK DATA VÀ STATS) ---
   orderList: Order[] = [];
   loyaltyPoints: LoyaltyPoint[] = [];
   activities: Activity[] = [];
@@ -60,9 +57,9 @@ export class CustomerDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadCustomerDetail(id);
-      this.loadOrderHistory(id); // (Bạn sẽ thay bằng API thật)
-      this.loadLoyaltyPoints(id); // (Bạn sẽ thay bằng API thật)
-      this.loadActivities(id); // (Bạn sẽ thay bằng API thật)
+      this.loadOrderHistory(id);
+      this.loadLoyaltyPoints(id);
+      this.loadActivities(id);
     }
   }
 
@@ -71,26 +68,23 @@ export class CustomerDetailComponent implements OnInit {
       next: (data) => {
         this.customer = data;
 
-        // CẬP NHẬT: Logic tìm email/phone chính
         if (data.emails) {
           this.displayEmail = data.emails[0] || null;
         }
         if (data.phones) {
           this.displayPhone = data.phones[0] || null;
         }
-        // Hết phần cập nhật
 
         this.loading = false;
       },
       error: (err) => {
-        this.toastr.error('Failed to load customer details', 'Error');
+        this.toastr.error('Không thể tải thông tin khách hàng', 'Lỗi');
         this.loading = false;
-        this.router.navigate(['/customer/list']); // Sửa lại /list
+        this.router.navigate(['/customer/list']);
       },
     });
   }
 
-  // --- (GIỮ NGUYÊN CÁC HÀM loadOrderHistory, loadLoyaltyPoints, loadActivities) ---
   loadOrderHistory(customerId: string): void {
     this.queryOrder.profile = customerId;
     this.orderService.getAll(this.queryOrder).subscribe({
@@ -109,7 +103,7 @@ export class CustomerDetailComponent implements OnInit {
         id: '1',
         points: 150,
         type: 'earned',
-        description: 'Purchase order ORD-2024-001',
+        description: 'Đơn hàng ORD-2024-001',
         date: new Date('2024-10-05'),
         orderId: '1',
       },
@@ -117,7 +111,7 @@ export class CustomerDetailComponent implements OnInit {
         id: '2',
         points: -50,
         type: 'redeemed',
-        description: 'Discount applied',
+        description: 'Áp dụng mã giảm giá',
         date: new Date('2024-09-25'),
       },
     ];
@@ -128,20 +122,18 @@ export class CustomerDetailComponent implements OnInit {
       {
         id: '1',
         type: 'order',
-        description: 'Placed order ORD-2024-001',
+        description: 'Đã đặt đơn hàng ORD-2024-001',
         date: new Date('2024-10-05'),
       },
       {
         id: '2',
         type: 'login',
-        description: 'Logged in to account',
+        description: 'Đăng nhập vào tài khoản',
         date: new Date('2024-10-04'),
       },
     ];
   }
-  // --- (HẾT PHẦN GIỮ NGUYÊN) ---
 
-  // --- (GIỮ NGUYÊN TẤT CẢ CÁC HÀM HELPER VÀ HANDLER) ---
   setActiveTab(tab: 'overview' | 'orders' | 'activity'): void {
     this.activeTab = tab;
   }
@@ -151,7 +143,7 @@ export class CustomerDetailComponent implements OnInit {
     const d = new Date(date);
     return new Intl.DateTimeFormat('vi-VN', {
       day: '2-digit',
-      month: 'short',
+      month: '2-digit',
       year: 'numeric',
     }).format(d);
   }
@@ -161,7 +153,7 @@ export class CustomerDetailComponent implements OnInit {
     const d = new Date(date);
     return new Intl.DateTimeFormat('vi-VN', {
       day: '2-digit',
-      month: 'short',
+      month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
@@ -177,29 +169,45 @@ export class CustomerDetailComponent implements OnInit {
 
   getGenderLabel(gender?: string): string {
     const labels: any = {
-      male: 'Male',
-      female: 'Female',
-      other: 'Other',
+      male: 'Nam',
+      female: 'Nữ',
+      other: 'Khác',
     };
     return gender ? labels[gender] || '-' : '-';
   }
-
   getOrderStatusClass(status: string): string {
     const classes: any = {
-      pending: 'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400',
-      processing: 'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400',
-      completed: 'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400',
-      cancelled: 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400',
+      // 1. Nhóm khởi tạo/chờ
+      unfinished: 'bg-gray-100 dark:bg-gray-500/20 text-gray-600 dark:text-gray-400', // Xám
+      pending: 'bg-yellow-50 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400', // Vàng (Cảnh báo nhẹ)
+
+      // 2. Nhóm xử lý bếp/nhà hàng
+      confirmed: 'bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400', // Xanh dương (Thông tin)
+      preparing: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400', // Tím (Đang làm việc)
+
+      // 3. Nhóm giao vận
+      waiting_for_driver: 'bg-orange-50 dark:bg-orange-500/15 text-orange-700 dark:text-orange-400', // Cam (Cần chú ý)
+      delivering: 'bg-cyan-50 dark:bg-cyan-500/15 text-cyan-700 dark:text-cyan-400', // Xanh lơ (Đang di chuyển)
+
+      // 4. Trạng thái cuối
+      completed: 'bg-green-50 dark:bg-green-500/15 text-green-700 dark:text-green-400', // Xanh lá (Thành công)
+      canceled: 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400', // Đỏ (Thất bại)
     };
+
+    // Mặc định trả về màu xám nếu không tìm thấy key
     return classes[status] || 'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-400';
   }
 
   getOrderStatusLabel(status: string): string {
     const labels: any = {
-      pending: 'Pending',
-      processing: 'Processing',
-      completed: 'Completed',
-      cancelled: 'Cancelled',
+      unfinished: 'Chưa hoàn tất',
+      pending: 'Chờ xác nhận',
+      confirmed: 'Đã xác nhận',
+      preparing: 'Đang chuẩn bị',
+      waiting_for_driver: 'Đang tìm tài xế',
+      delivering: 'Đang giao hàng',
+      completed: 'Hoàn thành',
+      canceled: 'Đã hủy',
     };
     return labels[status] || status;
   }
@@ -225,7 +233,7 @@ export class CustomerDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/customer/list']); // Sửa lại /list
+    this.router.navigate(['/customer/list']);
   }
 
   calculateAverageOrderValue(): any {
