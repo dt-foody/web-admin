@@ -5,7 +5,7 @@ import { NotificationService, Notification } from '../../../services/api/notific
 import { DropdownComponent } from '../../ui/dropdown/dropdown.component';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { Observable } from 'rxjs'; // Nhớ import Observable
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-notification-dropdown',
@@ -16,7 +16,6 @@ import { Observable } from 'rxjs'; // Nhớ import Observable
 export class NotificationDropdownComponent implements OnInit {
   isOpen = false;
 
-  // 1. Chỉ khai báo kiểu dữ liệu
   notifications$: Observable<Notification[]>;
   unreadCount$: Observable<number>;
 
@@ -24,7 +23,6 @@ export class NotificationDropdownComponent implements OnInit {
     public notificationService: NotificationService,
     private router: Router,
   ) {
-    // 2. Gán giá trị trong constructor
     this.notifications$ = this.notificationService.notifications$;
     this.unreadCount$ = this.notificationService.unreadCount$;
   }
@@ -37,10 +35,29 @@ export class NotificationDropdownComponent implements OnInit {
     this.isOpen = !this.isOpen;
   }
 
-  onNotificationClick(item: Notification) {
-    this.notificationService.markAsRead(item);
+  /**
+   * Hành động 1: Chỉ đánh dấu là đã đọc (khi click vào vùng trống của thông báo)
+   */
+  onMarkAsReadOnly(item: Notification) {
+    if (!item.isRead) {
+      this.notificationService.markAsRead(item);
+    }
+    // Không đóng dropdown, không navigate
+  }
+
+  /**
+   * Hành động 2: Chuyển tới trang chi tiết (khi click vào icon con mắt)
+   */
+  onNavigateToOrder(event: Event, item: Notification) {
+    event.stopPropagation(); // Ngăn chặn sự kiện click lan ra ngoài (để tránh gọi hàm onMarkAsReadOnly nếu không muốn conflict logic)
+
+    // Tùy chọn: Có thể mark as read luôn khi chuyển trang nếu muốn
+    if (!item.isRead) {
+      this.notificationService.markAsRead(item);
+    }
+
     if (item.type === 'ORDER_NEW' && item.referenceId) {
-      this.isOpen = false;
+      this.isOpen = false; // Đóng dropdown
       this.router.navigate(['/order/detail', item.referenceId]);
     }
   }
