@@ -46,7 +46,7 @@ const DEFAULT_FORM: CouponFormData = {
   startDate: '',
   endDate: '',
   maxUses: 0,
-  maxUsesPerUser: 1,
+  maxUsesPerUser: 0,
   public: true,
   claimable: false,
   autoApply: false,
@@ -573,8 +573,8 @@ export class CouponAddComponent implements OnInit {
       this.toastr.error('Maximum total uses must be 0 or more', 'Validation Error');
       return false;
     }
-    if (this.couponData.maxUsesPerUser <= 0) {
-      this.toastr.error('Maximum uses per user must be at least 1', 'Validation Error');
+    if (this.couponData.maxUsesPerUser < 0) {
+      this.toastr.error('Maximum uses per user must be 0 or more', 'Validation Error');
       return false;
     }
     if (!this.couponData.status) {
