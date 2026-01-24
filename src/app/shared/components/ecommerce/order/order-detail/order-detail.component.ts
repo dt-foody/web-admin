@@ -11,7 +11,6 @@ import { OrderService } from '../../../../services/api/order.service';
 import { ImageUrlPipe } from '../../../../pipe/image-url.pipe';
 import { ImageFallbackDirective } from '../../../../directives/app-image-fallback.directive';
 import { DialogService } from '@ngneat/dialog';
-import { Observable } from 'rxjs';
 import { AuditLog } from '../../../../models/audit-log.model';
 import { AuditLogService } from '../../../../services/api/audit-log.service';
 import { OrderHistoryComponent } from '../../../transactions/order-history/order-history.component';
@@ -73,6 +72,22 @@ export class OrderDetailComponent implements OnInit {
     { key: 'paid', label: 'Đã thanh toán', color: 'bg-green-500' },
     { key: 'refunded', label: 'Đã hoàn tiền', color: 'bg-purple-500' },
   ];
+
+  statusClassMap: any = {
+    pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+    paid: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+    failed: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+    canceled: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300',
+    refunded: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+  };
+
+  statusTextMap: any = {
+    pending: 'Chưa thanh toán',
+    paid: 'Đã thanh toán',
+    failed: 'Thất bại',
+    canceled: 'Đã huỷ',
+    refunded: 'Đã hoàn tiền',
+  };
 
   public filteredOrderStatuses: any[] = [];
   public orderStatusIndex: number = 0;
