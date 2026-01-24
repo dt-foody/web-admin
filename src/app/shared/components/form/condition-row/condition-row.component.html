@@ -49,10 +49,18 @@
               placeholder="Nhập số"
             />
           }
+          @case ('datetime-local') {
+            <app-input-field
+              id="datetime-local"
+              type="datetime-local"
+              [value]="condition().value"
+              (valueChange)="onValueChange($event)"
+            ></app-input-field>
+          }
           @case ('date') {
             <app-input-field
-              id="start-date"
-              type="datetime-local"
+              id="date"
+              type="date"
               [value]="condition().value"
               (valueChange)="onValueChange($event)"
             ></app-input-field>

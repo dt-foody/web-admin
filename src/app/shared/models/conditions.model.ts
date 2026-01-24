@@ -2,7 +2,14 @@ import { Observable } from 'rxjs';
 
 export type LogicalOperator = 'AND' | 'OR';
 
-export type FieldType = 'text' | 'number' | 'date' | 'select' | 'boolean' | 'multi-select';
+export type FieldType =
+  | 'text'
+  | 'number'
+  | 'date'
+  | 'datetime-local'
+  | 'select'
+  | 'boolean'
+  | 'multi-select';
 
 export enum Operator {
   EQUALS = 'EQUALS',

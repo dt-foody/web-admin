@@ -335,6 +335,15 @@ export class CouponAddComponent implements OnInit {
       },
     },
     {
+      id: 'current_full_date', // ID để backend check
+      group: 'Thứ ngày', // Nhóm mới cho dễ tìm
+      name: 'Ngày hiện tại',
+      type: 'date', // Dùng text để chị nhập dạng "08/03"
+      operators: [
+        Operator.EQUALS, // Phép so sánh "Là ngày"
+      ],
+    },
+    {
       id: 'referrer_successful_invites',
       group: 'Mã giới thiệu',
       name: 'Số lượt giới thiệu thành công (đã có đơn)',
