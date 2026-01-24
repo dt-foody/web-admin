@@ -34,8 +34,11 @@ import { OrderHistoryComponent } from '../../../transactions/order-history/order
 })
 export class OrderDetailComponent implements OnInit {
   @ViewChild('confirmCompleteTpl') confirmCompleteTpl!: TemplateRef<any>;
+  @ViewChild('confirmCancelTpl') confirmCancelTpl!: TemplateRef<any>;
   // Biến lưu dialog ref để đóng khi cần
   private dialogRef: any;
+
+  public cancelReason: string = '';
 
   public order: any = null;
   public orderId: any = '';
@@ -101,7 +104,8 @@ export class OrderDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.filteredOrderStatuses = this.orderStatuses.filter((s) => s.key !== 'canceled');
+    // this.filteredOrderStatuses = this.orderStatuses.filter((s) => s.key !== 'canceled');
+    this.filteredOrderStatuses = this.orderStatuses;
 
     // Lấy orderId từ route params
     this.route.params.subscribe((params) => {
@@ -149,7 +153,20 @@ export class OrderDetailComponent implements OnInit {
   public handleStatusUpdate(newStatusKey: string) {
     if (!this.order) return;
 
-    if (this.order.status === newStatusKey || newStatusKey === 'canceled') {
+    if (this.order.status === newStatusKey) {
+      return;
+    }
+
+    if (newStatusKey === 'canceled') {
+      // Kiểm tra điều kiện: Chỉ được hủy khi Pending hoặc Confirmed
+      if (!['pending', 'confirmed'].includes(this.order.status)) {
+        this.toastr.warning('Chỉ có thể hủy đơn hàng khi đang chờ xác nhận hoặc đã xác nhận');
+        return;
+      }
+
+      // Mở popup xác nhận
+      this.cancelReason = '';
+      this.dialogRef = this.dialog.open(this.confirmCancelTpl);
       return;
     }
 
@@ -182,6 +199,41 @@ export class OrderDetailComponent implements OnInit {
       this.dialogRef.close();
     }
     this.processCompleteOrder(true); // true = update thêm payment status thành paid
+  }
+
+  public confirmCancelProcess() {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    }
+
+    this.isLoading = true;
+
+    const payload: any = {
+      status: 'canceled',
+      note: this.order.note
+        ? this.order.note + `\n[Đã hủy]: ${this.cancelReason}`
+        : `[Đã hủy]: ${this.cancelReason}`,
+    };
+
+    // Xử lý hoàn tiền nếu cần
+    if (this.order.payment?.status === 'paid') {
+      payload.payment = { ...this.order.payment, status: 'refunded' };
+      delete payload.payment.qrCode;
+    } else if (this.order.payment?.status === 'pending') {
+      payload.payment = { ...this.order.payment, status: 'failed' }; // hoặc 'canceled' tùy enum
+      delete payload.payment.qrCode;
+    }
+
+    this.orderService.adminUpdateOrder(this.order.id, payload).subscribe({
+      next: (response) => {
+        this.toastr.success('Đã hủy đơn hàng thành công');
+        this.loadOrderDetail();
+      },
+      error: (error) => {
+        this.toastr.error('Hủy đơn hàng thất bại');
+        this.isLoading = false;
+      },
+    });
   }
 
   private processCompleteOrder(updatePayment: boolean) {

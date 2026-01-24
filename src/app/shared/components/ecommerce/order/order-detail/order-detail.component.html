@@ -743,3 +743,52 @@
     </div>
   </div>
 </ng-template>
+
+<ng-template #confirmCancelTpl let-ref>
+  <div class="p-6">
+    <div class="text-center mb-6">
+      <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+        <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white">Xác nhận hủy đơn hàng?</h3>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        Hành động này sẽ chuyển đơn hàng sang trạng thái
+        <span class="font-bold text-red-600">Đã hủy</span>
+        và không thể hoàn tác.
+      </p>
+
+      <div class="mt-4 text-left">
+        <div class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Lý do hủy</div>
+        <textarea
+          [(ngModel)]="cancelReason"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
+          rows="3"
+          placeholder="Nhập lý do hủy..."
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="flex gap-3 justify-center">
+      <button
+        (click)="ref.close()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+      >
+        Quay lại
+      </button>
+
+      <button
+        (click)="confirmCancelProcess()"
+        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-sm"
+      >
+        Xác nhận Hủy
+      </button>
+    </div>
+  </div>
+</ng-template>
