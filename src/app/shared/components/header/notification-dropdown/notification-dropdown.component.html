@@ -164,7 +164,11 @@
                 <span *ngIf="!item.isRead" class="block w-2 h-2 bg-blue-500 rounded-full"></span>
               </div>
               <button
-                *ngIf="item.type === 'ORDER_NEW'"
+                *ngIf="
+                  item.type === 'ORDER_NEW' ||
+                  item.type === 'ADMIN_REMINDER_PREP' ||
+                  item.type === 'ADMIN_REMINDER_SHIP'
+                "
                 (click)="onNavigateToOrder($event, item)"
                 class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-100 rounded-full transition-all dark:hover:bg-gray-600 dark:hover:text-blue-400"
                 title="Xem chi tiết đơn hàng"
