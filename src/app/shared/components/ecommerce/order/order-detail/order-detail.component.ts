@@ -157,6 +157,17 @@ export class OrderDetailComponent implements OnInit {
       return;
     }
 
+    if (
+      this.order.payment &&
+      this.order.payment.method !== 'cash' &&
+      this.order.payment.status === 'pending'
+    ) {
+      this.toastr.warning(
+        'Không thể thay đổi trạng thái do đơn hàng chưa được thanh toán bởi khách hàng',
+      );
+      return;
+    }
+
     if (newStatusKey === 'canceled') {
       // Kiểm tra điều kiện: Chỉ được hủy khi Pending hoặc Confirmed
       if (!['pending', 'confirmed'].includes(this.order.status)) {
