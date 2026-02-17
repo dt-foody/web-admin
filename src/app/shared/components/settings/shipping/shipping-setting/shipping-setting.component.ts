@@ -67,7 +67,7 @@ export class ShippingSettingComponent implements OnInit {
     },
     {
       id: 'customer_default_address_district',
-      group: 'Địa chỉ',
+      group: 'Địa chỉ Mặc Định',
       name: 'Quận/Huyện',
       type: 'multi-select',
       operators: [Operator.IN, Operator.NOT_IN],
@@ -96,32 +96,6 @@ export class ShippingSettingComponent implements OnInit {
             filtered = districts.filter((d) => d.label.toLowerCase().includes(searchLower));
           }
 
-          return of({
-            results: filtered,
-            page: 1,
-            limit: 100,
-            totalPages: 1,
-            totalResults: filtered.length,
-          });
-        },
-      },
-    },
-    {
-      id: 'customer_default_address_city',
-      group: 'Địa chỉ',
-      name: 'Tỉnh/Thành phố',
-      type: 'multi-select',
-      operators: [Operator.IN, Operator.NOT_IN],
-      source: {
-        valueField: 'label',
-        labelField: 'label',
-        optionsLoader: (params: any) => {
-          const cities = [{ label: 'Hà Nội' }, { label: 'Hồ Chí Minh' }, { label: 'Đà Nẵng' }];
-          let filtered = cities;
-          if (params.search) {
-            const searchLower = params.search.toLowerCase();
-            filtered = cities.filter((c) => c.label.toLowerCase().includes(searchLower));
-          }
           return of({
             results: filtered,
             page: 1,

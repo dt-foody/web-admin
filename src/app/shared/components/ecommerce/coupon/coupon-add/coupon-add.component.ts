@@ -250,7 +250,7 @@ export class CouponAddComponent implements OnInit {
     },
     {
       id: 'customer_default_address_district',
-      group: 'Địa chỉ',
+      group: 'Địa chỉ Mặc Định',
       name: 'Quận',
       type: 'multi-select',
       operators: [Operator.IN, Operator.NOT_IN],
