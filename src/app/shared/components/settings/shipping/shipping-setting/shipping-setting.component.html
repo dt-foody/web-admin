@@ -1,0 +1,87 @@
+<div class="space-y-6">
+  <!-- General Info Card -->
+  <app-component-card>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">Cấu hình Vận chuyển</h3>
+      <app-switch
+        [value]="form.get('isActive')?.value"
+        (valueChange)="form.get('isActive')?.setValue($event)"
+        label="Kích hoạt"
+      ></app-switch>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSave()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Name -->
+        <div class="space-y-1">
+          <app-label>Tên cấu hình</app-label>
+          <app-input-field
+            [value]="form.get('name')?.value"
+            (valueChange)="form.get('name')?.setValue($event)"
+            placeholder="Ví dụ: Phí ship nội thành"
+            [error]="!!(form.get('name')?.invalid && form.get('name')?.touched)"
+          ></app-input-field>
+        </div>
+
+        <!-- Priority -->
+        <div class="space-y-1">
+          <app-label>Độ ưu tiên</app-label>
+          <app-input-field
+            [value]="form.get('priority')?.value"
+            (valueChange)="form.get('priority')?.setValue($event)"
+            type="number"
+            placeholder="Số lớn ưu tiên trước"
+            [error]="!!(form.get('priority')?.invalid && form.get('priority')?.touched)"
+          ></app-input-field>
+        </div>
+
+        <!-- Fixed Fee -->
+        <div class="space-y-1">
+          <app-label>Phí ship cố định (VNĐ)</app-label>
+          <app-input-field
+            [value]="form.get('fixedFee')?.value"
+            (valueChange)="form.get('fixedFee')?.setValue($event)"
+            type="number"
+            placeholder="0"
+            [error]="!!(form.get('fixedFee')?.invalid && form.get('fixedFee')?.touched)"
+          ></app-input-field>
+        </div>
+
+        <!-- Description -->
+        <div class="space-y-1 md:col-span-2">
+          <app-label>Mô tả / Ghi chú</app-label>
+          <app-text-area
+            [value]="form.get('description')?.value"
+            (valueChange)="form.get('description')?.setValue($event)"
+            placeholder="Ghi chú thêm về cấu hình này..."
+          ></app-text-area>
+        </div>
+      </div>
+
+      <!-- Conditions Builder Section -->
+      <div class="mt-6 border-t pt-6">
+        <h4 class="text-md font-medium text-gray-700 mb-3">Điều kiện áp dụng</h4>
+        <p class="text-sm text-gray-500 mb-4">
+          Thiết lập các điều kiện để áp dụng cấu hình phí ship này. Nếu để trống, phí ship này sẽ áp
+          dụng cho tất cả đơn hàng (nếu được kích hoạt).
+        </p>
+
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <app-conditions-builder [fields]="fields" [(group)]="rootGroup"></app-conditions-builder>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="mt-6 flex justify-end">
+        <app-button
+          [loading]="isSaving"
+          type="submit"
+          variant="primary"
+          *appHasPermission="'shippingSettings.update'"
+        >
+          Lưu cấu hình
+        </app-button>
+      </div>
+    </form>
+  </app-component-card>
+</div>

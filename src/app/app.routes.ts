@@ -532,6 +532,22 @@ export const routes: Routes = [
               },
             ],
           },
+          {
+            path: 'shipping',
+            children: [
+              {
+                path: '',
+                loadComponent: () =>
+                  import('./pages/settings/shipping/config/config.component').then(
+                    (m) => m.ConfigComponent,
+                  ),
+                pathMatch: 'full',
+                title: 'Cấu hình Vận chuyển',
+                canActivate: [PermissionGuard],
+                data: { permissions: ['shippingSettings.read'] },
+              },
+            ],
+          },
         ],
       },
       {

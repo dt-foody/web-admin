@@ -122,6 +122,11 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
           path: '/settings/layout',
           permission: 'layoutSettings.read',
         },
+        {
+          name: 'Vận chuyển',
+          path: '/settings/shipping',
+          permission: 'shippingSettings.read', // Ensure this permission exists or use a generic one like 'settings.read'
+        },
       ],
     },
   ];
