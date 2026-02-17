@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { NotificationService, Notification } from '../../../services/api/notification.service';
-import { DropdownComponent } from '../../ui/dropdown/dropdown.component';
+
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { Observable } from 'rxjs';
@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-notification-dropdown',
   standalone: true,
-  imports: [CommonModule, RouterModule, DropdownComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './notification-dropdown.component.html',
 })
 export class NotificationDropdownComponent implements OnInit {

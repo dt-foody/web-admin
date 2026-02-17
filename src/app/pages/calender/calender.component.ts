@@ -2,14 +2,21 @@ import { KeyValuePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 
-import { Component, ViewChild } from '@angular/core';
-import { EventInput, CalendarOptions, DateSelectArg, EventClickArg } from '@fullcalendar/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
+import {
+  EventInput,
+  CalendarOptions,
+  DateSelectArg,
+  EventClickArg,
+  EventContentArg,
+} from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { ModalComponent } from '../../shared/components/ui/modal/modal.component';
 
 interface CalendarEvent extends EventInput {
+  id?: string;
   extendedProps: {
     calendar: string;
   };
@@ -21,7 +28,7 @@ interface CalendarEvent extends EventInput {
   templateUrl: './calender.component.html',
   styles: ``,
 })
-export class CalenderComponent {
+export class CalenderComponent implements OnInit {
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
 
   events: CalendarEvent[] = [];
@@ -74,15 +81,15 @@ export class CalenderComponent {
       },
       selectable: true,
       events: this.events,
-      select: (info) => this.handleDateSelect(info),
-      eventClick: (info) => this.handleEventClick(info),
+      select: (info: DateSelectArg) => this.handleDateSelect(info),
+      eventClick: (info: EventClickArg) => this.handleEventClick(info),
       customButtons: {
         addEventButton: {
           text: 'Add Event +',
           click: () => this.openModal(),
         },
       },
-      eventContent: (arg) => this.renderEventContent(arg),
+      eventContent: (arg: EventContentArg) => this.renderEventContent(arg),
     };
   }
 
@@ -155,8 +162,8 @@ export class CalenderComponent {
     this.resetModalFields();
   }
 
-  renderEventContent(eventInfo: any) {
-    const colorClass = `fc-bg-${eventInfo.event.extendedProps.calendar?.toLowerCase()}`;
+  renderEventContent(eventInfo: EventContentArg) {
+    const colorClass = `fc-bg-${eventInfo.event.extendedProps['calendar']?.toLowerCase()}`;
     return {
       html: `
         <div class="event-fc-color flex fc-event-main ${colorClass} p-1 rounded-sm">

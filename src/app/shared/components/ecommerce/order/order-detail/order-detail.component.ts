@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { StatusTimelineComponent } from '../../../ui/status-timeline/status-timeline.component';
-import { ButtonComponent } from '../../../ui/button/button.component';
+
 import { NgSelectModule } from '@ng-select/ng-select';
 
 import { ToastrService } from 'ngx-toastr';
@@ -24,7 +24,7 @@ import { OrderHistoryComponent } from '../../../transactions/order-history/order
     FormsModule,
     NgSelectModule,
     StatusTimelineComponent,
-    ButtonComponent,
+
     ImageUrlPipe,
     ImageFallbackDirective,
     OrderHistoryComponent,

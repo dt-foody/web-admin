@@ -187,58 +187,6 @@
     </div>
   </app-component-card>
 
-  <app-component-card title="Cấu hình Flash Sale">
-    <div class="flex flex-col gap-4">
-      <app-switch
-        label="Kích hoạt chương trình Flash Sale"
-        [value]="form.get('flashSale.value')?.value"
-        (valueChange)="form.get('flashSale.value')?.setValue($event)"
-      >
-      </app-switch>
-
-      <div class="ml-12 border-l-2 border-stroke pl-6 dark:border-strokedark flex flex-col gap-5">
-        <div class="flex flex-col gap-2">
-          <div class="text-sm text-black dark:text-white">
-            Mô tả / Thể lệ chương trình (Hiển thị ở trang danh sách)
-          </div>
-          <app-text-area
-            [value]="form.get('flashSale.note')?.value"
-            (valueChange)="form.get('flashSale.note')?.setValue($event)"
-            placeholder="Nhập mô tả về chương trình Flash sale..."
-            [rows]="4"
-          >
-          </app-text-area>
-        </div>
-      </div>
-    </div>
-  </app-component-card>
-
-  <app-component-card title="Cấu hình trang Combo">
-    <div class="flex flex-col gap-4">
-      <app-switch
-        label="Hiển thị menu Combo"
-        [value]="form.get('combo.value')?.value"
-        (valueChange)="form.get('combo.value')?.setValue($event)"
-      >
-      </app-switch>
-
-      <div class="ml-12 border-l-2 border-stroke pl-6 dark:border-strokedark flex flex-col gap-5">
-        <div class="flex flex-col gap-2">
-          <div class="text-sm text-black dark:text-white">
-            Mô tả / Giới thiệu (Hiển thị đầu trang Combo)
-          </div>
-          <app-text-area
-            [value]="form.get('combo.note')?.value"
-            (valueChange)="form.get('combo.note')?.setValue($event)"
-            placeholder="Ví dụ: Tiết kiệm hơn khi mua theo Combo..."
-            [rows]="3"
-          >
-          </app-text-area>
-        </div>
-      </div>
-    </div>
-  </app-component-card>
-
   <div class="flex justify-end">
     <app-button type="submit" variant="primary" size="sm" *appHasPermission="'dealSettings.update'">
       Lưu cấu hình

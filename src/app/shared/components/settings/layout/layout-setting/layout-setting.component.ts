@@ -8,7 +8,6 @@ import { ButtonComponent } from '../../../ui/button/button.component';
 import { ComponentCardComponent } from '../../../../components/common/component-card/component-card.component';
 import { SwitchComponent } from '../../../form/input/switch.component';
 import { TextAreaComponent } from '../../../form/input/text-area.component';
-import { InputFieldComponent } from '../../../form/input/input-field.component';
 
 // Directives & Services
 import { HasPermissionDirective } from '../../../../directives/has-permission.directive';
@@ -25,7 +24,7 @@ import { HeaderNavItem } from '../../../../models/layout-setting.model';
     ComponentCardComponent,
     SwitchComponent,
     TextAreaComponent,
-    InputFieldComponent,
+
     HasPermissionDirective,
   ],
   templateUrl: './layout-setting.component.html',
@@ -53,6 +52,8 @@ export class LayoutSettingComponent implements OnInit {
     // Khởi tạo form
     this.form = this.fb.group({
       items: this.fb.array([]),
+      flashSale: this.createComingSoonGroup(false),
+      combo: this.createComingSoonGroup(true),
     });
   }
 
@@ -66,6 +67,7 @@ export class LayoutSettingComponent implements OnInit {
 
   loadData() {
     this.isLoading = true;
+
     this.layoutService.getAll({ limit: 1 }).subscribe({
       next: (res) => {
         let finalItems = this.defaultItems;
@@ -74,6 +76,14 @@ export class LayoutSettingComponent implements OnInit {
           const setting = res.results[0];
           this.currentSettingId = setting.id;
           finalItems = this.mergeWithDefaults(setting.headerNavItems);
+
+          // Patch value for flashSale and combo
+          if (setting.flashSale) {
+            this.form.get('flashSale')?.patchValue(setting.flashSale);
+          }
+          if (setting.combo) {
+            this.form.get('combo')?.patchValue(setting.combo);
+          }
         }
 
         // Reset form array và fill data
@@ -82,7 +92,7 @@ export class LayoutSettingComponent implements OnInit {
           this.itemsFormArray.push(
             this.fb.group({
               id: [item.id],
-              title: [item.title], // Title này thường cố định hoặc lấy từ default
+              title: [item.title],
               description: [item.description],
               enable: [item.enable],
             }),
@@ -99,10 +109,23 @@ export class LayoutSettingComponent implements OnInit {
     });
   }
 
+  createComingSoonGroup(defaultValue: boolean) {
+    return this.fb.group({
+      value: [defaultValue],
+      note: [''],
+      activeNote: [false],
+      showNoteWhen: ['off'],
+    });
+  }
+
   onSave() {
     this.isSaving = true;
+
+    // Prepare Payload
     const payload = {
       headerNavItems: this.form.value.items,
+      flashSale: this.form.value.flashSale,
+      combo: this.form.value.combo,
     };
 
     const request = this.currentSettingId

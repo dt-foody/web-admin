@@ -389,7 +389,7 @@
 
               <div class="space-y-1">
                 <p class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-                  {{ customer?.totalOrder || 0 }}
+                  {{ customer.totalOrder || 0 }}
                 </p>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Tổng đơn hàng</p>
                 <p class="text-xs text-gray-500 dark:text-gray-500">Số lần mua trọn đời</p>
@@ -445,7 +445,7 @@
 
               <div class="space-y-1">
                 <p class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-                  {{ formatCurrency(customer?.totalSpent || 0) }}
+                  {{ formatCurrency(customer.totalSpent || 0) }}
                 </p>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Tổng chi tiêu</p>
                 <p class="text-xs text-gray-500 dark:text-gray-500">Giá trị trọn đời</p>
@@ -558,7 +558,7 @@
                 <p
                   class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight uppercase"
                 >
-                  {{ customer?.referralCode || '---' }}
+                  {{ customer.referralCode || '---' }}
                 </p>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Mã giới thiệu</p>
                 <p class="text-xs text-gray-500 dark:text-gray-500">Chia sẻ để nhận thưởng</p>
@@ -641,7 +641,7 @@
                             </td>
                             <td class="px-4 py-4">
                               <span class="text-sm text-gray-600 dark:text-gray-400"
-                                >{{ order.items?.length }} sản phẩm</span
+                                >{{ order.items.length }} sản phẩm</span
                               >
                             </td>
                             <td class="px-4 py-4">
