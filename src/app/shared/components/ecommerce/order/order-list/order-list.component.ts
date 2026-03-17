@@ -103,7 +103,7 @@ export class OrderListComponent extends BaseListComponent<Order> implements OnIn
   ) {
     super();
 
-    this.query.status = 'unfinished';
+    this.query.status = '';
     this.query.paymentStatus = '';
     this.query.shippingStatus = '';
     this.query.deliveryType = '';
